@@ -1,0 +1,38 @@
+{
+  "name": "nss-project-backend",
+  "version": "1.0.0",
+  "description": "The National Sevice Scheme (NSS) Android App BackEnd Project Apis",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "node temp.test.js",
+    "migration": "node ./models/_migrations.js"
+  },
+  "imports": {
+    "#color": "./src/script/color.js",
+    "#controllers/*": "./controllers/*",
+    "#models/*":"./models/*",
+    "#config/*":"./config/*",
+    "#routers/*":"./routers/*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shailesh-04/NSS.git"
+  },
+  "keywords": [
+    "NSS"
+  ],
+  "author": "shailesh makavana",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "mysql2": "^3.12.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
