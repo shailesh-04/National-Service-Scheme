@@ -10,10 +10,13 @@ type ButtonProps = {
 const Button: React.FC<ButtonProps> = ({ children, onPress, className }) => {
   return (
     <TouchableOpacity
-      className={`w-full bg-[--primary-color] p-3 rounded-lg ${className}`}
+      className={`w-[80%] align-middle  bg-[--primary-color] p-4 ${className}`}
+      style={{
+        borderRadius:15
+      }}
       onPress={onPress}
     >
-      <Text className="text-center text-[--bg-color] font-semibold">
+      <Text className="text-center text-[12px] text-[--bg-color] font-semibold">
         {children}
       </Text>
     </TouchableOpacity>

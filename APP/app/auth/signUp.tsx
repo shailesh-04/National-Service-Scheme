@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
-import Colors from '@/constants/Colors';
+import {Theme} from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import logo from '@assets/img/logo.png';
 import Button from '@/components/ui/button';
