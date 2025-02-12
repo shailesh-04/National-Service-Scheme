@@ -26,35 +26,32 @@ This is a **National Service Scheme (NSS) App**, developed using **Node.js**, **
 ## **Project Setup & Installation**
 
 ### **Backend (Node.js - Express.js)**
-
+- Must Follow The Below Step For Run Prject
 1. **Clone the repository**
    ```sh
-   git clone https://github.com/yourusername/nss-project.git
-   cd nss-project/backend
+   git clone https://github.com/shailesh-04/National-Service-Scheme.git
+   cd National-Service-Scheme
    ```
 2. **Install dependencies**
+3. - Backend
    ```sh
+   cd SERVER
    npm install
    ```
-3. **Configure the environment variables**
+4. **Configure the environment variables**
    - Create a `.env` file in the `backend/` directory
    ```
-   PORT=5000
-   DB_HOST=localhost
-   DB_USER=root
-   DB_PASSWORD=yourpassword
-   DB_NAME=nss_db
-   JWT_SECRET=your_jwt_secret
+   mv dot.env .env
    ```
-4. **Run the MySQL Database Migration**
+5. **Run the MySQL Database Migration**
    ```sh
-   npx sequelize-cli db:migrate
+   npm run migration
    ```
-5. **Start the server**
+6. **Start the server**
    ```sh
    npm start
    ```
-   The backend will be running on `http://localhost:5000`
+   The backend will be running on `http://localhost:3000`
 
 ---
 
@@ -62,7 +59,7 @@ This is a **National Service Scheme (NSS) App**, developed using **Node.js**, **
 
 1. **Navigate to the frontend directory**
    ```sh
-   cd ../frontend
+   cd ../APP
    ```
 2. **Install dependencies**
    ```sh
