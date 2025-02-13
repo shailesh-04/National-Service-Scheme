@@ -43,7 +43,12 @@ function color(...messages) {
         bgBrightWhite: "\u001b[107m",
     };
 
-    const formattedMessages = messages.map(([text, color, stylesArray]) => {
+    const formattedMessages = messages.map((message) => {
+        if (!Array.isArray(message) || message.length < 1) {
+            return message; // Handle invalid input
+        }
+
+        const [text, color, stylesArray] = message;
         let output = "";
 
         if (color && styles[color]) {
@@ -56,7 +61,9 @@ function color(...messages) {
                     output += styles[style];
                 }
             });
-        } else output += styles[stylesArray];
+        } else if (styles[stylesArray]) {
+            output += styles[stylesArray];
+        }
 
         output += text + styles.reset;
         return output;
@@ -64,5 +71,12 @@ function color(...messages) {
 
     console.log(formattedMessages.join(" "));
 }
-
+export const catchErr = (err,path)=>{
+    color(
+        ["******ERROR*****", "red", ["underline", "bold"]],
+        ["\n" + err, "yellow", ""],
+        ['\n -> '+path,'blue']
+    );
+}
 export default color;
+

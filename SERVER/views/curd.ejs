@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD with Tailwind and Axios</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<style>
+    .message {
+        position: absolute;
+        top: -100%;
+        right: 10px;
+        font-family: sans-serif;
+        color: #00ff00;
+        border-radius: 30px;
+        padding: 10px;
+        border: 1px solid #00ff00;
+        animation-duration: .5s;
+        animation-fill-mode: forwards;
+    }
+@keyframes Animation {
+        from {
+            top: -100%;
+        }
+
+        to {
+            top: 20px;
+        }
+    }   
+    @keyframes AnimationOff {
+        from {
+            top: 20px;
+        }
+
+        to {
+            top: -100%;
+        }
+    }
+</style>
+
+<body class="p-10 bg-gray-100">
+
+    <div class="message">SuccessusFuly Update</div>
+    <div class="max-w-2xl mx-auto bg-white p-5 rounded-lg shadow">
+        <h2 class="text-xl font-bold mb-4">CRUD Operations</h2>
+
+        <div class="mb-4">
+            <input type="text" id="nameInput" placeholder="Enter name" class="w-full p-2 border rounded mb-2">
+            <input type="email" id="emailInput" placeholder="Enter email" class="w-full p-2 border rounded mb-2">
+            <input type="password" id="passwordInput" placeholder="Enter password"
+                class="w-full p-2 border rounded mb-2">
+            <input type="text" id="phoneInput" placeholder="Enter phone" class="w-full p-2 border rounded">
+            <button onclick="addItem()" class="mt-2 w-full bg-blue-500 text-white p-2 rounded">Add Item</button>
+        </div>
+
+        <table class="w-full border-collapse border border-gray-300 mt-4">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="border border-gray-300 p-2">Name</th>
+                    <th class="border border-gray-300 p-2">Email</th>
+                    <th class="border border-gray-300 p-2">Password</th>
+                    <th class="border border-gray-300 p-2">Phone</th>
+                    <th class="border border-gray-300 p-2">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="itemsList"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const apiUrl = "http://localhost:3000/api/user";
+
+        async function fetchItems() {
+            try {
+                const res = await axios.get(apiUrl);
+                renderItems(res.data);
+            } catch (error) {
+                console.error("Error fetching items:", error);
+            }
+        }
+
+        async function addItem() {
+            const name = document.getElementById("nameInput").value;
+            const email = document.getElementById("emailInput").value;
+            const password = document.getElementById("passwordInput").value;
+            const phone = document.getElementById("phoneInput").value;
+
+            const newItem = { name, email, password, phone };
+
+            try {
+                await axios.post(apiUrl, newItem);
+                document.getElementById("nameInput").value = "";
+                document.getElementById("emailInput").value = "";
+                document.getElementById("passwordInput").value = "";
+                document.getElementById("phoneInput").value = "";
+                message("Successfuly Inser New Data","blue");
+                fetchItems();
+            } catch (error) {
+                console.error("Error adding item:", error);
+            }
+        }
+
+        async function updateItem(id) {
+            try {
+                const name = document.getElementById("name" + id).value;
+                const email = document.getElementById("email" + id).value;
+                const password = document.getElementById("password" + id).value;
+                const phone = document.getElementById("phone" + id).value;
+                const item = { name, email, password, phone };
+                await axios.put(`${apiUrl}/${id}`, item);
+                message('Sucsessfuly Uplade ','green');
+                fetchItems();
+            } catch (error) {
+                console.error("Error updating item:", error);
+            }
+        }
+
+        async function deleteItem(id) {
+            try {
+                await axios.delete(`${apiUrl}/${id}`);
+                message("Successfuly Delete Clicked Record",'red');
+                fetchItems();
+                
+            } catch (error) {
+                console.error("Error deleting item:", error);
+            }
+        }
+
+        function renderItems(items) {
+            const list = document.getElementById("itemsList");
+            list.innerHTML = "";
+            items.forEach(item => {
+                const tr = document.createElement("tr");
+                tr.className = "border border-gray-300";
+                tr.innerHTML = `
+                    <td class="border border-gray-300 p-2"><input type="text" value="${item.name}" class="w-full p-1" onchange="updateItem('${item._id}', 'name', this.value)" id="name${item._id}"></td>
+                    <td class="border border-gray-300 p-2"><input type="email" value="${item.email}" class="w-full p-1" onchange="updateItem('${item._id}', 'email', this.value)" id="email${item._id}"></td>
+                    <td class="border border-gray-300 p-2"><input type="text" value="${item.password}" class="w-full p-1" onchange="updateItem('${item._id}', 'password', this.value)" id="password${item._id}"></td>
+                    <td class="border border-gray-300 p-2"><input type="text" value="${item.phone}" class="w-full p-1" onchange="updateItem('${item._id}', 'phone', this.value)" id="phone${item._id}"></td>
+                    <td class="border border-gray-300 p-2 text-center"><button onclick="deleteItem('${item._id}')" class="bg-red-500 text-white px-2 py-1 rounded">Delete</button></td>
+                `;
+                list.appendChild(tr);
+            });
+        }
+
+        function message(msg,color){
+            const box = document.querySelector('.message');
+            box.style.animationName="Animation";
+            color?box.style.color=color:'';
+            color?box.style.borderColor=color:'';
+            msg? box.innerHTML = msg:'';
+            setInterval(()=>{
+                box.style.animationName="AnimationOff";
+            },3000);
+
+        }
+        fetchItems();
+    </script>
+</body>
+
+</html>
