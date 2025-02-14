@@ -1,46 +1,76 @@
-import {
-    View,
-    Text,
-    TouchableOpacity,
-    Image,
-    TextInput,
-    ScrollView,
-} from "react-native";
-import DrawerMenu from "@assets/img/DrawerMenu.png";
-import logo from "@assets/img/logo.png";
+import { SafeAreaView, ScrollView } from "react-native";
 import { Theme, Color } from "@/constants/Colors";
-import { SafeAreaView } from "react-native-safe-area-context";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { StatusBar } from "expo-status-bar";
-const index = () => {
+import ImageSlider from "@/components/ImageSlider";
+import EventList from "@/components/EventList";
+import Header from "@/components/Header";
+interface Event {
+    imagesrc: string;
+    date: [string, string, string]; // [day, month, year]
+    name: string;
+    numOfUser: number;
+    address: string;
+}
+interface Image {
+    url: string;
+}
+
+const index: React.FC = () => {
+    const images: Image[] = [
+        {
+            url: "https://www.sbpedutrust.org/PhotoGallery/Gallery/Blood_Donation/19251.png",
+        },
+        {
+            url: "https://www.sbpedutrust.org/PhotoGallery/Gallery/Drawing_Competition/115.png",
+        },
+        {
+            url: "https://www.sbpedutrust.org/PhotoGallery/Gallery/Harghar_Tiranga/65420.png",
+        },
+        {
+            url: "https://www.sbpedutrust.org/PhotoGallery/Gallery/Debate_On_Beti_Bachavo/69019.png",
+        },
+    ];
+    const events: Event[] = [
+        {
+            imagesrc:
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPMJDgjBj23uThV8e0cYTaBv9ItBOfiAGmBQ&s",
+            date: ["15", "FEB", "2025"],
+            name: "Nasha Mukti Abhiyan",
+            numOfUser: 300,
+            address: "PAREKH COLLAGE-MAHUVA ",
+        },
+        {
+            imagesrc:
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLRye_ixJ3XtFBy0EifOmHlKw-U_QK9ZWRnw&s",
+            date: ["1", "JUNE", "2001"],
+            name: "Blood Donation",
+            numOfUser: 300,
+            address: "Motivadal, Mahuva,-364319",
+        },
+        {
+            imagesrc:
+                "https://www.shutterstock.com/image-vector/illustration-indian-people-wishing-happy-260nw-298508150.jpg",
+            date: ["1", "JUNE", "2001"],
+            name: "indian-people-wishing-happy",
+            numOfUser: 300,
+            address: "Motivadal, Mahuva,-364319",
+        },
+    ];
     return (
-        <View className="" style={Theme}>
-            <StatusBar backgroundColor={`${Color["main-color"]}`} />
-            <View className=" bg-[--main-color] rounded-b-[30px]  flex-row justify-between items-center px-6 py-10 relative">
-                <View>
-                    <View className="flex-row gap-3">
-                        <Image
-                            source={logo}
-                            resizeMode="contain"
-                            className="w-12 h-12 bg-white rounded-full overflow-hidden"
-                        />
-                        <Text className="text-[--bg-color] font-bold text-[20px]">
-                            NSS
-                        </Text>
-                    </View>
-                    <Text className="text-[--bg-color] font-bold">
-                        National Service Scheme
-                    </Text>
-                </View>
-                <View className="bg-[#ffffff22]  rounded-full w-10 h-10 items-center justify-center">
-                    <Ionicons
-                        name="notifications-outline"
-                        size={24}
-                        color={`${Color["bg-color"]}`}
-                    />
-                </View>
-            </View>
-        </View>
+        <SafeAreaView style={Theme} className="gap-8"> 
+            <Header />
+            <ScrollView
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{
+                    gap: "30",
+                    paddingBottom: 200,
+                }}
+            >
+                <StatusBar backgroundColor={`${Color["main-color"]}`} />
+                <EventList events={events} />
+                <ImageSlider images={images} title="Photos..." />
+            </ScrollView>
+        </SafeAreaView>
     );
 };
 export default index;
