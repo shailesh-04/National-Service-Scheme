@@ -1,49 +1,78 @@
+import { catchErr } from "#color";
 import model from "#models/users.model.js";
 export const signup = async (req, res) => {
-    const { name, email, password, phone } = req.body;
-    model.create([name, email, password, phone], (err, data) => {
-        if (err) return res.status(406).json(err.sqlMessage);
-        res.status(201).json("new user is create");
-    });
+    try {
+        const { name, email, password, phone } = req.body;
+        model.create([name, email, password, phone], (err, data) => {
+            if (err) return res.status(406).json(err.sqlMessage);
+            res.status(201).json("new user is create");
+        });
+    } catch (error) {
+        catchErr(error, "user.controll.sinup");
+    }
 };
 export const singin = (req, res) => {
-    const { email, password } = req.body;
-    model.singin([email, password], (err, data) => {
-        if (err) return res.status(406).json(err.sqlMessage);
-        if (data.length > 0) res.status(200).json(data);
-        else return res.status(404).json("User Name And Password Is Not Valid");
-    });
+    try {
+        const { email, password } = req.body;
+        model.singin([email, password], (err, data) => {
+            if (err) return res.status(406).json(err.sqlMessage);
+            if (data.length > 0) res.status(200).json(data);
+            else
+                return res
+                    .status(404)
+                    .json("User Name And Password Is Not Valid");
+        });
+    } catch (error) {
+        catchErr(error, "user.controll.sinin");
+    }
 };
 export const findAll = (req, res) => {
-    model.findAll((err, data) => {
-        if (err) return res.status(406).json(err.sqlMessage);
-        res.status(200).json(data);
-    });
+    try {
+        model.findAll((err, data) => {
+            if (err) return res.status(406).json(err.sqlMessage);
+            res.status(200).json(data);
+        });
+    } catch (error) {
+        catchErr(error, "user.controll.findall");
+    }
 };
 
 export const findOne = (req, res) => {
-    const id = req.params.id;
-    model.findOne(id, (err, data) => {
-        if (err) return res.status(406).json(err.sqlMessage);
-        if (data.length > 0) res.status(200).json(data);
-        else return res.status(404).json("Invalid User ID : Not Found User");
-    });
+    try {
+        const id = req.params.id;
+        model.findOne(id, (err, data) => {
+            if (err) return res.status(406).json(err.sqlMessage);
+            if (data.length > 0) res.status(200).json(data);
+            else
+                return res.status(404).json("Invalid User ID : Not Found User");
+        });
+    } catch (error) {
+        catchErr(error, "user.controll.findOn");
+    }
 };
 
 export const update = (req, res) => {
-    const id = req.params.id;
-    const { name, email, password, phone } = req.body;
-    model.update(id, [name, email, password, phone], (err, data) => {
-        if (err) return res.status(406).json(err.sqlMessage);
-        res.status(200).json("Succsessfuly Update Change Text..");
-    });
+    try {
+        const id = req.params.id;
+        const { name, email, password, phone } = req.body;
+        model.update(id, [name, email, password, phone], (err, data) => {
+            if (err) return res.status(406).json(err.sqlMessage);
+            res.status(200).json("Succsessfuly Update Change Text..");
+        });
+    } catch (error) {
+        catchErr(error, "user.controll.update");
+    }
 };
 
 export const remove = (req, res) => {
-    const id = req.params.id;
-    model.remove(id, (err, data) => {
-        if (err) return res.status(406).json(err.sqlMessage);
-        if (data.length > 0) res.status(200).json(data);
-        res.status(200).json("Succsessfuly Delete The Record..");
-    });
+    try {
+        const id = req.params.id;
+        model.remove(id, (err, data) => {
+            if (err) return res.status(406).json(err.sqlMessage);
+            if (data.length > 0) res.status(200).json(data);
+            res.status(200).json("Succsessfuly Delete The Record..");
+        });
+    } catch (error) {
+        catchErr(error, "user.controll.remove");
+    }
 };

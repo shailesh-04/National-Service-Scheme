@@ -1,6 +1,6 @@
 import React from "react";
 import { TouchableOpacity, Text } from "react-native";
-
+import { Theme } from "@/constants/Colors";
 type ButtonProps = {
   children: React.ReactNode;
   onPress?: () => void;
@@ -9,14 +9,12 @@ type ButtonProps = {
 
 const Button: React.FC<ButtonProps> = ({ children, onPress, className }) => {
   return (
-    <TouchableOpacity
-      className={`w-[80%] align-middle  bg-[--primary-color] p-4 ${className}`}
-      style={{
-        borderRadius:15
-      }}
+    <TouchableOpacity 
+      style={[Theme,{borderRadius:10}]}
+      className={`bg-[--main-color] w-full align-middle p-4 items-center ${className}`}
       onPress={onPress}
     >
-      <Text className="text-center text-[12px] text-[--bg-color] font-semibold">
+      <Text className=" text-[--bg-color] text-[12px] font-bold">
         {children}
       </Text>
     </TouchableOpacity>
