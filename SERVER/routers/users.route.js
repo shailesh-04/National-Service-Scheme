@@ -16,6 +16,6 @@ try {
     router.post("/", signup);
     router.route("/:id").get(findOne).put(update).delete(remove);
 } catch (error) {
-    catchErr(error,'user.route');
+    catchErr(error, "user.route");
 }
 export default router;

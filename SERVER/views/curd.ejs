@@ -59,6 +59,7 @@
         <table class="w-full border-collapse border border-gray-300 mt-4">
             <thead>
                 <tr class="bg-gray-200">
+                    <th class="border border-gray-300 p-2">ID</th>
                     <th class="border border-gray-300 p-2">Name</th>
                     <th class="border border-gray-300 p-2">Email</th>
                     <th class="border border-gray-300 p-2">Password</th>
@@ -136,11 +137,12 @@
                 const tr = document.createElement("tr");
                 tr.className = "border border-gray-300";
                 tr.innerHTML = `
-                    <td class="border border-gray-300 p-2"><input type="text" value="${item.name}" class="w-full p-1" onchange="updateItem('${item._id}', 'name', this.value)" id="name${item._id}"></td>
-                    <td class="border border-gray-300 p-2"><input type="email" value="${item.email}" class="w-full p-1" onchange="updateItem('${item._id}', 'email', this.value)" id="email${item._id}"></td>
-                    <td class="border border-gray-300 p-2"><input type="text" value="${item.password}" class="w-full p-1" onchange="updateItem('${item._id}', 'password', this.value)" id="password${item._id}"></td>
-                    <td class="border border-gray-300 p-2"><input type="text" value="${item.phone}" class="w-full p-1" onchange="updateItem('${item._id}', 'phone', this.value)" id="phone${item._id}"></td>
-                    <td class="border border-gray-300 p-2 text-center"><button onclick="deleteItem('${item._id}')" class="bg-red-500 text-white px-2 py-1 rounded">Delete</button></td>
+                    <td>${item.id}</td>
+                    <td class="border border-gray-300 p-2"><input type="text" value="${item.name}" class="w-full p-1" onchange="updateItem('${item.id}', 'name', this.value)" id="name${item.id}"></td>
+                    <td class="border border-gray-300 p-2"><input type="email" value="${item.email}" class="w-full p-1" onchange="updateItem('${item.id}', 'email', this.value)" id="email${item.id}"></td>
+                    <td class="border border-gray-300 p-2"><input type="text" value="${item.password}" class="w-full p-1" onchange="updateItem('${item.id}', 'password', this.value)" id="password${item.id}"></td>
+                    <td class="border border-gray-300 p-2"><input type="text" value="${item.phone}" class="w-full p-1" onchange="updateItem('${item.id}', 'phone', this.value)" id="phone${item.id}"></td>
+                    <td class="border border-gray-300 p-2 text-center"><button onclick="deleteItem('${item.id}')" class="bg-red-500 text-white px-2 py-1 rounded">Delete</button></td>
                 `;
                 list.appendChild(tr);
             });

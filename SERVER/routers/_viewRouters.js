@@ -2,14 +2,20 @@ import { Router } from "express";
 import {catchErr} from '#color';
 const router = Router();
 try {
-    router.use("/curd",(req,res)=>{
+    router.get("/curd",(req,res)=>{
         res.render('curd');
     });
-    router.use("/signup",(req,res)=>{
+    router.get("/signup",(req,res)=>{
         res.render('signup');
     });
-    router.use("/signin",(req,res)=>{
+    router.get("/signin",(req,res)=>{
         res.render('signin');
+    });
+    router.get("/event",(req,res)=>{
+        res.render("Event");
+    });
+    router.get("/emages",(req,res)=>{
+        res.render("images");
     });
 } catch (error) {
     catchErr(error,"ViewRoute");

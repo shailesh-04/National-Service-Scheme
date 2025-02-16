@@ -1,8 +1,6 @@
 import conn from "#config/db.config.js";
-import {catchErr} from "#color";
-function model(){
-
-};
+import { catchErr } from "#color";
+function model() {}
 try {
     model.create = async (body, res) => {
         conn.query(
@@ -23,20 +21,20 @@ try {
     };
 
     model.findOne = async (id, res) => {
-        conn.query("SELECT * FROM users where _id = ?", id, res);
+        conn.query("SELECT * FROM users where id = ?", id, res);
     };
     model.update = async (id, body, res) => {
         conn.query(
-            "UPDATE users SET name = ?, email = ?, password = ?, phone = ? WHERE _id = " +
+            "UPDATE users SET name = ?, email = ?, password = ?, phone = ? WHERE id = " +
                 id,
             body,
             res
         );
     };
     model.remove = async (id, res) => {
-        conn.query("DELETE FROM users WHERE _id = ?;", [id], res);
+        conn.query("DELETE FROM users WHERE id = " + id + ";", res);
     };
 } catch (error) {
-    catchErr(error,'user.model');
+    catchErr(error, "user.model");
 }
 export default model;

@@ -1,4 +1,4 @@
-import { SafeAreaView, ScrollView } from "react-native";
+import { ImageBackground, SafeAreaView, ScrollView,Text,View } from "react-native";
 import { Theme, Color } from "@/constants/Colors";
 import { StatusBar } from "expo-status-bar";
 import ImageSlider from "@/components/ImageSlider";
@@ -69,7 +69,16 @@ const index: React.FC = () => {
                 <StatusBar backgroundColor={`${Color["main-color"]}`} />
                 <EventList events={events} />
                 <ImageSlider images={images} title="Photos..." />
+                <View className="items-center h-52">
+                    <Text className="font-black text-3xl">
+                        THANKS FOR JOIN!
+                    </Text>
+                    <Text className="w-full text-5xl ps-20 font-black text-[--main-color]">
+                    NSS
+                    </Text>
+                </View>
             </ScrollView>
+
         </SafeAreaView>
     );
 };
