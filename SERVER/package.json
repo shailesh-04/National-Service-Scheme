@@ -16,8 +16,9 @@
     "#models/*": "./database/models/*",
     "#migrations/*": "./database/migrations/*",
     "#config/*": "./config/*",
-    "#routers/*": "./routers/*",
-    "#middleware/*": "./middleware/*"
+    "#routes/*": "./routes/*",
+    "#middleware/*": "./middleware/*",
+    "#services/*":"./services/*"
   },
   "repository": {
     "type": "git",

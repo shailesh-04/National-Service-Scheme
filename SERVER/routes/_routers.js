@@ -9,6 +9,6 @@ try {
     router.use("/event",event);
     router.use("/images",emages);
 } catch (error) {
-    catchErr(error,"_routers");
+    catchErr(error,"_routes");
 }
 export default router;

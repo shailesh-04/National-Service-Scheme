@@ -52,6 +52,13 @@ try {
             res
         );
     };
+    model.uploadImage = async (body, res) => {
+        conn.query(
+            `UPDATE events SET image = ?  WHERE id = ?;`,
+            [body],
+            res
+        );
+    };
     model.upcoming = async (res) => {
         conn.query(
             `SELECT id,name,description,location,start_time,end_time,numOFUser,image,created_by FROM events 

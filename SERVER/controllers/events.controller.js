@@ -87,8 +87,21 @@ export const remove = (req, res) => {
 export const upcoming = (req, res) => {
     try {
         model.upcoming((err, data) => {
-            if (err) if (err) return res.status(406).json(err);
+            if (err) if (err) return res.status(406).json(err.sqlMessage);
             res.json(data);
+        });
+    } catch (error) {
+        catchErr(error, "event.controll.remove");
+    }
+};
+
+export const uploadImage = (req, res) => {
+    const id = req.params.id;
+    const file = req.file.path;
+    try {
+        model.uploadImage([file,id],(err, data) => {
+            if (err) if (err) return res.status(406).json(err.sqlMessage);
+            res.json("Sucsessfuly Update Image");
         });
     } catch (error) {
         catchErr(error, "event.controll.remove");

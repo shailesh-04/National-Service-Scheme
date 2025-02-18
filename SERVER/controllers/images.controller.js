@@ -1,6 +1,6 @@
 import { catchErr } from "#color";
 import model from "#models/images.model.js";
-export const upload = async (req, res) => {
+export const uploadImages = async (req, res) => {
     try {
         const { E_id } = req.body;
         const files = req.files;

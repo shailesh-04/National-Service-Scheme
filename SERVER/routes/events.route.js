@@ -1,20 +1,21 @@
 import { Router } from "express";
 import { catchErr } from "#color";
-import { singleUpload } from "#middleware/cloudinary.middleware.js";
+import { upload } from "#middleware/cloudinary.middleware.js";
 import {
     create,
     update,
     remove,
     findAll,
     findOne,
-    upcoming
+    upcoming,
+    uploadImage
 } from "#controllers/events.controller.js";
 const router = Router();
 try {
     router.get("/",findAll);
-    router.post("/",singleUpload,create);
+    router.post("/",upload.single("image"),create);
     router.get("/upcoming",upcoming);
-
+    router.put("/image/:id",upload.single('image'),uploadImage);
     router.route("/:id").get(findOne).put(update).delete(remove);
     
 

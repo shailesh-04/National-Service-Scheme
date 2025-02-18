@@ -2,8 +2,8 @@ import { Router } from "express";
 import {catchErr} from '#color';
 const router = Router();
 try {
-    router.get("/curd",(req,res)=>{
-        res.render('curd');
+    router.get("/users",(req,res)=>{
+        res.render('users');
     });
     router.get("/signup",(req,res)=>{
         res.render('signup');

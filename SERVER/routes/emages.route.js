@@ -1,13 +1,13 @@
 import { Router } from "express";
 import { catchErr } from "#color";
-import { multipleUpload} from "#middleware/cloudinary.middleware.js";
+import { upload} from "#middleware/cloudinary.middleware.js";
 import {
-    upload,
+    uploadImages,
     findAll
 } from "#controllers/images.controller.js";
 const router = Router();
 try {
-    router.post("/",multipleUpload,upload);
+    router.post("/",upload.array("images",10),uploadImages);
     router.get("/", findAll);
 } catch (error) {
     catchErr(error,'Event.route');

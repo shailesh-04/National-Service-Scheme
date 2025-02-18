@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
-import routers from "#routers/_routers.js";
-import viewRouters from "#routers/_viewRouters.js";
+import routers from "#routes/_routers.js";
+import viewRouters from "#routes/_viewRouters.js";
 import cors from "cors";
 import { catchErr } from "#color";
 const app = express();

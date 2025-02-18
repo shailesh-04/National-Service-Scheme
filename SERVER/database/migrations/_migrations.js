@@ -1,87 +1,72 @@
 import conn from "#config/db.config.js";
 import color from "#color";
 
-const tableNameArg = process.argv[2];
-export const tables = [
-    {
-        name: "users",
-        field: `
-            id INT PRIMARY KEY AUTO_INCREMENT,
-            name VARCHAR(50) NOT NULL,
-            email VARCHAR(100) UNIQUE NOT NULL,
-            password VARCHAR(100) NOT NULL,
-            phone VARCHAR(20),
-            role ENUM('1', '2', '3','a') DEFAULT '1',
-            img VARCHAR(255)
-        `,
-    },
-    {
-        name: "events",
-        field: `
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(255) NOT NULL,
-            description TEXT,
-            location VARCHAR(255),
-            start_time DATETIME NOT NULL,
-            end_time DATETIME NOT NULL,
-            numOFUser INT DEFAULT 0,
-            image VARCHAR(255),
-            created_by INT,
-            is_deleted BOOLEAN DEFAULT FALSE,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
-        `,
-    },
-    {
-        name:"images",
-        field:`
-         id INT AUTO_INCREMENT PRIMARY KEY,
-         imageurl VARCHAR(255) NOT NULL,
-         E_id INT,
-         FOREIGN KEY (E_id) REFERENCES events(id) ON DELETE SET NULL
-        `
-    }
-   
-];
+const table = process.argv[2];
+const command = process.argv[3];
 
-const migration = async () => {
-    let selectedTables = tables;
+if (!table && !command) {
+    color(
+        ["Command Line Argument ERROR", "red", ["underline", "bold"]],
+        ["\nRun Following Command Example", "yellow", "italic"],
+        ["\n\n->  npm run migration <table_name> <command>"],
+        ["\n\n<command>", "bold"],
+        ["create \n drop \n drop&create \n seeders \n all"]
+    );
+    process.exit(0);
+}
 
-    // If a specific table name is passed, filter only that table
-    if (tableNameArg) {
-        selectedTables = tables.filter(t => t.name === tableNameArg);
-        if (selectedTables.length === 0) {
-            console.log(color([`Error: Table "${tableNameArg}" not found!`, "red", "bold"]));
-            conn.end();
-            return;
+async function loadModule(t, c) {
+    try {
+        const module = await import(`./${t}.migration.js`);
+        let query = ''
+        switch (c) {
+            case "create":
+                query = module.createTable;
+                break;
+            case "drop":
+                query = module.dropTable;
+                break;
+            case "drop_create":
+                conn.query(module.dropTable);
+                query = module.createTable;
+                break;
+            case "seeders":
+                query = module.seeders;
+                break;
+            default:
+                color(
+                    [
+                        "Command Line Argument ERROR",
+                        "red",
+                        ["underline", "bold"],
+                    ],
+                    ["\nRun Following Command Example", "yellow", "italic"],
+                    ["\n\n->  npm run migration <table_name> <command>"],
+                    ["\n\n<command>", "bold"],
+                    ["create \n drop \n drop_create \n seeders \n all"]
+                );
+                process.exit(0);
         }
-    }
-
-    // Drop tables
-    for (let i = selectedTables.length - 1; i >= 0; i--) {
-        const table = selectedTables[i];
-        await new Promise((resolve) => {
-            conn.query(`DROP TABLE IF EXISTS ${table.name}`, (err) => {
-                if (err) console.log(err.sqlMessage);
-                else color([`Table Dropped: ${table.name}`, "red", "italic"]);
-                resolve();
-            });
+        conn.query(query,(err,data)=>{
+            if(err)
+                return console.error(err.sqlMessage);
+            color(["\n DONE ","green",['bold','italic']]);
         });
+    } catch (error) {
+        color(
+            [
+                "Command Line Argument ERROR",
+                "red",
+                ["underline", "bold"],
+            ],
+            ["\nRun Following Command Example", "yellow", "italic"],
+            ["\n\n->  npm run migration <table_name> <command>"],
+            ["\n\n<command>", "bold"],
+            ["create \n drop \n drop_create \n seeders \n all"],
+            ['\nERRPR=>',error]
+        );
+        process.exit(0);
     }
-
-    // Create tables
-    for (let table of selectedTables) {
-        await new Promise((resolve) => {
-            conn.query(`CREATE TABLE ${table.name} (${table.field})`, (err) => {
-                if (err) console.log(err.sqlMessage);
-                else color([`Table Created: ${table.name}`, "green", "bold"]);
-                resolve();
-            });
-        });
-    }
-};
-
-migration().then(() => conn.end());
-
-export default migration;
+}
+await loadModule(table, command); // Adjust the path as needed
+conn.end();
