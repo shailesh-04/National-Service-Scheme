@@ -72,7 +72,6 @@ export const update = (req, res) => {
         catchErr(error, "event.controll.update");
     }
 };
-
 export const remove = (req, res) => {
     try {
         const id = req.params.id;
@@ -80,6 +79,16 @@ export const remove = (req, res) => {
             if (err) return res.status(406).json(err.sqlMessage);
             if (data.length > 0) res.status(200).json(data);
             res.status(200).json("Succsessfuly Delete The Record..");
+        });
+    } catch (error) {
+        catchErr(error, "event.controll.remove");
+    }
+};
+export const upcoming = (req, res) => {
+    try {
+        model.upcoming((err, data) => {
+            if (err) if (err) return res.status(406).json(err);
+            res.json(data);
         });
     } catch (error) {
         catchErr(error, "event.controll.remove");

@@ -55,6 +55,7 @@ export const update = (req, res) => {
     try {
         const id = req.params.id;
         const { name, email, password, phone } = req.body;
+        console.log(req.body);
         model.update(id, [name, email, password, phone], (err, data) => {
             if (err) return res.status(406).json(err.sqlMessage);
             res.status(200).json("Succsessfuly Update Change Text..");
@@ -69,10 +70,23 @@ export const remove = (req, res) => {
         const id = req.params.id;
         model.remove(id, (err, data) => {
             if (err) return res.status(406).json(err.sqlMessage);
-            if (data.length > 0) res.status(200).json(data);
             res.status(200).json("Succsessfuly Delete The Record..");
         });
     } catch (error) {
         catchErr(error, "user.controll.remove");
     }
+};
+
+export const uploadImage = (req,res)=>{
+   // try {
+        const id = req.params.id;
+        const image = req.file;
+        console.log(id,image);
+    //     model.uploadImage([image,id], (err, data) => {
+    //         if (err) return res.status(406).json(err.sqlMessage);
+    //         res.status(200).json("Succsessfuly Upload Image");
+    //     });
+    // } catch (error) {
+    //     catchErr(error, "user.controll.uploadImage");
+    // }
 };

@@ -9,7 +9,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 const Header = () => {
     return (
         <View className=" bg-[--main-color] rounded-b-[30px]  flex-row justify-between items-center px-6 py-10 relative">
-            <View className="gap-3">
+            <View className="gap-3 mt-5">
                 <View className="flex-row gap-3">
                     <View className="w-10 h-10">
                         <Image

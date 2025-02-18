@@ -126,7 +126,7 @@ document.getElementById("eventForm").addEventListener("submit", async function (
     formData.append("start_time", document.getElementById("eventStartTime").value);
     formData.append("end_time", document.getElementById("eventEndTime").value);
     formData.append("image", document.getElementById("eventImage").files[0]);
-    formData.append("created_by","1 ");
+    formData.append("created_by","5 ");
     try {
         await axios.post("/api/event/", formData, { headers: { "Content-Type": "multipart/form-data" } });
         alert("Event created successfully!");

@@ -11,8 +11,17 @@ try {
         );
     };
     model.findAll = async (res) => {
-        conn.query("SELECT * FROM events WHERE is_deleted = FALSE;", res);
-    };
+        conn.query(
+            `SELECT id, name, description, location, start_time, end_time, numOFUser, image, created_by 
+                FROM events 
+                WHERE is_deleted = false  
+                ORDER BY 
+                DATE(end_time) = CURDATE() ASC,
+                start_time DESC;  
+                `,
+            res
+        );
+    } ;
 
     model.findOne = async (id, res) => {
         conn.query(
@@ -40,6 +49,16 @@ try {
         conn.query(
             `UPDATE events SET is_deleted = TRUE WHERE id = ?;`,
             [id],
+            res
+        );
+    };
+    model.upcoming = async (res) => {
+        conn.query(
+            `SELECT id,name,description,location,start_time,end_time,numOFUser,image,created_by FROM events 
+            WHERE is_deleted = false 
+            AND start_time >= NOW() 
+            ORDER BY start_time ASC 
+            LIMIT 5;`,
             res
         );
     };

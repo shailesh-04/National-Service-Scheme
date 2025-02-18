@@ -34,6 +34,9 @@ try {
     model.remove = async (id, res) => {
         conn.query("DELETE FROM users WHERE id = " + id + ";", res);
     };
+    model.uploadImage = async (body, res) => {
+        conn.query("UPDATE users SET img = ? WHERE id = ?",body, res);
+    };
 } catch (error) {
     catchErr(error, "user.model");
 }

@@ -1,14 +1,20 @@
-import express from 'express';
+import express from "express";
 import dotenv from "dotenv";
 import routers from "#routers/_routers.js";
 import viewRouters from "#routers/_viewRouters.js";
 import cors from "cors";
-dotenv.config();
+import { catchErr } from "#color";
 const app = express();
-app.use(express.static("public"));
-app.use(cors({ origin: "*" }));
-app.use(express.json());
-app.set("view engine", "ejs");
-app.use("/", viewRouters);
-app.use("/api", routers);
+try {
+    dotenv.config();
+    app.use(express.static("public"));
+    app.use(cors({ origin: "*" }));
+    app.use(express.json());
+    app.set("view engine", "ejs");
+    app.use("/", viewRouters);
+    app.use("/api", routers);
+
+} catch (error) {
+    catchErr(error,"app.config.js");
+}
 export default app;

@@ -1,15 +1,15 @@
 import { Router } from "express";
 import { catchErr } from "#color";
-import { EventImages } from "#middleware/Cloudinary.middleware.js";
+import { multipleUpload} from "#middleware/cloudinary.middleware.js";
 import {
     upload,
     findAll
 } from "#controllers/images.controller.js";
 const router = Router();
 try {
-    router.post("/",EventImages,upload);
+    router.post("/",multipleUpload,upload);
     router.get("/", findAll);
 } catch (error) {
-    catchErr(error,'user.route');
+    catchErr(error,'Event.route');
 }
 export default router;

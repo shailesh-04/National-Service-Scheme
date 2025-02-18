@@ -11,7 +11,7 @@
     "migration": "node ./database/migrations/_migrations.js"
   },
   "imports": {
-    "#color": "./src/script/color.js",
+    "#color": "./services/color.js",
     "#controllers/*": "./controllers/*",
     "#models/*": "./database/models/*",
     "#migrations/*": "./database/migrations/*",

@@ -73,9 +73,9 @@ function color(...messages) {
 }
 export const catchErr = (err,path)=>{
     color(
-        ["******ERROR*****", "red", ["underline", "bold"]],
-        ["\n" + err, "yellow", ""],
-        ['\n -> '+path,'blue']
+        ["_____ERROR__________", "red", ["underline", "bold"]],
+        ["\n\n" + err, "yellow", ""],
+        ['\n -> '+path+"  ",'blue',"inverse"]
     );
 }
 export default color;

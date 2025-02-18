@@ -7,10 +7,10 @@ import {
     Easing,
 } from "react-native";
 import { useEffect } from "react";
-import { Theme } from "@/constants/Colors";
+import { Color, Theme } from "@/constants/Colors";
 import { useRouter } from "expo-router";
 import logo from "@assets/img/logo.png";
-
+import { StatusBar } from "expo-status-bar";
 export default function HomeScreen() {
     const router = useRouter();
     useEffect(() => {
@@ -24,6 +24,7 @@ export default function HomeScreen() {
             style={Theme}
             className="bg-[--main-color] flex-1 items-center justify-center "
         >
+            <StatusBar backgroundColor="transparent"/>
             <View className=" w-96 h-96 rounded-full  overflow-hidden items-center justify-center bg-red-50">
                 <Image
                     source={logo}
