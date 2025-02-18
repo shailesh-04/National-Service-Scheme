@@ -9,7 +9,7 @@ import {
     remove,
     uploadImage
 } from "#controllers/users.contraller.js";
-import {upload} from "#middleware/cloudinary.middleware.js";
+import { upload } from "#middleware/cloudinary.middleware.js";
 const router = Router();
 try {
     router.post("/signup", signup);
