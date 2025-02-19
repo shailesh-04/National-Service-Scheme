@@ -12,7 +12,7 @@ import ImageSlider from "@/components/ImageSlider";
 import EventList from "@/components/EventList";
 import Header from "@/components/Header";
 import axios from "axios";
-import { EventType, fetchUpcomingEvents } from "@/components/service/event";
+import { EventType, fetchUpcomingEvents } from "@services/event";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL; 
 interface Image {

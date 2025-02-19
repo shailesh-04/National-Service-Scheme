@@ -13,7 +13,7 @@ import { Theme, Color } from "@/constants/Colors";
 import * as Icon from "@expo/vector-icons";
 import TabEventCard from "@/components/TabEventCard";
 import React, { useEffect, useState } from "react";
-import { EventType, allEvent } from "@/components/service/event";
+import { EventType, allEvent } from "@services/event";
 const Events: React.FC = () => {
     const [events, setEvents] = useState<EventType[]>([]);
     const [eventsMain, setEventsMain] = useState<EventType[]>([]);

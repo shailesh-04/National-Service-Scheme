@@ -77,15 +77,29 @@ export const remove = (req, res) => {
     }
 };
 
-export const uploadImage = (req,res)=>{
-   try {
+export const uploadImage = (req, res) => {
+    try {
         const id = req.params.id;
         const image = req.file.path;
-        model.uploadImage([image,id], (err, data) => {
+        model.uploadImage([image, id], (err, data) => {
             if (err) return res.status(406).json(err.sqlMessage);
             res.status(200).json("Succsessfuly Upload Image");
         });
     } catch (error) {
         catchErr(error, "user.controll.uploadImage");
+    }
+};
+
+export const getEventUser = (req, res) => {
+    try {
+        const id = req.params.id;
+        model.getEventUser(id, (err, data) => {
+            if (err) return res.status(406).json(err.sqlMessage);
+            if (data.length > 0) res.status(200).json(data);
+            else
+                return res.status(404).json("Invalid User ID : Not Found User");
+        });
+    } catch (error) {
+        catchErr(error, "user.controll.getEventUser");
     }
 };

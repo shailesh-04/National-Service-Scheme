@@ -3,7 +3,7 @@ import { ScrollView, View, Text, TouchableOpacity } from "react-native";
 import EventCard from "./EventCard";
 import { AntDesign } from "@expo/vector-icons";
 import { Color } from "@/constants/Colors";
-import { EventType } from "./service/event";
+import { EventType } from "./services/event";
 import { useRouter } from "expo-router";
 interface EventProps {
     events: EventType[];

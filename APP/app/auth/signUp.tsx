@@ -4,7 +4,7 @@ import { Theme, Color } from "@/constants/Colors";
 import { useRouter } from "expo-router";
 import logo from "@assets/img/logo.png";
 import Button from "@/components/ui/button";
-import { signup } from "@/components/service/auth";
+import { signup } from "@services/auth";
 export default function SignUpScreen() {
     const router = useRouter();
     const [name, setName] = useState("");

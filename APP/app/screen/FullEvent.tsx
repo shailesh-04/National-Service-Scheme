@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Image,
     SafeAreaView,
@@ -6,28 +6,42 @@ import {
     View,
     TouchableOpacity,
     ScrollView,
-
+    ActivityIndicator,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Color, Theme } from "@/constants/Colors";
-import { EventType } from "@/components/service/event";
+import { EventType } from "@services/event";
 import * as Icons from "@expo/vector-icons";
 import { date, returnValue } from "@/components/date";
 import { LinearGradient } from "expo-linear-gradient";
-
+import { fetchUser, EventUserProps } from "@/services/user";
 const FullEvent: React.FC = () => {
     const router = useRouter();
+
+    const [user, setUser] = useState<EventUserProps[]| null>(null)
+    const [event, setEvent] = useState<EventType | null>(null);
+    const [dateTime, setDateTime] = useState<returnValue | null>(null);
     const { data } = useLocalSearchParams();
-    const event: EventType = JSON.parse(data as string);
-    const dateTime: returnValue = date(event.start_time, event.end_time);
-    useEffect(() => {}, []);
+    useEffect(() => {
+        const parsedEvent = JSON.parse(data as string);
+        setEvent(parsedEvent);
+        setDateTime(date(parsedEvent.start_time, parsedEvent.end_time));
+        fetchUser(parsedEvent.id, (data, err) => {
+            if (err) {
+                alert(err);
+                console.log(err);
+                return;
+            }
+            setUser(data);
+        });
+    }, []);
 
     return (
         <SafeAreaView style={Theme} className="flex-1 relative">
             <ScrollView className="">
                 <View className="w-full h-72">
                     <Image
-                        source={{ uri: event.image }}
+                        source={{ uri: event?.image }}
                         className="w-full h-full"
                         resizeMode="cover"
                     />
@@ -44,7 +58,7 @@ const FullEvent: React.FC = () => {
                             className=" font-semibold text-[12px]"
                             style={{ color: `${Color["main-color"]}aa` }}
                         >
-                            +{event.numOFUser} Going
+                            +{event?.numOFUser} Going
                         </Text>
                         <TouchableOpacity className="bg-[--main-color] p-2 rounded-xl ms-16">
                             <Text className="text-[--bg-color] text-[11px]">
@@ -55,7 +69,7 @@ const FullEvent: React.FC = () => {
                 </View>
                 <View className="px-5">
                     <View className=" mt-10">
-                        <Text className="text-[25px]">{event.name}</Text>
+                        <Text className="text-[25px]">{event?.name}</Text>
                     </View>
                     <View className="flex-row items-center gap-6 mt-6">
                         <View
@@ -71,9 +85,9 @@ const FullEvent: React.FC = () => {
                             />
                         </View>
                         <View className="gap-3">
-                            <Text className="font-bold">{dateTime.date}</Text>
+                            <Text className="font-bold">{dateTime?.date}</Text>
                             <Text className="text-[12px] text-[#00000055]">
-                                {dateTime.time}
+                                {dateTime?.time}
                             </Text>
                         </View>
                     </View>
@@ -92,40 +106,46 @@ const FullEvent: React.FC = () => {
                         </View>
                         <View className="gap-3">
                             <Text className="font-bold">
-                                {event.location.split(",")[0]}
+                                {event?.location.split(",")[0]}
                             </Text>
                             <Text className="text-[12px] text-[#00000055]">
-                                {event.location.split(",")[1]}
+                                {event?.location.split(",")[1]}
                             </Text>
                         </View>
                     </View>
+                        {user ? (
                     <View className="flex-row items-center gap-6 mt-6 rela">
-                        <View className="w-16 h-16 rounded-lg overflow-hidden">
-                            <Image
-                                source={{
-                                    uri: "https://media.licdn.com/dms/image/v2/D4D03AQGAarBhVChcAg/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1721744897322?e=2147483647&v=beta&t=dTcI_A3Ed7GKfndByZjh2MtnLD5Kg3seGzfYJKq3nvA",
-                                }}
-                                className="w-full h-full"
-                                resizeMode="contain"
-                            />
-                        </View>
-                        <View className="gap-3">
-                            <Text className="font-bold">Shailesh Makava</Text>
-                            <Text className="text-[12px] text-[#00000055]">
-                                Sudent
-                            </Text>
-                        </View>
-                        <Text className="ms-auto text-[10px] text-[--main-color] me-4">
-                            Create By
-                        </Text>
+                                <View className="w-16 h-16 rounded-xl overflow-hidden">
+                                    <Image
+                                        source={{
+                                            uri: user[0].img,
+                                        }}
+                                        className="w-full h-full"
+                                        resizeMode="contain"
+                                    />
+                                </View>
+                                <View className="gap-3">
+                                    <Text className="font-bold">
+                                        {user[0].name}
+                                    </Text>
+                                    <Text className="text-[12px] text-[#00000055]">
+                                        {user[0].role=="1"?'Student':user[0].role=="2"?'Voreentear':user[0].role=="3"?"faculty":'admin'}
+                                    </Text>
+                                </View>
+                                <Text className="ms-auto text-[10px] text-[--main-color] me-4">
+                                    Create By
+                                </Text>
                     </View>
+                        ) : (
+                            <ActivityIndicator />
+                        )}
                     <View className="mt-6 pb-32">
                         <Text className="font-bold">About Event</Text>
-                        <Text className="mt-6">{event.description}</Text>
+                        <Text className="mt-6">{event?.description}</Text>
                     </View>
                 </View>
             </ScrollView>
-                        <LinearGradient
+            <LinearGradient
                 colors={["transparent", "#fff"]} // Define gradient colors here
                 style={{
                     flex: 1,
@@ -166,16 +186,12 @@ const FullEvent: React.FC = () => {
                         color={Color["bg-color"]}
                     />
                 </TouchableOpacity>
-                <Text
-                    className="text-[--bg-color] font-semibold text-[17px] "
-                >
+                <Text className="text-[--bg-color] font-semibold text-[17px] ">
                     Event Details
                 </Text>
             </View>
-
         </SafeAreaView>
     );
 };
-
 
 export default FullEvent;

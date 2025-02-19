@@ -37,6 +37,9 @@ try {
     model.uploadImage = async (body, res) => {
         conn.query("UPDATE users SET img = ? WHERE id = ?",body, res);
     };
+    model.getEventUser = async (body,res)=>{
+        conn.query("SELECT id,name,email,phone,role,img FROM users WHERE id = ?",body,res);
+    }
 } catch (error) {
     catchErr(error, "user.model");
 }
