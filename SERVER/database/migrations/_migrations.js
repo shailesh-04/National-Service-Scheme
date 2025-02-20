@@ -10,8 +10,9 @@ if (!table && !command) {
         ["\nRun Following Command Example", "yellow", "italic"],
         ["\n\n->  npm run migration <table_name> <command>"],
         ["\n\n<command>", "bold"],
-        ["create \n drop \n drop&create \n seeders \n all"]
+        ["create \n drop \n drop&create \n seeders \n destroyAll"]
     );
+    
     process.exit(0);
 }
 
@@ -32,6 +33,9 @@ async function loadModule(t, c) {
                 break;
             case "seeders":
                 query = module.seeders;
+                break;
+            case "destroyAll":
+                query = module.destroyAll;
                 break;
             default:
                 color(

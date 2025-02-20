@@ -26,7 +26,7 @@ const FullEvent: React.FC = () => {
         const parsedEvent = JSON.parse(data as string);
         setEvent(parsedEvent);
         setDateTime(date(parsedEvent.start_time, parsedEvent.end_time));
-        fetchUser(parsedEvent.id, (data, err) => {
+        fetchUser(parsedEvent.created_by, (data, err) => {
             if (err) {
                 alert(err);
                 console.log(err);
@@ -121,7 +121,7 @@ const FullEvent: React.FC = () => {
                                             uri: user[0].img,
                                         }}
                                         className="w-full h-full"
-                                        resizeMode="contain"
+                                        resizeMode="cover"
                                     />
                                 </View>
                                 <View className="gap-3">

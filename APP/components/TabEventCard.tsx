@@ -3,7 +3,7 @@ import Header from "@/components/Header";
 import { Theme, Color } from "@/constants/Colors";
 import * as Icon from "@expo/vector-icons";
 import React from "react";
-import { EventType } from "./services/event";
+import { EventType } from "@services/event";
 import { useRouter } from "expo-router";
 interface EventProps {
     data: EventType;

@@ -2,7 +2,7 @@ import { View, Text, Image, TouchableOpacity } from "react-native";
 import { Feather, EvilIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Color } from "@/constants/Colors";
-import { EventType } from "./services/event";
+import { EventType } from "@services/event";
 interface EventProps {
     data: EventType;
 }
@@ -20,9 +20,9 @@ const EventCard: React.FC<EventProps> = ({ data }) => {
         }} className="w-[260px] gap-3 bg-[#fff] p-3 rounded-xl pb-4">
             <View className=" ovserflow-hidden rounded-[20px] h-40 w-full relative">
                 <Image
-                    src={data.image}
+                    source={{uri:data.image}}
                     className="w-full h-full rounded-[20px]"
-                    resizeMode="contain"
+                    resizeMode="cover"
                 />
                 <View className=" p-2 bg-[#ffffffdd] absolute top-2 left-2 rounded-xl  justify-center items-center">
                     <Text className="text-[--second-color] text-[18px] font-bold">
