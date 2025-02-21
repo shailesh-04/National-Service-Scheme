@@ -11,23 +11,23 @@ import { Theme, Color } from "@/constants/Colors";
 import ImageSlider from "@/components/ImageSlider";
 import EventList from "@/components/EventList";
 import Header from "@/components/Header";
-import axios from "axios";
 import { EventType, fetchUpcomingEvents } from "@services/event";
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL; 
+import ErrorMessage from "@/components/ErrorMessage";
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
 interface Image {
     url: string;
 }
 const Index: React.FC = () => {
-    
     const [events, setEvents] = useState<EventType[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     useEffect(() => {
         setLoading(true);
-        fetchUpcomingEvents((data:EventType[],err:string) => {
-            if (err) return alert(err);
-            setEvents(data);
+        fetchUpcomingEvents((data: EventType[], err: string) => {
             setLoading(false);
+            if (err) {
+                return;
+            }
+            setEvents(data);
         });
     }, []);
     const images: Image[] = [
@@ -47,6 +47,9 @@ const Index: React.FC = () => {
 
     return (
         <SafeAreaView style={Theme} className="gap-8">
+            {
+                !loading&&events.length<1&&<ErrorMessage message="Check Your Internet Connection" className="bg-red-400 pt-10"/>
+            }
             <Header />
             <ScrollView
                 showsHorizontalScrollIndicator={false}
@@ -55,15 +58,14 @@ const Index: React.FC = () => {
                     paddingBottom: 200,
                 }}
             >
-
                 {loading ? (
-                    <ActivityIndicator size="large" color="blue" />
-                ) : (
+                    <ActivityIndicator size={30} />
+                ) :(
                     <EventList events={events} />
-                )}
+                ) 
+                }
 
                 <ImageSlider images={images} title="Photos..." />
-
                 <View className="items-center h-52">
                     <Text className="font-black text-3xl">
                         THANKS FOR JOIN!

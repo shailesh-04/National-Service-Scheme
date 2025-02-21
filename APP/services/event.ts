@@ -9,6 +9,7 @@ export interface EventType {
     end_time: string;
     numOFUser: number;
     image: string;
+    created_by:string;
 }
 export const fetchUpcomingEvents = (res: (data: EventType[], error: string) => void): void => {
     axios.get<EventType[]>(`${API_URL}/event/upcoming`)
@@ -16,8 +17,7 @@ export const fetchUpcomingEvents = (res: (data: EventType[], error: string) => v
             res(responce.data, ''); // Success case
         }) 
         .catch(error => {
-            console.error("Error fetching events:", error);
-            res([], 'NetWork ERORR :_-^-_'); // Error case
+            res([], 'Check Your Network'); // Error case
         });
 };
 export const allEvent = (res:(data:EventType[],err:string) => void) :void =>{
@@ -26,7 +26,18 @@ export const allEvent = (res:(data:EventType[],err:string) => void) :void =>{
         res(responce.data,'');
     })
     .catch((error)=>{
-        console.error("Error fetching events:", error);
         res([],'Check Your Network');
     });
 }
+
+
+export const fetchEvent = (id:number,res:(data:EventType[],err:string) => void) :void =>{
+    axios.get<EventType[]>(`${API_URL}/event/${id}`)
+    .then((responce)=>{
+        res(responce.data,'');
+    })
+    .catch((error)=>{
+        res([],'Check Your Network');
+    });
+}
+

@@ -1,83 +1,54 @@
-import React, { useState } from 'react';
-import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from "react";
+import { FlatList, SafeAreaView, ActivityIndicator, Text } from "react-native";
+import Header from "@/components/Header";
+import { Theme } from "@/constants/Colors";
+import { fetchImages, ImageData, ImageProps } from "@/services/images";
+import ExploreCard from "@/components/ExploreCard";
+import { View } from "react-native-reanimated/lib/typescript/Animated";
+import DataNotFound from "@/components/DataNotFound";
+const EventImageList: React.FC = () => {
+    const [events, setEvents] = useState<ImageProps[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
 
-const categories = ['Nature', 'Animals', 'Architecture'];
+    useEffect(() => {
+        fetchImages((data: ImageData[], err: string) => {
+            const groupedEvents = groupImagesByEvent(data);
+            setEvents(groupedEvents);
+            setLoading(false);
+        });
+    }, []);
 
-const images = [
-  { id: '1', category: 'Nature', uri: '../../../assets/img/bloodDonation.jpg' },
-  { id: '2', category: 'Nature', uri: 'https://example.com/nature2.jpg' },
-  { id: '3', category: 'Animals', uri: 'https://example.com/animal1.jpg' },
-  { id: '4', category: 'Animals', uri: 'https://example.com/animal2.jpg' },
-  { id: '5', category: 'Architecture', uri: 'https://example.com/architecture1.jpg' },
-  { id: '6', category: 'Architecture', uri: 'https://example.com/architecture2.jpg' },
-];
-
-export default function ImageGalleryApp() {
-  const [selectedCategory, setSelectedCategory] = useState('Nature');
-
-  const filteredImages = images.filter(img => img.category === selectedCategory);
-
-  return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Image Gallery</Text>
-      <FlatList
-        horizontal
-        data={categories}
-        keyExtractor={(item) => item}
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => setSelectedCategory(item)}>
-            <Text style={[styles.category, selectedCategory === item && styles.selectedCategory]}>{item}</Text>
-          </TouchableOpacity>
-        )}
-        style={styles.categoryList}
-      />
-      <FlatList
-        data={filteredImages}
-        keyExtractor={(item) => item.id}
-        numColumns={2}
-        renderItem={({ item }) => (
-          <Image source={{ uri: item.uri }} style={styles.image} />
-        )}
-        contentContainerStyle={styles.imageGrid}
-      />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 50,
-    backgroundColor: '#fff',
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  categoryList: {
-    marginBottom: 10,
-    paddingHorizontal: 10,
-  },
-  category: {
-    fontSize: 18,
-    marginHorizontal: 10,
-    padding: 5,
-    borderRadius: 5,
-    backgroundColor: '#ddd',
-  },
-  selectedCategory: {
-    backgroundColor: '#007bff',
-    color: '#fff',
-  },
-  imageGrid: {
-    paddingHorizontal: 10,
-  },
-  image: {
-    width: '45%',
-    height: 150,
-    margin: '2.5%',
-    borderRadius: 10,
-  },
-});
+    const groupImagesByEvent = (data: ImageData[]): ImageProps[] => {
+        const eventMap: { [key: number]: ImageProps } = {};
+        data.forEach((img) => {
+            if (!eventMap[img.E_id]) {
+                eventMap[img.E_id] = {
+                    id: img.E_id,
+                    name: img.event_name,
+                    images: [],
+                };
+            }
+            eventMap[img.E_id].images.push(img);
+        });
+        return Object.values(eventMap);
+    };
+    return (
+        <SafeAreaView style={Theme} className="flex-1 bg-gray-100">
+            <Header />
+            {loading ? (
+                <ActivityIndicator size="large" color="#0000ff" />
+            ) : events.length > 0 ? (
+                <FlatList
+                    data={events}
+                    className="p-3"
+                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={({ item }) => <ExploreCard event={item} />}
+                    contentContainerStyle={{ paddingBottom: 100 }}
+                />
+            ) : (
+                <DataNotFound/>
+            )}
+        </SafeAreaView>
+    );
+};
+export default EventImageList;

@@ -14,6 +14,7 @@ import * as Icon from "@expo/vector-icons";
 import TabEventCard from "@/components/TabEventCard";
 import React, { useEffect, useState } from "react";
 import { EventType, allEvent } from "@services/event";
+import ErrorMessage from "@/components/ErrorMessage";
 const Events: React.FC = () => {
     const [events, setEvents] = useState<EventType[]>([]);
     const [eventsMain, setEventsMain] = useState<EventType[]>([]);
@@ -23,7 +24,7 @@ const Events: React.FC = () => {
     useEffect(() => {
         setLoading(true);
         allEvent((data, err) => {
-            if (err) return alert(err);
+            if (err) return;
             setEvents(data);
             setEventsMain(data);
             setLoading(false);
@@ -31,6 +32,9 @@ const Events: React.FC = () => {
     }, []);
     return (
         <SafeAreaView style={Theme} className="gap-5">
+             {
+                !loading&&events.length<1&&<ErrorMessage message="Check Your Internet Connection" className="bg-red-400 pt-10"/>
+            }
             <Header />
             <View className="px-7 gap-4">
                 <View className="flex-row justify-between">
@@ -38,7 +42,7 @@ const Events: React.FC = () => {
                         Events
                     </Text>
                     {searchBox?<TextInput
-                        className="border border-blue-600 h-10 w-[160px] text-[9px] ps-2 rounded-full"
+                        className="bg-white h-10 w-[160px] text-[9px] ps-2 rounded-full items-center justify-centerdfsd"
                         placeholder="Search.."
                         value={`${searchText}`}
                         onChangeText={(value) => {
@@ -48,7 +52,6 @@ const Events: React.FC = () => {
                             );
                             setEvents(filteredEvents);
                         }}
-                        
                     />:''}
                     <View className="flex-row gap-5">
                         <TouchableOpacity
@@ -86,5 +89,4 @@ const Events: React.FC = () => {
         </SafeAreaView>
     );
 };
-
 export default Events;

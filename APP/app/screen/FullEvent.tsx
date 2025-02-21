@@ -15,37 +15,49 @@ import * as Icons from "@expo/vector-icons";
 import { date, returnValue } from "@/components/date";
 import { LinearGradient } from "expo-linear-gradient";
 import { fetchUser, EventUserProps } from "@/services/user";
+import { fetchEvent } from "@services/event";
+import ErrorMessage from "@/components/ErrorMessage";
 const FullEvent: React.FC = () => {
     const router = useRouter();
-
-    const [user, setUser] = useState<EventUserProps[]| null>(null)
+    const [user, setUser] = useState<EventUserProps[] | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
     const [event, setEvent] = useState<EventType | null>(null);
     const [dateTime, setDateTime] = useState<returnValue | null>(null);
     const { data } = useLocalSearchParams();
     useEffect(() => {
         const parsedEvent = JSON.parse(data as string);
-        setEvent(parsedEvent);
-        setDateTime(date(parsedEvent.start_time, parsedEvent.end_time));
-        fetchUser(parsedEvent.created_by, (data, err) => {
-            if (err) {
-                alert(err);
-                console.log(err);
-                return;
-            }
-            setUser(data);
-        });
+        if (Number.isInteger(parsedEvent)) {
+            fetchEvent(parsedEvent, (data1: EventType[], err) => {
+                if (err) return console.log(err);
+                setDateTime(date(data1[0].start_time, data1[0].end_time));
+                setEvent(data1[0]);
+                fetchUser(data1[0].created_by, (data, err) => {
+                    if (err) return;
+                    setUser(data);
+                });
+            });
+        } else {
+            setEvent(parsedEvent);
+            setDateTime(date(parsedEvent.start_time, parsedEvent.end_time));
+            fetchUser(parsedEvent.created_by, (data, err) => {
+                if (err) return;
+                setUser(data);
+            });
+            setLoading(false);
+        }
     }, []);
-
     return (
         <SafeAreaView style={Theme} className="flex-1 relative">
+            <ErrorMessage />
             <ScrollView className="">
                 <View className="w-full h-72">
                     <Image
                         source={{ uri: event?.image }}
                         className="w-full h-full"
-                        resizeMode="cover"
+                        resizeMode="cover" // Shows full image without cropping
                     />
                 </View>
+
                 <View className="items-center mt-[-30px]">
                     <View className="flex-row items-center gap-4 bg-[--bg-color] px-5 py-4 rounded-full">
                         <Icons.Feather
@@ -113,38 +125,45 @@ const FullEvent: React.FC = () => {
                             </Text>
                         </View>
                     </View>
-                        {user ? (
-                    <View className="flex-row items-center gap-6 mt-6 rela">
-                                <View className="w-16 h-16 rounded-xl overflow-hidden">
-                                    <Image
-                                        source={{
-                                            uri: user[0].img,
-                                        }}
-                                        className="w-full h-full"
-                                        resizeMode="cover"
-                                    />
-                                </View>
-                                <View className="gap-3">
-                                    <Text className="font-bold">
-                                        {user[0].name}
-                                    </Text>
-                                    <Text className="text-[12px] text-[#00000055]">
-                                        {user[0].role=="1"?'Student':user[0].role=="2"?'Voreentear':user[0].role=="3"?"faculty":'admin'}
-                                    </Text>
-                                </View>
-                                <Text className="ms-auto text-[10px] text-[--main-color] me-4">
-                                    Create By
+                    {user ? (
+                        <View className="flex-row items-center gap-6 mt-6 rela">
+                            <View className="w-16 h-16 rounded-xl overflow-hidden">
+                                <Image
+                                    source={{
+                                        uri: user[0].img,
+                                    }}
+                                    className="w-full h-full"
+                                    resizeMode="cover"
+                                />
+                            </View>
+                            <View className="gap-3">
+                                <Text className="font-bold">
+                                    {user[0].name}
                                 </Text>
-                    </View>
-                        ) : (
-                            <ActivityIndicator />
-                        )}
+                                <Text className="text-[12px] text-[#00000055]">
+                                    {user[0].role == "1"
+                                        ? "Student"
+                                        : user[0].role == "2"
+                                        ? "Voreentear"
+                                        : user[0].role == "3"
+                                        ? "faculty"
+                                        : "admin"}
+                                </Text>
+                            </View>
+                            <Text className="ms-auto text-[10px] text-[--main-color] me-4">
+                                Create By
+                            </Text>
+                        </View>
+                    ) : (
+                        <ActivityIndicator />
+                    )}
                     <View className="mt-6 pb-32">
                         <Text className="font-bold">About Event</Text>
                         <Text className="mt-6">{event?.description}</Text>
                     </View>
                 </View>
             </ScrollView>
+            {/* ================== */}
             <LinearGradient
                 colors={["transparent", "#fff"]} // Define gradient colors here
                 style={{

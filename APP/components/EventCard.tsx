@@ -20,7 +20,7 @@ const EventCard: React.FC<EventProps> = ({ data }) => {
         }} className="w-[260px] gap-3 bg-[#fff] p-3 rounded-xl pb-4">
             <View className=" ovserflow-hidden rounded-[20px] h-40 w-full relative">
                 <Image
-                    source={{uri:data.image}}
+                    source={{uri:`${data.image}?random=${data.id}`}}
                     className="w-full h-full rounded-[20px]"
                     resizeMode="cover"
                 />

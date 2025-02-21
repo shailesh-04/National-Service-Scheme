@@ -1,12 +1,10 @@
-import {
-    View,
-    Text,
-    Image,
-} from "react-native";
+import { View, Text, Image } from "react-native";
 import logo from "@assets/img/logo.png";
 import { Theme, Color } from "@/constants/Colors";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useState } from "react";
 const Header = () => {
+    const [errorVisible, setErrorVisible] = useState(true);
     return (
         <View className=" bg-[--main-color] rounded-b-[30px]  flex-row justify-between items-center px-6 py-10 relative">
             <View className="gap-3 mt-5">

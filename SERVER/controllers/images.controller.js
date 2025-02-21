@@ -32,3 +32,13 @@ export const findAll = (req, res) => {
         catchErr(error, "event.controll.findall");
     }
 };
+export const eventEmages = (req, res) => {
+    try {
+        model.eventEmages((err, data) => {
+            if (err) return res.status(406).json(err.sqlMessage);
+            res.status(200).json(data);
+        });
+    } catch (error) {
+        catchErr(error, "event.controll.findall");
+    }
+};

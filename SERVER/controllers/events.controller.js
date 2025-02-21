@@ -48,7 +48,7 @@ export const findOne = (req, res) => {
             if (err) return res.status(406).json(err.sqlMessage);
             if (data.length > 0) res.status(200).json(data);
             else
-                return res.status(404).json("Invalid User ID : Not Found User");
+                return res.status(404).json(data);
         });
     } catch (error) {
         catchErr(error, "event.controll.findOn");

@@ -18,9 +18,7 @@ export const singin = (req, res) => {
             if (err) return res.status(406).json(err.sqlMessage);
             if (data.length > 0) res.status(200).json(data);
             else
-                return res
-                    .status(404)
-                    .json("User Name And Password Is Not Valid");
+                return res.status(404).json(data);
         });
     } catch (error) {
         catchErr(error, "user.controll.sinin");
@@ -44,7 +42,7 @@ export const findOne = (req, res) => {
             if (err) return res.status(406).json(err.sqlMessage);
             if (data.length > 0) res.status(200).json(data);
             else
-                return res.status(404).json("Invalid User ID : Not Found User");
+                return res.status(404).json(data);
         });
     } catch (error) {
         catchErr(error, "user.controll.findOn");
@@ -97,7 +95,7 @@ export const getEventUser = (req, res) => {
             if (err) return res.status(406).json(err.sqlMessage);
             if (data.length > 0) res.status(200).json(data);
             else
-                return res.status(404).json("Invalid User ID : Not Found User");
+            return res.status(404).json(data);
         });
     } catch (error) {
         catchErr(error, "user.controll.getEventUser");
