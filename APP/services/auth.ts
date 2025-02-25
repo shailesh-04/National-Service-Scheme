@@ -1,8 +1,6 @@
 import axios from "axios";
 import { Alert } from "react-native";
-const API_URL = process.env.EXPO_PUBLIC_API_URL; // For Android Emulator
-
-
+const API_URL = process.env.EXPO_PUBLIC_API_URL; 
 type signupProps = {
     name: string, 
     email: string,

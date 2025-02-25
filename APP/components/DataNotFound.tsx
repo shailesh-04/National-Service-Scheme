@@ -1,9 +1,13 @@
+import React from "react";
 import { Text, View } from "react-native";
-const DataNotFound = ()=>{
+interface DataNotFoundProps{
+    message?:string;
+}
+const DataNotFound:React.FC<DataNotFoundProps> = ({message})=>{
     return(
-        <View className="items-center justify-center h-[60%]">
+        <View className="items-center justify-center ">
             <Text className="text-4xl font-black text-[#999]">
-                Data Not Found 
+                {message?message:'Data Not Found'} 
             </Text>
         </View>
     );

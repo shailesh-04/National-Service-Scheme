@@ -1,18 +1,20 @@
 export const table = {
     name: "users",
     field: `
-                  id INT PRIMARY KEY AUTO_INCREMENT,
+                id INT PRIMARY KEY AUTO_INCREMENT,
                 name VARCHAR(50) NOT NULL,
                 email VARCHAR(100) UNIQUE NOT NULL,
                 password VARCHAR(100) NOT NULL,
                 phone VARCHAR(20),
                 role ENUM('1', '2', '3','a') DEFAULT '1',
-                 img VARCHAR(255)
+                is_deleted BOOLEAN DEFAULT FALSE,
+                img VARCHAR(255)
         `,
 };
 export const createTable = `CREATE TABLE ${table.name} (${table.field});`;
 export const dropTable = `DROP TABLE  ${table.name}`;
 export const destroyAll = `DELETE FROM  ${table.name}`;
+export const AddColumn = `ALTER TABLE ${table.name} ADD COLUMN `;
 export const seeders = `INSERT INTO ${table.name} (name, email, password, phone, role, img) VALUES
 ('John Doe', 'john.doe@example.com', 'hashed_password_1', '1234567890', '1', 'https://picsum.photos/200/300?random=1'),
 ('Jane Smith', 'jane.smith@example.com', 'hashed_password_2', '0987654321', '2', 'https://picsum.photos/200/300?random=2'),

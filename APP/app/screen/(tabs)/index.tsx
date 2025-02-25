@@ -1,18 +1,18 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-    Alert,
     SafeAreaView,
     ScrollView,
     Text,
     View,
     ActivityIndicator,
+    RefreshControl,
 } from "react-native";
-import { Theme, Color } from "@/constants/Colors";
-import ImageSlider from "@/components/ImageSlider";
-import EventList from "@/components/EventList";
-import Header from "@/components/Header";
+import { Theme, Color } from "@constants/Colors";
+import ImageSlider from "@components/ImageSlider";
+import EventList from "@components/EventList";
+import Header from "@components/Header";
 import { EventType, fetchUpcomingEvents } from "@services/event";
-import ErrorMessage from "@/components/ErrorMessage";
+import Notification from "@components/Notification";
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 interface Image {
     url: string;
@@ -20,16 +20,21 @@ interface Image {
 const Index: React.FC = () => {
     const [events, setEvents] = useState<EventType[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const [alert, setAlert] = useState<string | null>(null);
     useEffect(() => {
+        fetchData();
+    }, []);
+    const fetchData = () => {
         setLoading(true);
         fetchUpcomingEvents((data: EventType[], err: string) => {
             setLoading(false);
             if (err) {
+                setAlert(err);
                 return;
             }
             setEvents(data);
         });
-    }, []);
+    };
     const images: Image[] = [
         {
             url: "https://www.sbpedutrust.org/PhotoGallery/Gallery/Blood_Donation/19251.png",
@@ -44,26 +49,36 @@ const Index: React.FC = () => {
             url: "https://www.sbpedutrust.org/PhotoGallery/Gallery/Debate_On_Beti_Bachavo/69019.png",
         },
     ];
-
+const onRefresh = React.useCallback(()=>{
+    if(events.length<1)
+        fetchData();
+    },[]);
     return (
         <SafeAreaView style={Theme} className="gap-8">
-            {
-                !loading&&events.length<1&&<ErrorMessage message="Check Your Internet Connection" className="bg-red-400 pt-10"/>
-            }
             <Header />
+            {alert && (
+                <Notification
+                    message={alert}
+                    type={"error"}
+                    onClose={setAlert}
+                />
+            )}
             <ScrollView
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{
                     gap: 30,
                     paddingBottom: 200,
                 }}
-            >
-                {loading ? (
-                    <ActivityIndicator size={30} />
-                ) :(
-                    <EventList events={events} />
-                ) 
+                refreshControl={
+                    <RefreshControl
+                        refreshing={loading}
+                        onRefresh={onRefresh}
+                    />
                 }
+            >
+                {!loading && (
+                    <EventList events={events} />
+                )}
 
                 <ImageSlider images={images} title="Photos..." />
                 <View className="items-center h-52">

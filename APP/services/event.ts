@@ -29,8 +29,6 @@ export const allEvent = (res:(data:EventType[],err:string) => void) :void =>{
         res([],'Check Your Network');
     });
 }
-
-
 export const fetchEvent = (id:number,res:(data:EventType[],err:string) => void) :void =>{
     axios.get<EventType[]>(`${API_URL}/event/${id}`)
     .then((responce)=>{

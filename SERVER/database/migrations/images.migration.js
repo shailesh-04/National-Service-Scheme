@@ -5,16 +5,18 @@ export const table = {
       id INT AUTO_INCREMENT PRIMARY KEY,
       imageurl VARCHAR(255) NOT NULL,
       E_id INT NULL,
+      is_deleted BOOLEAN DEFAULT FALSE,
       FOREIGN KEY (E_id) REFERENCES events(id) ON DELETE SET NULL
+      
     `,
-  };
-  
-  // SQL queries
-  export const createTable = `CREATE TABLE ${table.name} (${table.field});`;
-  export const dropTable = `DROP TABLE IF EXISTS ${table.name};`;
-  
-  // Seed data with reduced duplication
-  export const seeders = `INSERT INTO ${table.name} (imageurl, E_id) VALUES
+};
+
+// SQL queries
+export const createTable = `CREATE TABLE ${table.name} (${table.field});`;
+export const dropTable = `DROP TABLE IF EXISTS ${table.name};`;
+export const AddColumn = `ALTER TABLE ${table.name} ADD COLUMN `;
+// Seed data with reduced duplication
+export const seeders = `INSERT INTO ${table.name} (imageurl, E_id) VALUES
     ('https://picsum.photos/200/300?random=1', 1),
     ('https://picsum.photos/200/300?random=2', 1),
     ('https://picsum.photos/200/300?random=3', 1),
@@ -152,6 +154,5 @@ export const table = {
     ('https://picsum.photos/200/300?random=9', 3)
     
   ;`;
-  
-  export default { table, dropTable, createTable, seeders };
-  
+
+export default { table, dropTable, createTable, seeders };

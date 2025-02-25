@@ -42,9 +42,17 @@ async function loadModule(t, c) {
             case "rollback":
                 await rollback();
                 return;
+            case "addcolumn": 
+                query = `${module.AddColumn} ${process.argv[4]}`;
+                console.log(query);
+                break;
             default:
                 color(
-                    ["Command Line Argument ERROR", "red", ["underline", "bold"]],
+                    [
+                        "Command Line Argument ERROR",
+                        "red",
+                        ["underline", "bold"],
+                    ],
                     ["\nRun Following Command Example", "yellow", "italic"],
                     ["\n\n-> npm run migration <table_name> <command>"],
                     ["\n\n<command>", "bold"],
@@ -59,7 +67,6 @@ async function loadModule(t, c) {
                 color(["\n DONE ", "green", ["bold", "italic"]]);
             });
         }
-
     } catch (error) {
         catchErr("_migration", error);
         process.exit(0);
@@ -67,7 +74,6 @@ async function loadModule(t, c) {
 }
 
 async function rollback() {
-
     for (const tbl of rbTable) {
         try {
             const module = await import(`./${tbl}.migration.js`);
@@ -91,7 +97,6 @@ async function rollback() {
             catchErr("_migration/rollback", err);
         }
     }
-    
 
     for (const tbl of rbTable.slice().reverse()) {
         try {
@@ -104,7 +109,6 @@ async function rollback() {
             catchErr("_migration/rollback", err);
         }
     }
-    
 }
 
 await loadModule(table, command);

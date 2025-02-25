@@ -1,23 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { FlatList, SafeAreaView, ActivityIndicator, Text } from "react-native";
-import Header from "@/components/Header";
-import { Theme } from "@/constants/Colors";
-import { fetchImages, ImageData, ImageProps } from "@/services/images";
-import ExploreCard from "@/components/ExploreCard";
+import Header from "@components/Header";
+import { Theme } from "@constants/Colors";
+import { fetchImages, ImageData, ImageProps } from "@services/images";
+import ExploreCard from "@components/ExploreCard";
 import { View } from "react-native-reanimated/lib/typescript/Animated";
-import DataNotFound from "@/components/DataNotFound";
+import DataNotFound from "@components/DataNotFound";
+import Notification from "@components/Notification";
 const EventImageList: React.FC = () => {
     const [events, setEvents] = useState<ImageProps[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-
-    useEffect(() => {
+    const [alert, setAlert] = useState<string|null>(null);
+     useEffect(() => {
+            fetchData();
+        }, []);
+    const fetchData = () => {
         fetchImages((data: ImageData[], err: string) => {
+            setLoading(false);
+            if(err){
+                setAlert(err);
+                return;
+            }
             const groupedEvents = groupImagesByEvent(data);
             setEvents(groupedEvents);
-            setLoading(false);
         });
-    }, []);
-
+    };
     const groupImagesByEvent = (data: ImageData[]): ImageProps[] => {
         const eventMap: { [key: number]: ImageProps } = {};
         data.forEach((img) => {
@@ -35,12 +42,14 @@ const EventImageList: React.FC = () => {
     return (
         <SafeAreaView style={Theme} className="flex-1 bg-gray-100">
             <Header />
+            {alert && <Notification message={alert} onClose={setAlert} type="error"/>}
             {loading ? (
                 <ActivityIndicator size="large" color="#0000ff" />
             ) : events.length > 0 ? (
                 <FlatList
                     data={events}
                     className="p-3"
+                    
                     keyExtractor={(item) => item.id.toString()}
                     renderItem={({ item }) => <ExploreCard event={item} />}
                     contentContainerStyle={{ paddingBottom: 100 }}

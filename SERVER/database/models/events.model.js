@@ -2,10 +2,27 @@ import conn from "#config/db.config.js";
 import { catchErr } from "#color";
 function model() {}
 try {
-    model.create = async (body, res) => {
+    model.All = async (res) => {
         conn.query(
-            `INSERT INTO events (name, description, location, start_time, end_time, image, created_by)
-            VALUES (?,?,?,?, ?,?,?);`,
+            `SELECT * FROM events`,res);
+    } ;
+    model.AllUpdate = async (id, body, res) => {
+        conn.query(`UPDATE events SET 
+            name=       ?, 
+            description=?, 
+            location=   ?, 
+            start_time= ?, 
+            end_time=   ?,
+            numOFUser=  ?,
+            created_by= ?, 
+            is_deleted =?  
+            WHERE id = ${id}; `,body,res);
+    };
+    
+    model.create = async (body,res) => {
+        conn.query(
+            `INSERT INTO events (name, description, location, start_time, end_time, created_by)
+            VALUES (?,?,?,?, ?,?);`,
             body,
             res
         );
@@ -55,7 +72,7 @@ try {
     model.uploadImage = async (body, res) => {
         conn.query(
             `UPDATE events SET image = ?  WHERE id = ?;`,
-            [body],
+            body,
             res
         );
     };

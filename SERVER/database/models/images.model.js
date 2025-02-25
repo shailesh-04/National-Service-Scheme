@@ -2,6 +2,12 @@ import conn from "#config/db.config.js";
 import { catchErr } from "#color";
 function model() {}
 try {
+    model.All = async (res) => {
+        conn.query("SELECT * FROM images", res);
+    };
+    model.updateAll = async (id,body,res) => {
+        conn.query("UPDATE images SET E_id = ?, image = ? , is_deleted = ? WHERE id ="+id,body, res);
+    };
     model.create = async (body, res) => {
         conn.query("INSERT INTO images(E_id,imageurl) VALUES(?,?)", body, res);
     };

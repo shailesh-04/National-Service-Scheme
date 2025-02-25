@@ -5,6 +5,11 @@
     "paths": {
       "@/*": ["./*"],
       "@services/*":["./services/*"],
+      "@app/*":["./app/*"],
+      "@components/*":["./components/*"],
+      "@constants/*":["./constants/*"],
+      "@redux/*":["./redux/*"],
+      "@script/*":["./script/*"],
       "@assets/*":["./assets/*"]
     }
   },

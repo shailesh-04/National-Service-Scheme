@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { catchErr } from "#color";
-import cloudinary  from "#middleware/cloudinary.middleware.js";
+import cloudinary from "#middleware/cloudinary.middleware.js";
 import {
     create,
     update,
@@ -8,16 +8,23 @@ import {
     findAll,
     findOne,
     upcoming,
-    uploadImage
+    uploadImage,
+    All,
+    AllUpdate,
 } from "#controllers/events.controller.js";
 const router = Router();
 try {
-    router.get("/",findAll);
-    router.post("/",cloudinary.upload.single("image"),create);
-    router.get("/upcoming",upcoming);
-    router.put("/image/:id",cloudinary.upload.single('image'),uploadImage);
+    // DashBord
+    router.get("/dashbord",All);
+    router.put("/dashbord/:id",AllUpdate);
+
+    // User
+    router.get("/", findAll);
+    router.post("/", create);
+    router.get("/upcoming", upcoming);
+    router.put("/image/:id", cloudinary.upload.single("image"), uploadImage);
     router.route("/:id").get(findOne).put(update).delete(remove);
 } catch (error) {
-    catchErr(error,'event.routers');
+    catchErr(error, "event.routers");
 }
 export default router;

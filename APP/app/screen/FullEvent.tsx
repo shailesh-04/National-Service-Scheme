@@ -9,30 +9,37 @@ import {
     ActivityIndicator,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Color, Theme } from "@/constants/Colors";
+import { Color, Theme } from "@constants/Colors";
 import { EventType } from "@services/event";
 import * as Icons from "@expo/vector-icons";
-import { date, returnValue } from "@/components/date";
+import { date, returnValue } from "@components/date";
 import { LinearGradient } from "expo-linear-gradient";
-import { fetchUser, EventUserProps } from "@/services/user";
+import { fetchUser, EventUserProps } from "@services/user";
 import { fetchEvent } from "@services/event";
-import ErrorMessage from "@/components/ErrorMessage";
+import Notification from "@components/Notification";
 const FullEvent: React.FC = () => {
     const router = useRouter();
     const [user, setUser] = useState<EventUserProps[] | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [event, setEvent] = useState<EventType | null>(null);
     const [dateTime, setDateTime] = useState<returnValue | null>(null);
+    const [alert, setAlert] = useState<string | null>(null);
     const { data } = useLocalSearchParams();
     useEffect(() => {
         const parsedEvent = JSON.parse(data as string);
         if (Number.isInteger(parsedEvent)) {
             fetchEvent(parsedEvent, (data1: EventType[], err) => {
-                if (err) return console.log(err);
+                if (err) {
+                    setAlert(err);
+                    return;
+                }
                 setDateTime(date(data1[0].start_time, data1[0].end_time));
                 setEvent(data1[0]);
                 fetchUser(data1[0].created_by, (data, err) => {
-                    if (err) return;
+                    if (err) {
+                        setAlert(err);
+                        return;
+                    }
                     setUser(data);
                 });
             });
@@ -40,7 +47,10 @@ const FullEvent: React.FC = () => {
             setEvent(parsedEvent);
             setDateTime(date(parsedEvent.start_time, parsedEvent.end_time));
             fetchUser(parsedEvent.created_by, (data, err) => {
-                if (err) return;
+                if (err) {
+                    setAlert(err);
+                    return;
+                }
                 setUser(data);
             });
             setLoading(false);
@@ -48,7 +58,9 @@ const FullEvent: React.FC = () => {
     }, []);
     return (
         <SafeAreaView style={Theme} className="flex-1 relative">
-            <ErrorMessage />
+            {alert && (
+                <Notification message={alert} onClose={setAlert} type="error" />
+            )}
             <ScrollView className="">
                 <View className="w-full h-72">
                     <Image
@@ -57,7 +69,6 @@ const FullEvent: React.FC = () => {
                         resizeMode="cover" // Shows full image without cropping
                     />
                 </View>
-
                 <View className="items-center mt-[-30px]">
                     <View className="flex-row items-center gap-4 bg-[--bg-color] px-5 py-4 rounded-full">
                         <Icons.Feather

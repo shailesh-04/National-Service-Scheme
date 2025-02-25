@@ -2,6 +2,18 @@ import conn from "#config/db.config.js";
 import { catchErr } from "#color";
 function model() {}
 try {
+    model.All = async (res) => {
+        conn.query("SELECT * FROM users", res);
+    };
+    model.updateAll = async (id, body, res) => {
+        conn.query(
+            "UPDATE users SET name=?, email=?, password=?, phone=?, role=?, is_deleted=? WHERE id = " +
+                id,
+            body,
+            res
+        );
+    };
+
     model.create = async (body, res) => {
         conn.query(
             "insert into users(name,email,password,phone)values(?,?,?,?)",
@@ -17,7 +29,7 @@ try {
         );
     };
     model.findAll = async (res) => {
-        conn.query("SELECT * FROM users", res);
+        conn.query("SELECT id,name, email, password, phone,role,img FROM users", res);
     };
 
     model.findOne = async (id, res) => {

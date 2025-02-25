@@ -1,4 +1,4 @@
-import { Router } from "express";
+    import { Router } from "express";
 import { catchErr } from "#color";
 import {
     signup,
@@ -8,14 +8,20 @@ import {
     findOne,
     remove,
     uploadImage,
-    getEventUser
+    getEventUser,
+    All,
+    updateAll
 } from "#controllers/users.contraller.js";
 import  cloudinary from "#middleware/cloudinary.middleware.js";
 const router = Router();
 try {
+    // DashBord
+    router.get("/dashbord", All);
+    router.put("/dashbord/:id", updateAll);
+    // User
+    router.get("/", findAll);
     router.post("/signup", signup);
     router.post("/singin", singin);
-    router.get("/", findAll);
     router.post("/", signup);
     router.put('/image/:id',cloudinary.upload.single('image'),uploadImage);
     router.get("/event/:id", getEventUser);
