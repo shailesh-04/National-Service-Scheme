@@ -1,23 +1,24 @@
 {
-  "extends": "expo/tsconfig.base",
-  "compilerOptions": {
-    "strict": true,
-    "paths": {
-      "@/*": ["./*"],
-      "@services/*":["./services/*"],
-      "@app/*":["./app/*"],
-      "@components/*":["./components/*"],
-      "@constants/*":["./constants/*"],
-      "@redux/*":["./redux/*"],
-      "@script/*":["./script/*"],
-      "@assets/*":["./assets/*"]
-    }
-  },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts",
-    "nativewind-env.d.ts"
-  ]
+    "extends": "expo/tsconfig.base",
+    "compilerOptions": {
+        "strict": true,
+        "paths": {
+            "#/*": ["./*"],
+            "@/*": ["./src/*"],
+            "@services/*": ["./src/services/*"],
+            "@app/*": ["./src/app/*"],
+            "@components/*": ["./src/components/*"],
+            "@constants/*": ["./src/constants/*"],
+            "@redux/*": ["./src/redux/*"],
+            "@script/*": ["./src/script/*"],
+            "@assets/*": ["./src/assets/*"]
+        }
+    },
+    "include": [
+        "**/*.ts",
+        "**/*.tsx",
+        ".expo/types/**/*.ts",
+        "expo-env.d.ts",
+        "nativewind-env.d.ts"
+    ]
 }

@@ -8,17 +8,19 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "node temp.test.js",
-    "migration": "node ./database/migrations/_migrations.js"
+    "migration": "node ./database/migrations/_migrations.js",
+    "create-migration": "node ./scripts/createMigratoin.js"
   },
   "imports": {
-    "#color": "./services/color.js",
-    "#controllers/*": "./controllers/*",
-    "#models/*": "./database/models/*",
-    "#migrations/*": "./database/migrations/*",
+    "#src/*": "./src/*",
+    "#color": "./src/services/color.js",
+    "#controllers/*": "./src/controllers/*",
+    "#models/*": "./src/database/models/*",
+    "#migrations/*": "./src/database/migrations/*",
     "#config/*": "./config/*",
-    "#routes/*": "./routes/*",
-    "#middleware/*": "./middleware/*",
-    "#services/*":"./services/*"
+    "#routes/*": "./src/routes/*",
+    "#middleware/*": "./src/middleware/*",
+    "#services/*": "./src/services/*"
   },
   "repository": {
     "type": "git",
@@ -35,6 +37,8 @@
     "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
     "multer-storage-cloudinary": "^4.0.0",
     "mysql2": "^3.12.0",

@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import mysql from "mysql2";
-
+import color from "#color";
 const conn = mysql.createConnection({
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
@@ -19,10 +19,14 @@ function connectToDatabase() {
     return new Promise((resolve, reject) => {
         conn.connect((err) => {
             if (err) {
-                console.error("❌ Error connecting to MySQL:", err);
+                color(["❌ Database Connection Failed!", "brightRed", "bold"]);
+                color([`🔍 Error: ${err.message}`, "red", "italic"]);
+
                 reject(err);
             } else {
-                console.log("✅ Connected to MySQL Database!");
+                
+    color(["════════════════════════════════════", "brightMagenta", "bold"]);
+                color(["✅ Database Connected Successfully!", "brightGreen", "bold"]);
                 resolve(conn);
             }
         });

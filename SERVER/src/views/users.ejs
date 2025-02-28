@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD with Tailwind and Axios</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<body class="p-10 bg-gray-900 text-white">
+    <div class="max-w-full mx-auto bg-gray-800 p-5 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-bold mb-4 text-center">User Management</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <input type="text" id="nameInput" placeholder="Enter name" class="p-2 bg-gray-700 rounded text-white">
+            <input type="email" id="emailInput" placeholder="Enter email" class="p-2 bg-gray-700 rounded text-white">
+            <input type="password" id="passwordInput" placeholder="Enter password"
+                class="p-2 bg-gray-700 rounded text-white">
+            <input type="text" id="phoneInput" placeholder="Enter phone" class="p-2 bg-gray-700 rounded text-white">
+            <select id="roleInput" class="p-2 bg-gray-700 rounded text-white">
+                <option value="a">Admin</option>
+                <option value="1">Student</option>
+                <option value="2">Voleteer</option>
+                <option value="3">Teacher</option>
+            </select>
+            <button onclick="addItem()" class="col-span-1 md:col-span-2 bg-blue-500 text-white p-2 rounded">Add
+                User</button>
+        </div>
+
+        <table class="w-full border-collapse border border-gray-600 mt-4 text-white">
+            <thead>
+                <tr class="bg-gray-700">
+                    <th class="border border-gray-600 p-2">ID</th>
+                    <th class="border border-gray-600 p-2">Name</th>
+                    <th class="border border-gray-600 p-2">Email</th>
+                    <th class="border border-gray-600 p-2">Password</th>
+                    <th class="border border-gray-600 p-2">Phone</th>
+                    <th class="border border-gray-600 p-2">Role</th>
+                    <th class="border border-gray-600 p-2">Profile</th>
+                    <th class="border border-gray-600 p-2">Deleted</th>
+                    <th class="border border-gray-600 p-2">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="itemsList"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const apiUrl = "http://localhost:3000/api/user";
+
+        async function fetchItems() {
+            try {
+                const token = localStorage.getItem('token');
+                const res = await axios.get(apiUrl + "/dashbord", {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                renderItems(res.data);
+            } catch (error) {
+                alert("❌ Error Uputhorized User!");
+                console.error("Error fetching items:", error);
+            }
+        }
+
+        async function addItem() {
+            const name = document.getElementById("nameInput").value;
+            const email = document.getElementById("emailInput").value;
+            const password = document.getElementById("passwordInput").value;
+            const phone = document.getElementById("phoneInput").value;
+            const role = document.getElementById("roleInput").value;
+
+            const newItem = { name, email, password, phone, role };
+
+            try {
+                await axios.post(apiUrl, newItem);
+                alert("Image Sucsessfuly successfully ✅");
+
+                document.getElementById("nameInput").value = "";
+                document.getElementById("emailInput").value = "";
+                document.getElementById("passwordInput").value = "";
+                document.getElementById("phoneInput").value = "";
+                document.getElementById("roleInput").value = "";
+                fetchItems();
+            } catch (error) {
+                alert("❌ Error Inser image!");
+                console.error("Error adding item:", error);
+            }
+        }
+
+        async function updateItemImage(id) {
+            const fileInput = document.getElementById("image" + id);
+            if (!fileInput.files.length) return alert("Please select an image!");
+
+            const formData = new FormData();
+            formData.append("image", fileInput.files[0]);
+
+            try {
+                await axios.put(`${apiUrl}/image/${id}`, formData, { headers: { "Content-Type": "multipart/form-data" } });
+                alert("Image updated successfully ✅");
+                fetchItems();
+            } catch (error) {
+                alert("❌ Error updating image!");
+                console.error("Error updating image:", error);
+            }
+        }
+
+        async function updateItem(id) {
+            const name = document.getElementById("name" + id).value;
+            const email = document.getElementById("email" + id).value;
+            const password = document.getElementById("password" + id).value;
+            const phone = document.getElementById("phone" + id).value;
+            const role = document.getElementById("role" + id).value;
+            const is_deleted = document.getElementById("deleted" + id).checked ? 1 : 0;
+
+            try {
+                await axios.put(`${apiUrl}/dashbord/${id}`, { name, email, password, phone, role, is_deleted });
+                alert("data updated successfully ✅");
+                fetchItems();
+            } catch (error) {
+                alert("❌ Error updating Data!");
+                console.error("Error updating item:", error);
+            }
+        }
+
+        function renderItems(items) {
+            const list = document.getElementById("itemsList");
+            list.innerHTML = "";
+
+            items.forEach(item => {
+                const tr = document.createElement("tr");
+                tr.className = "border border-gray-600";
+
+                tr.innerHTML = `
+                    <td class="p-2">${item.id}</td>
+                    <td class="p-2"><input type="text" value="${item.name}" class="bg-gray-800 text-white p-1 w-full" id="name${item.id}"></td>
+                    <td class="p-2"><input type="email" value="${item.email}" class="bg-gray-800 text-white p-1 w-full" id="email${item.id}"></td>
+                    <td class="p-2"><input type="text" value="${item.password}" class="bg-gray-800 text-white p-1 w-full" id="password${item.id}"></td>
+                    <td class="p-2"><input type="text" value="${item.phone}" class="bg-gray-800 text-white p-1 w-full" id="phone${item.id}"></td>
+                    <td class="p-2">
+                        <select id="role${item.id}" class="bg-gray-800 text-white p-1 w-full">
+                            <option value="1" ${item.role == 'a' ? 'selected' : ''}>Admin</option>
+                            <option value="1" ${item.role == 1 ? 'selected' : ''}>Student</option>
+                            <option value="2" ${item.role == 2 ? 'selected' : ''}>voleteers</option>
+                            <option value="3" ${item.role == 3 ? 'selected' : ''}>Teachere</option>
+                        </select>
+                    </td>
+                    <td class="p-2">
+                        ${item.img ? `<img src="${item.img}" alt="Profile" class="w-14 h-14 rounded-full mx-auto">` : "No Image"}
+                        <input type="file" id="image${item.id}" class="mt-2 w-full border rounded p-1 bg-gray-800 text-white">
+                        <button onclick="updateItemImage(${item.id})" class="mt-1 w-full bg-yellow-500 px-2 py-1 rounded">Upload</button>
+                    </td>
+                    <td class="p-2 text-center">
+                        <input type="checkbox" id="deleted${item.id}" ${item.is_deleted ? "checked" : ""}>
+                    </td>
+                    <td class="p-2 text-center">
+                        <button onclick="updateItem(${item.id})" class="bg-green-500 text-white px-3 py-1 rounded">Update</button>
+                    </td>
+                `;
+                list.appendChild(tr);
+            });
+        }
+
+        fetchItems();
+    </script>
+</body>
+
+</html>
