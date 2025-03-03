@@ -12,47 +12,47 @@ import { Color, Theme } from "@/constants/Colors";
 import { useEffect } from "react";
 import { useRouter } from "expo-router";
 import * as Icons from "@expo/vector-icons";
-import userImage from "@assets/img/download.png";
+import { useUserStore,UserType } from "#/src/store/useUserStore";
 const Profile = () => {
+    const user = useUserStore((state)=>state.user);
     const router = useRouter();
+    useEffect(() => {
+        if(!user){
+            router.replace("/auth/signIn");
+        }
+    },[])
     return (
-        <SafeAreaView style={Theme} className="gap-8 flex-1">
-              <Header/>
-            <ScrollView className="flex-1">
-                <View className="items-center ">
-                    <View className="w-32 h-32">
-                        <Image
-                            source={userImage}
-                            resizeMode="cover"
-                            className="w-full h-full rounded-full"
-                        />
-                    </View>
-                </View>
-                <Text className="text-center mt-5 font-semibold text-[17px]">
-                    Shailesh Makavana
-                </Text>
-                <Text
-                    className="text-center mt-3 "
-                    style={{ color: `${Color["text-color"]}aa` }}
-                >
-                    ADMIN
-                </Text>
-                <View className="mt-5 items-center">
-                    <TouchableOpacity className=" flex-row bg-transparent border-[--main-color] gap-4 border-2 p-3 items-center rounded-xl">
-                        <Icons.Feather name="edit" size={20} color={`${Color['main-color']}`} />
-                        <Text className="text-[--main-color]">Edit Profle</Text>
-                    </TouchableOpacity>
-                </View>
-                <View className="px-7 mt-10 gap-4">
-                    <Text className="font-semibold">
-                        About Me
-                    </Text>
-                    <Text style={{color:`${Color['text-color']}99`}}>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate error minima, magni numquam inventore culpa repellendus, fuga iste aliquam ea id sunt sequi consequuntur voluptate molestias, necessitatibus maiores? Ipsa, aspernatur.
-                    </Text>
-                </View>
-            </ScrollView>
-        </SafeAreaView>
+    <View className="flex-1 bg-white px-4 py-6">
+      {/* Profile Picture */}
+      <View className="items-center">
+        <Image
+          source={{ uri: "https://your-image-url.com" }} // Replace with actual image URL
+          className="w-32 h-32 rounded-full border-4 border-gray-300"
+        />
+      </View>
+
+      {/* Profile Info */}
+      <View className="mt-4 items-center">
+        <Text className="text-xl font-bold">Abhishek</Text>
+        <Text className="text-gray-500">2020CE10211</Text>
+        <Text className="text-gray-600 mt-2">Girnar | B+</Text>
+      </View>
+
+      {/* Contact Info */}
+      <View className="mt-6 space-y-3">
+        <Text className="text-gray-700">📞 +918755273773</Text>
+        <Text className="text-gray-700">✉ abhikriitd@gmail.com</Text>
+        <Text className="text-gray-700">✉ ce1200211@iitd.ac.in</Text>
+      </View>
+
+      {/* Edit Profile Button */}
+      <TouchableOpacity
+        className="mt-6 bg-blue-600 py-2 rounded-lg items-center"
+         // Replace with actual navigation route
+      >
+        <Text className="text-white font-semibold">Edit Profile</Text>
+      </TouchableOpacity>
+    </View>
     );
 };
 

@@ -11,12 +11,11 @@ import { Theme } from "@constants/Colors";
 import { fetchImages, ImageData, ImageProps } from "@services/images";
 import ExploreCard from "@components/ExploreCard";
 import DataNotFound from "@components/DataNotFound";
-import Notification from "@components/Notification";
+import useAlert from "@store/useAlert";
 const EventImageList: React.FC = () => {
     const [events, setEvents] = useState<ImageProps[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [alert, setAlert] = useState<string | null>(null);
-
+    const setAlert = useAlert(s=>s.setAlert); 
     useEffect(() => {
         fetchData();
     }, []);
@@ -50,9 +49,6 @@ const EventImageList: React.FC = () => {
     return (
         <SafeAreaView style={Theme} className="flex-1 bg-gray-100">
             <Header />
-            {alert && (
-                <Notification message={alert} onClose={setAlert} type="error" />
-            )}
             {
                 <FlatList
                     data={events}

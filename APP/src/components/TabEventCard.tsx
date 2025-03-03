@@ -42,9 +42,9 @@ const TabEventCard: React.FC<EventProps> = ({ data }) => {
                     style={{ color: Color["main-color"] }}
                     className="text-xs"
                 >
-                    {start_time}
+                    {start_time.length>23?start_time.substring(0,23)+"...":start_time}
                 </Text>
-                <Text className="font-bold text-lg">{data.name}</Text>
+                <Text className="font-bold text-lg">{data.name.length>17?data.name.substring(0,17)+"...":data.name}</Text>
                 <View className="flex-row items-center">
                     <Icon.EvilIcons
                         name="location"

@@ -9,7 +9,7 @@ const ExploreCard: React.FC<{ event: ImageProps }> = ({ event }) => {
     return (
         <View className="mb-8">
             <View className=" justify-between flex-row items-center py-2">
-                <Text className="text-xl font-bold ">{event.name}</Text>
+                <Text className="text-xl font-bold ">{event.name.length>20?event.name.substring(0,20)+"...":event.name}</Text>
                 <TouchableOpacity
                     className="flex-row justify-center items-center"
                     onPress={() => {

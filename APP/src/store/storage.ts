@@ -1,18 +1,30 @@
 import { MMKV } from "react-native-mmkv";
 
-export const storage = new MMKV({
-    id: "user-storage", // Use a proper unique ID
-    encryptionKey: "your-secure-key" // Consider fetching securely
+export const mmkvStore = new MMKV({
+  id: "my_secure_store",
+  encryptionKey: "your-secret-key", // Ensure secure storage in production
 });
+export const storage = {
+  getItem: (name: string) => {
+    const value = mmkvStore.getString(name);
 
-export const mmkvStore = {
-    setItem: (key: string, value: string) => {
-        storage.set(key, value);
-    },
-    getItem: (key: string) => {
-        return storage.getString(key) ?? storage.getNumber(key) ?? storage.getBoolean(key) ?? null;
-    },
-    removeItem: (key: string) => {
-        storage.delete(key);
+    if (name === "accessToken") return value; // Tokens are plain strings, no need to parse
+
+    try {
+      return value ? JSON.parse(value) : null;
+    } catch (error) {
+      console.error(`MMKV JSON parse error for key "${name}":`, error, "Value:", value);
+      return null; // Prevent crashing on invalid JSON
     }
+  },
+  setItem: (name: string, value: any) => {
+    if (name === "accessToken") {
+      mmkvStore.set(name, value); // Store JWT token as a raw string
+    } else {
+      mmkvStore.set(name, JSON.stringify(value)); // Convert to JSON before storing
+    }
+  },
+  removeItem: (name: string) => {
+    mmkvStore.delete(name);
+  },
 };

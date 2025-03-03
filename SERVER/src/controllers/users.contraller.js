@@ -1,14 +1,15 @@
 import { catchErr } from "#color";
 import model from "#models/users.model.js";
-import { create } from "#services/jwt.service.js";
+import { createToken } from "#services/jwt.service.js";
 export const All = (req, res) => {
     try {
         model.All((err, data) => {
-            if (err) return res.status(406).json(err.sqlMessage);
+            if (err) return res.status(406).json({ message: err.sqlMessage});
             res.status(200).json(data);
         });
     } catch (error) {
         catchErr(error, "user.controll.findall");
+        if (err) return res.status(500).json({ message: "Internal Server Error : "+error});
     }
 };
 
@@ -17,11 +18,12 @@ export const updateAll = (req, res) => {
         const id = req.params.id;
         const { name, email, password, phone, role, is_deleted } = req.body;
         model.updateAll(id, [name, email, password, phone, role, is_deleted], (err, data) => {
-            if (err) return res.status(406).json(err.sqlMessage);
+            if (err) return res.status(406).json({ message: err.sqlMessage});
             res.status(200).json("Succsessfuly Update Update Your Profile..");
         });
     } catch (error) {
         catchErr(error, "user.controll.update");
+        if (err) return res.status(500).json({ message: "Internal Server Error : "+error});
     }
 };
 
@@ -30,37 +32,40 @@ export const signup = async (req, res) => {
     try {
         const { name, email, password, phone } = req.body;
         model.create([name, email, password, phone], (err, data) => {
-            if (err) return res.status(406).json(err.sqlMessage);
+            if (err) return res.status(406).json({ message: err.sqlMessage});
             res.status(201).json("You Are Successfully Registed..");
         });
     } catch (error) {
         catchErr(error, "user.controll.sinup");
+        if (err) return res.status(500).json({ message: "Internal Server Error : "+error});
     }
 };
 export const singin = async (req, res) => {
     try {
         const { email, password } = req.body;
         model.singin([email, password], async (err, data) => {
-            if (err) return res.status(406).json(err.sqlMessage);
+            if (err) return res.status(406).json({ message: err.sqlMessage});
             if (data.length > 0){
-                const token = await create(data[0]);
-                res.status(200).json({token});
+                const token = await createToken(data[0]);
+                res.status(200).json({token:token,data:data[0]});
             }
             else
-                return res.status(404).json("Your Inserted Email And Passaword Is Not Match Any User");
+                return res.status(404).json({mesaage:"Your Inserted Email And Passaword Is Not Match Any User"});
         });
     } catch (error) {
         catchErr(error, "user.controll.sinin");
+        if (err) return res.status(500).json({ message: "Internal Server Error : "+error});
     }
 };
 export const findAll = (req, res) => {
     try {
         model.findAll((err, data) => {
-            if (err) return res.status(406).json(err.sqlMessage);
+            if (err) return res.status(406).json({ message: err.sqlMessage});
             res.status(200).json(data);
         });
     } catch (error) {
         catchErr(error, "user.controll.findall");
+        if (err) return res.status(500).json({ message: "Internal Server Error : "+error});
     }
 };
 
@@ -68,13 +73,14 @@ export const findOne = (req, res) => {
     try {
         const id = req.params.id;
         model.findOne(id, (err, data) => {
-            if (err) return res.status(406).json(err.sqlMessage);
+            if (err) return res.status(406).json({ message: err.sqlMessage});
             if (data.length > 0) res.status(200).json(data);
             else
                 return res.status(404).json("You Are File UserID :"+id+" - It ID User Is Not Avalable..");
         });
     } catch (error) {
         catchErr(error, "user.controll.findOn");
+        if (err) return res.status(500).json({ message: "Internal Server Error : "+error});
     }
 };
 
@@ -84,11 +90,12 @@ export const update = (req, res) => {
         const { name, email, password, phone } = req.body;
         console.log(req.body);
         model.update(id, [name, email, password, phone], (err, data) => {
-            if (err) return res.status(406).json(err.sqlMessage);
+            if (err) return res.status(406).json({ message: err.sqlMessage});
             res.status(200).json("Succsessfuly Update Update Your Profile..");
         });
     } catch (error) {
         catchErr(error, "user.controll.update");
+        if (err) return res.status(500).json({ message: "Internal Server Error : "+error});
     }
 };
 
@@ -96,11 +103,12 @@ export const remove = (req, res) => {
     try {
         const id = req.params.id;
         model.remove(id, (err, data) => {
-            if (err) return res.status(406).json(err.sqlMessage);
+            if (err) return res.status(406).json({ message: err.sqlMessage});
             res.status(200).json("Succsessfully Delete Your Profile");
         });
     } catch (error) {
         catchErr(error, "user.controll.remove");
+        if (err) return res.status(500).json({ message: "Internal Server Error : "+error});
     }
 };
 
@@ -109,11 +117,12 @@ export const uploadImage = (req, res) => {
         const id = req.params.id;
         const image = req.file.path;
         model.uploadImage([image, id], (err, data) => {
-            if (err) return res.status(406).json(err.sqlMessage);
+            if (err) return res.status(406).json({ message: err.sqlMessage});
             res.status(200).json("Succsessfully Upload Profile Image");
         });
     } catch (error) {
         catchErr(error, "user.controll.uploadImage");
+        if (err) return res.status(500).json({ message: "Internal Server Error : "+error});
     }
 };
 
@@ -121,12 +130,28 @@ export const getEventUser = (req, res) => {
     try {
         const id = req.params.id;
         model.getEventUser(id, (err, data) => {
-            if (err) return res.status(406).json(err.sqlMessage);
+            if (err) return res.status(406).json({ message: err.sqlMessage});
             if (data.length > 0) res.status(200).json(data);
             else
             return res.status(404).json("The Event User ID Is Not Avalable In Server..");
         });
     } catch (error) {
         catchErr(error, "user.controll.getEventUser");
+        if (err) return res.status(500).json({ message: "Internal Server Error : "+error});
     }
 };
+
+export const verifyUser = (req,res)=>{
+    try {
+        const id = req.auth.id;
+        model.fineUser(id, (err, data) => {
+            if (err) return res.status(406).json({ message: err.sqlMessage});
+            if (data.length > 0) res.status(200).json(data);
+            else
+                return res.status(404).json("You Are File UserID :"+id+" - It ID User Is Not Avalable..");
+        });
+    } catch (error) {
+        catchErr(error, "user.controll.verifyuser");
+        if (err) return res.status(500).json({ message: "Internal Server Error : "+error});
+    }
+}

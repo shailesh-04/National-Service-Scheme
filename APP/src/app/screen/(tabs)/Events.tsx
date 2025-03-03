@@ -16,14 +16,14 @@ import * as Icon from "@expo/vector-icons";
 import TabEventCard from "@/components/TabEventCard";
 import React, { useEffect, useState } from "react";
 import { EventType, allEvent } from "@services/event";
-import Notification from "@components/Notification";
 import DataNotFound from "@components/DataNotFound";
+import useAlert from "@store/useAlert";
 const Events: React.FC = () => {
+    const setAlert = useAlert(s=>s.setAlert);
     const [events, setEvents] = useState<EventType[]>([]);
     const [eventsMain, setEventsMain] = useState<EventType[]>([]);
     const [searchBox, setSearchBox] = useState<boolean>(false);
     const [searchText, setSearchText] = useState<string>("");
-    const [alert, setAlert] = useState<string | null>(null);
     const [refreshing, setRefreshing] = React.useState(false);
     useEffect(() => {
         fetchData();
@@ -33,7 +33,7 @@ const Events: React.FC = () => {
         allEvent((data, err) => {
             setRefreshing(false);
             if (err) {
-                setAlert(err);
+                setAlert(err,"error");
                 return;
             } else {
                 setEvents(data);
@@ -44,13 +44,6 @@ const Events: React.FC = () => {
     return (
         <SafeAreaView style={Theme} className="gap-5">
             <Header />
-            {alert && (
-                <Notification
-                    message={alert}
-                    onClose={setAlert}
-                    type={"error"}
-                />
-            )}
             <View className="gap-4">
                 <View className="px-7 flex-row justify-between">
                     <Text className="text-[--text-color] text-[18px] font-semibold">

@@ -9,8 +9,8 @@
             "@app/*": ["./src/app/*"],
             "@components/*": ["./src/components/*"],
             "@constants/*": ["./src/constants/*"],
-            "@redux/*": ["./src/redux/*"],
             "@script/*": ["./src/script/*"],
+            "@store/*": ["./src/store/*"],
             "@assets/*": ["./src/assets/*"]
         }
     },

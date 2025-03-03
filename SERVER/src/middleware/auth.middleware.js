@@ -1,10 +1,9 @@
-import jwt from "jsonwebtoken";
-export const authenticate = (req, res, next) => {
+import { verifyToken } from "#services/jwt.service.js";
+export const authenticate =  async (req, res, next) => {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) return res.status(401).json({ message: "Unauthorized" });
-    jwt.verify(token, process.env.JWT_SECRET,(err, decoded) => {
-        if (err) return res.status(403).json({ message: "Forbidden" });
-        req.auth = decoded;
-        next();
-    });
+    const decoded = await verifyToken(token);
+    if (!decoded) return res.status(403).json({ message: "Forbidden" });
+    req.auth = decoded;
+    next();
 };

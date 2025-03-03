@@ -6,14 +6,15 @@ import Animated, {
   runOnJS 
 } from "react-native-reanimated";
 import { View, Text, Pressable } from "react-native";
+import { Ionicons } from "@expo/vector-icons"; // Icon library
 
-interface NotificationProps {
+interface AlertProps {
   message: string;
-  type?: "success" | "error" | "info";
+  type?: "success" | "error" | "info" | "warn";
   onClose: (value: string | null) => void;
 }
 
-const Notification: React.FC<NotificationProps> = ({ message, type = "info", onClose }) => {
+const Alert: React.FC<AlertProps> = ({ message, type = "info", onClose }) => {
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(-50);
 
@@ -24,7 +25,7 @@ const Notification: React.FC<NotificationProps> = ({ message, type = "info", onC
     const timer = setTimeout(() => {
       opacity.value = withSpring(0, {}, () => runOnJS(onClose)(null));
       translateY.value = withSpring(-50);
-    }, 3000);
+    }, 4000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -34,25 +35,37 @@ const Notification: React.FC<NotificationProps> = ({ message, type = "info", onC
     transform: [{ translateY: translateY.value }],
   }));
 
-  const getColor = () => {
+  const getAlertStyle = () => {
     switch (type) {
       case "success": return "bg-green-500 border-green-700";
       case "error": return "bg-red-500 border-red-700";
+      case "warn": return "bg-yellow-500 border-yellow-700";
       default: return "bg-blue-500 border-blue-700";
+    }
+  };
+
+  const getIcon = () => {
+    switch (type) {
+      case "success": return "checkmark-circle";
+      case "error": return "close-circle";
+      case "warn": return "warning";
+      default: return "information-circle";
     }
   };
 
   return (
     <Animated.View style={animatedStyle} 
-      className={"absolute top-10 left-5 right-5 p-4 rounded-lg border z-[100] " + getColor()}>
-      <View className="flex-row justify-between items-center">
-        <Text className="text-white font-semibold">{message}</Text>
-        <Pressable onPress={() => onClose(null)} className="ml-3 px-2 py-1 bg-white/20 rounded">
-          <Text className="text-white">X</Text>
-        </Pressable>
-      </View>
+      className={`absolute top-12 left-5 right-5 p-4 rounded-lg border shadow-lg z-[100] flex-row items-center ${getAlertStyle()}`}>
+      
+      <Ionicons name={getIcon()} size={24} color="white" className="mr-3" />
+
+      <Text className="text-white font-medium flex-1">{message}</Text>
+
+      <Pressable onPress={() => onClose(null)} className="ml-3 px-2 py-1">
+        <Ionicons name="close" size={20} color="white" />
+      </Pressable>
     </Animated.View>
   );
 };
 
-export default Notification;
+export default Alert;

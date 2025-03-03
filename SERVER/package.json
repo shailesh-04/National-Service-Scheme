@@ -8,8 +8,8 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "node temp.test.js",
-    "migration": "node ./database/migrations/_migrations.js",
-    "create-migration": "node ./scripts/createMigratoin.js"
+    "migration": "node ./src/database/migrations/_migrations.js",
+    "create-migration": "node ./src/scripts/createMigratoin.js"
   },
   "imports": {
     "#src/*": "./src/*",
@@ -20,7 +20,8 @@
     "#config/*": "./config/*",
     "#routes/*": "./src/routes/*",
     "#middleware/*": "./src/middleware/*",
-    "#services/*": "./src/services/*"
+    "#services/*": "./src/services/*",
+    "#untils/*": "./src/untils/*"
   },
   "repository": {
     "type": "git",

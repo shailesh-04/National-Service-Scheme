@@ -6,6 +6,7 @@ try {
         conn.query(
             `SELECT * FROM events`,res);
     } ;
+
     model.AllUpdate = async (id, body, res) => {
         conn.query(`UPDATE events SET 
             name=       ?, 
@@ -42,7 +43,7 @@ try {
 
     model.findOne = async (id, res) => {
         conn.query(
-            "SELECT * FROM events WHERE id  = ? AND is_deleted = FALSE;",
+            "SELECT id, name, description, location, start_time, end_time, numOFUser, image, created_by FROM events WHERE id  = ? AND is_deleted = FALSE;",
             id,
             res
         );

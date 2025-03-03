@@ -33,7 +33,10 @@ try {
     };
 
     model.findOne = async (id, res) => {
-        conn.query("SELECT * FROM users where id = ?", id, res);
+        conn.query("SELECT id,name, email, phone,role,about,img FROM users where id = ?", id, res);
+    };
+    model.fineUser = async (id, res) => {
+        conn.query("SELECT id,name, email, phone,role,about,img FROM users where is_deleted=FALSE AND id = ?", id, res);
     };
     model.update = async (id, body, res) => {
         conn.query(

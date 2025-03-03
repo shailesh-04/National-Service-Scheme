@@ -17,10 +17,9 @@ import { useRouter } from "expo-router";
 import Header from "@components/Header";
 import * as Icon from "@expo/vector-icons/";
 import { EventType, fetchUpcomingEvents } from "@services/event";
-import Notification from "@components/Notification";
-import NoEventImage from "@assets/img/NotFoundEvent.png";
+import useAlert from "@store/useAlert";
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
-interface Image {
+interface ImageProps {
     url: string;
 }
 interface EventProps {
@@ -30,7 +29,7 @@ const Index: React.FC = () => {
     const router = useRouter();
     const [events, setEvents] = useState<EventType[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [alert, setAlert] = useState<string | null>(null);
+    const setAlert = useAlert((e)=>e.setAlert);
     useEffect(() => {
         fetchData();
     }, []);
@@ -39,24 +38,24 @@ const Index: React.FC = () => {
         fetchUpcomingEvents((data: EventType[], err: string) => {
             setLoading(false);
             if (err) {
-                setAlert(err);
+                setAlert(err,'error');
                 return;
             }
             setEvents(data);
         });
     };
-    const images: Image[] = [
+    const images: ImageProps[] = [
         {
-            url: "https://www.sbpedutrust.org/PhotoGallery/Gallery/Blood_Donation/19251.png",
+            url: "https://picsum.photos/200/300?random=9",
         },
         {
-            url: "https://www.sbpedutrust.org/PhotoGallery/Gallery/Drawing_Competition/115.png",
+            url: "https://picsum.photos/200/300?random=10",
         },
         {
-            url: "https://www.sbpedutrust.org/PhotoGallery/Gallery/Harghar_Tiranga/65420.png",
+            url: "https://picsum.photos/200/300?random=11",
         },
         {
-            url: "https://www.sbpedutrust.org/PhotoGallery/Gallery/Debate_On_Beti_Bachavo/69019.png",
+            url: "https://picsum.photos/200/300?random=12",
         },
     ];
     const onRefresh = React.useCallback(() => {
@@ -65,13 +64,6 @@ const Index: React.FC = () => {
     return (
         <SafeAreaView style={Theme} className="gap-8">
             <Header />
-            {alert && (
-                <Notification
-                    message={alert}
-                    type={"error"}
-                    onClose={setAlert}
-                />
-            )}
             <ScrollView
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{
@@ -119,7 +111,7 @@ const Index: React.FC = () => {
                                 <View className=" bg-white rounded-3xl p-5 items-center justify-center ">
                                     <View className="w-[100px] h-[100px]">
                                         <Image
-                                            source={NoEventImage}
+                                            source={require("@assets/img/NotFoundEvent.png")}
                                             resizeMode="cover"
                                             className="w-full h-full"
                                         />
@@ -134,9 +126,15 @@ const Index: React.FC = () => {
                                 </View>
                             )
                         }
+                        snapToAlignment="start"
+                        snapToInterval={250} // Adjust based on your card width + gap
+                        decelerationRate="fast"
                     />
+
                 </View>
-                <ImageSlider images={images} title="Photos..." />
+
+                <ImageSlider images={images} title="Photos" />
+
                 <View className="items-center h-52">
                     <Text className="font-black text-3xl">
                         THANKS FOR JOIN!

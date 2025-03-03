@@ -14,11 +14,8 @@ import {
 } from "#controllers/events.controller.js";
 const router = Router();
 try {
-    // DashBord
     router.get("/dashbord",All);
     router.put("/dashbord/:id",AllUpdate);
-
-    // User
     router.get("/", findAll);
     router.post("/", create);
     router.get("/upcoming", upcoming);

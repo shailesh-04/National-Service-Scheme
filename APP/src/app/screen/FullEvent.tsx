@@ -16,15 +16,15 @@ import { date, returnValue } from "@components/date";
 import { LinearGradient } from "expo-linear-gradient";
 import { fetchUser, EventUserProps } from "@services/user";
 import { fetchEvent } from "@services/event";
-import Notification from "@components/Notification";
+import useAlert from "@store/useAlert";
 const FullEvent: React.FC = () => {
     const router = useRouter();
     const [user, setUser] = useState<EventUserProps[] | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [event, setEvent] = useState<EventType | null>(null);
     const [dateTime, setDateTime] = useState<returnValue | null>(null);
-    const [alert, setAlert] = useState<string | null>(null);
     const { data } = useLocalSearchParams();
+    const setAlert = useAlert(s=>s.setAlert);
     useEffect(() => {
         const parsedEvent = JSON.parse(data as string);
         if (Number.isInteger(parsedEvent)) {
@@ -58,9 +58,6 @@ const FullEvent: React.FC = () => {
     }, []);
     return (
         <SafeAreaView style={Theme} className="flex-1 relative">
-            {alert && (
-                <Notification message={alert} onClose={setAlert} type="error" />
-            )}
             <ScrollView className="">
                 <View className="w-full h-72">
                     <Image
