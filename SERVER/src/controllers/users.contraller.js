@@ -47,6 +47,7 @@ export const singin = async (req, res) => {
             if (err) return res.status(406).json({ message: err.sqlMessage});
             if (data.length > 0){
                 const token = await createToken(data[0]);
+                res.cookie("token", token);
                 res.status(200).json({token:token,data:data[0]});
             }
             else

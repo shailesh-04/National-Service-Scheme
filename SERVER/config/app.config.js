@@ -7,6 +7,7 @@ import { catchErr } from "#color";
 import { fileURLToPath } from "url";
 import path from "path";
 import session from "express-session";
+import cookieParser from "cookie-parser";
 const app = express();
 try {
     dotenv.config();
@@ -17,6 +18,7 @@ try {
     app.use(express.static("public"));
     app.use(cors({ origin: "*" }));
     app.use(express.json());
+    app.use(cookieParser());
     app.use("/", viewRouters);
     app.use("/api", routers);
     app.use(

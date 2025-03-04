@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { mmkvStore,storage } from "./storage"; // Make sure this is correctly configured
+//import { mmkvStore,storage } from "./storage"; // Make sure this is correctly configured
 
 export interface UserType {
     id: number; 
@@ -16,32 +16,30 @@ type UserStoreType = {
     user: UserType | null;
     setUser: (user: UserType, token: string) => void;
     setUserOnly: (user: UserType) => void;
-    setToken: (token: string) => void;
+    //setToken: (token: string) => void;
     clearUser: () => void;
 };
 
 export const useUserStore = create<UserStoreType>()(
-    persist(
+    //persist(
         (set) => ({
             user: null,
             setUser: (user, token) => {
                 set({ user });
-                mmkvStore.set("accessToken", token); // Correct MMKV method
+                //mmkvStore.set("accessToken", token); // Correct MMKV method
             },
             setUserOnly: (user) => {
                 set({ user });
             },
-            setToken: (token) => {
-                mmkvStore.set("accessToken", token);
-            },
+            //setToken: (token) => {mmkvStore.set("accessToken", token);},
             clearUser: () => {
                 set({ user: null });
-                mmkvStore.delete("accessToken"); // Correct MMKV method
+                //mmkvStore.delete("accessToken"); // Correct MMKV method
             },
         }),
-        {
-            name: "user-storage",
-            storage: createJSONStorage(() => storage), // Wrap MMKV correctly
-        }
-    )
+    //     {
+    //         name: "user-storage",
+    //         storage: createJSONStorage(() => storage), // Wrap MMKV correctly
+    //     }
+    // )
 );

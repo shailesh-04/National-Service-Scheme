@@ -5,6 +5,7 @@ import Button from "@/components/ui/button";
 import { useRouter } from "expo-router";
 import { signin } from "#/src/services/auth";
 import { useUserStore } from "#/src/store/useUserStore";
+import useAlert from "#/src/store/useAlert";
 
 export default function SignInScreen() {    
     const [email, setEmail] = useState<string>("");
@@ -13,6 +14,7 @@ export default function SignInScreen() {
     const [emailError, setEmailError] = useState<string | null>(null); // Email validation error
     const router = useRouter();
     const setUser = useUserStore((state) => state.setUser);
+    const setAlert = useAlert(s=>s.setAlert);
 
     const validateEmail = (email: string) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -37,6 +39,7 @@ export default function SignInScreen() {
             if (err) {
                 setError("Invalid email or password. Please try again.");
             } else if (res) { 
+                setAlert("You Are Succsessfuly SignIn!","success");
                 setUser(res.data, res.token);
                 router.replace("/screen/(tabs)");
             }

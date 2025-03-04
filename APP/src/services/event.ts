@@ -1,4 +1,4 @@
-import { publicApi } from "./apiinterceptors";
+import { api } from "./apiinterceptors";
 
 export interface EventType {
     id: number;
@@ -15,7 +15,7 @@ export interface EventType {
 // Generic function to handle API requests
 const handleRequest = async <T>(endpoint: string, res: (data: T[], error: string) => void): Promise<void> => {
     try {
-        const response = await publicApi.get<T[]>(endpoint);
+        const response = await api.get<T[]>(endpoint);
         res(response.data, '');
     } catch (error: any) {
         const errorMessage = error?.response?.data?.message || "Check Your Network";

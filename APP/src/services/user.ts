@@ -1,4 +1,4 @@
-import { publicApi } from "./apiinterceptors";
+import { api} from "./apiinterceptors";
 export interface EventUserProps {
     id: number;
     name: string;
@@ -8,12 +8,22 @@ export interface EventUserProps {
     img: string;
 }
 export const fetchUser = (id: string, res: (data: EventUserProps[], error: string) => void): void => {
-    publicApi.get<EventUserProps[]>(`/user/event/${id}`)
+    api.get<EventUserProps[]>(`/user/event/${id}`)
         .then((responce) => {
             res(responce.data, '');
         })
         .catch(error => {
             console.log("Error fetching events:", error);
+            res([], 'NetWork ERORR :_-^-_:' + error.data); // Error case
+        });
+};
+export const updateProfile = (id: string, res: (data: EventUserProps[], error: string) => void): void => {
+    api.get<EventUserProps[]>(`/user/event/${id}`)
+        .then((responce) => {
+            res(responce.data, '');
+        })
+        .catch(error => {
+            console.log("Update", error);
             res([], 'NetWork ERORR :_-^-_:' + error.data); // Error case
         });
 };

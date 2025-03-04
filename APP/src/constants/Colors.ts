@@ -5,8 +5,6 @@ export const Color = {
   'text-color': '#212121',
   'light-dark-color': '#999',
   'second-color': '#F0635A',
-  
-
 };
 export const Theme = vars({
   '--main-color': '#4A43EC',

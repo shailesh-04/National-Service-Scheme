@@ -1,5 +1,5 @@
 
-import { publicApi, api } from "./apiinterceptors";
+import { api } from "./apiinterceptors";
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 type signupProps = {
@@ -20,7 +20,7 @@ export interface EventUserProps {
     img: string;
 }
 export const fetchUser = (id: string, res: (data: EventUserProps[], error: string) => void): void => {
-    publicApi.get<EventUserProps[]>(`/user/event/${id}`)
+    api.get<EventUserProps[]>(`/user/event/${id}`)
         .then((responce) => {
             res(responce.data, '');
         })
@@ -48,7 +48,7 @@ interface InfoType {
 }
 
 export const signin = (info: InfoType, res: (data: SigninMainType | null, error: string | null) => void): void => {
-    publicApi.post<SigninMainType>("/user/singin", info) // Fixed typo in endpoint
+    api.post<SigninMainType>("/user/singin", info) // Fixed typo in endpoint
         .then((response) => {
             res(response.data, null); // Extracting `response.data`
         })
