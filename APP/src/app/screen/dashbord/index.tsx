@@ -1,0 +1,342 @@
+import React, { useEffect, useState } from "react";
+import {
+    SafeAreaView,
+    ScrollView,
+    Text,
+    View,
+    ActivityIndicator,
+    TouchableOpacity,
+    RefreshControl,
+    FlatList,
+    Image,
+    StatusBar,
+} from "react-native";
+import { Theme, Color } from "@constants/Colors";
+import ImageSlider from "@components/ImageSlider";
+import EventCard from "@components/DashBordEventCard";
+import { useRouter } from "expo-router";
+import Header from "@components/Header";
+import * as Icon from "@expo/vector-icons/";
+import { EventType, fetchUpcomingEvents } from "@services/event";
+import useAlert from "@store/useAlert";
+import { FontAwesome5, Ionicons } from "@expo/vector-icons";
+import { useUserStore } from "@store/useUserStore";
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
+interface ImageProps {
+    url: string;
+}
+interface EventProps {
+    events: EventType[];
+}
+type User = {
+    id: string;
+    name: string;
+    username: string;
+    avatar: string;
+};
+
+const users: User[] = [
+    {
+        id: "1",
+        name: "John Doe",
+        username: "@johndoe",
+        avatar: "https://i.pravatar.cc/150?img=1",
+    },
+    {
+        id: "2",
+        name: "Jane Smith",
+        username: "@janesmith",
+        avatar: "https://i.pravatar.cc/150?img=2",
+    },
+    {
+        id: "3",
+        name: "Alice Johnson",
+        username: "@alicej",
+        avatar: "https://i.pravatar.cc/150?img=3",
+    },
+];
+
+const Index: React.FC = () => {
+    const router = useRouter();
+    const [events, setEvents] = useState<EventType[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const { user } = useUserStore();
+    const { setAlert } = useAlert();
+    useEffect(() => {
+        fetchData();
+    }, []);
+    const fetchData = () => {
+        setLoading(true);
+        fetchUpcomingEvents((data: EventType[], err: string) => {
+            setLoading(false);
+            if (err) {
+                setAlert(err, "error");
+                return;
+            }
+            setEvents(data);
+        });
+    };
+    const images: ImageProps[] = [
+        {
+            url: "https://picsum.photos/200/300?random=9",
+        },
+        {
+            url: "https://picsum.photos/200/300?random=10",
+        },
+        {
+            url: "https://picsum.photos/200/300?random=11",
+        },
+        {
+            url: "https://picsum.photos/200/300?random=12",
+        },
+    ];
+    const onRefresh = React.useCallback(() => {
+        if (events.length < 1) fetchData();
+    }, []);
+    return (
+        <SafeAreaView style={Theme} className="gap-8 pb-32">
+            <View
+                className=" rounded-b-[30px]  flex-row justify-between items-center px-6 py-10 relative"
+                style={{ backgroundColor: Color["main-color"] }}
+            >
+                <StatusBar backgroundColor={Color["main-color"]} />
+                <View className="gap-3 mt-5">
+                    <View className="flex-row gap-3">
+                        <View className="w-10 h-10">
+                            <Image
+                                source={require("@assets/img/logo.png")}
+                                className="w-12 h-12 rounded-full overflow-hidden"
+                                style={{ backgroundColor: Color["bg-color"] }}
+                            />
+                        </View>
+                        <Text
+                            className=" font-bold text-[20px]"
+                            style={{ color: Color["bg-color"] }}
+                        >
+                            NSS
+                        </Text>
+                    </View>
+                    <Text
+                        className=" font-bold"
+                        style={{ color: Color["bg-color"] }}
+                    >
+                        National Service Scheme
+                    </Text>
+                </View>
+                {user?.role == "a" ? (
+                    <TouchableOpacity
+                        onPress={() => {
+                            router.push("/screen/(tabs)");
+                        }}
+                    >
+                        <Text className="text-[--second-color] font-bold border-b border-[--second-color]">
+                            Home
+                        </Text>
+                    </TouchableOpacity>
+                ) : (
+                    ""
+                )}
+                <TouchableOpacity
+                    className="bg-[#ffffff22]  rounded-full w-10 h-10 items-center justify-center"
+                    onPress={() => {
+                        router.push("/screen/notification/Notificatoin");
+                    }}
+                >
+                    <Ionicons
+                        name="notifications-outline"
+                        size={24}
+                        color={`${Color["bg-color"]}`}
+                    />
+                </TouchableOpacity>
+            </View>
+
+            <ScrollView
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{
+                    gap: 30,
+                    paddingBottom: 200,
+                }}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={loading}
+                        onRefresh={onRefresh}
+                    />
+                }
+            >
+                <View className="px-5 gap-5">
+                    <View className="flex-1 bg-[--bg-color] p-5 justify-center items-center">
+                        <Text className="text-[--text-color] text-2xl font-bold mb-5">
+                            Dashboard
+                        </Text>
+
+                        <View className="w-full flex-row justify-around">
+                            <View className="items-center bg-[--main-color] p-5 rounded-xl w-28">
+                                <FontAwesome5
+                                    name="users"
+                                    size={24}
+                                    color={Color["second-color"]}
+                                />
+                                <Text className="text-white text-lg font-bold mt-2">
+                                    300
+                                </Text>
+                                <Text className="text-gray-400">Users</Text>
+                            </View>
+
+                            <View className="items-center bg-[--main-color]  p-5 rounded-xl w-28">
+                                <FontAwesome5
+                                    name="calendar-alt"
+                                    size={24}
+                                    color={Color["second-color"]}
+                                />
+                                <Text className="text-white text-lg font-bold mt-2">
+                                    30
+                                </Text>
+                                <Text className="text-gray-400">Events</Text>
+                            </View>
+
+                            <View className="items-center bg-[--main-color]  p-5 rounded-xl w-28">
+                                <FontAwesome5
+                                    name="image"
+                                    size={24}
+                                    color={Color["second-color"]}
+                                />
+                                <Text className="text-white text-lg font-bold mt-2">
+                                    400
+                                </Text>
+                                <Text className="text-gray-400">Images</Text>
+                            </View>
+                        </View>
+                    </View>
+                    <View className="flex-row justify-between">
+                        <Text className="font-bold">Upcomming Event</Text>
+                        <TouchableOpacity
+                            onPress={() => {
+                                router.push("/screen/(tabs)/Events");
+                            }}
+                            className="flex-row items-center"
+                        >
+                            <Text className="text-[--light-dark-color]">
+                                Manage Event{" "}
+                            </Text>
+                            <Icon.AntDesign
+                                name="caretright"
+                                size={15}
+                                color={Color["light-dark-color"]}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                    <FlatList
+                        data={events}
+                        keyExtractor={(item, index) => index.toString()}
+                        renderItem={({ item }) => <EventCard data={item} />}
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={{
+                            gap: 30,
+                            paddingHorizontal: 10,
+                        }}
+                        ListEmptyComponent={
+                            !loading ? (
+                                <View className=" bg-white rounded-3xl p-5 items-center justify-center ">
+                                    <View className="w-[100px] h-[100px]">
+                                        <Image
+                                            source={require("@assets/img/NotFoundEvent.png")}
+                                            resizeMode="cover"
+                                            className="w-full h-full"
+                                        />
+                                    </View>
+                                    <Text className="text-[-bg-color] text-[13px] font-semibold">
+                                        No Upcoming Events
+                                    </Text>
+                                </View>
+                            ) : (
+                                <View className=" bg-white rounded-3xl p-5 items-center justify-center ">
+                                    <View className="w-[100px] h-[100px]"></View>
+                                </View>
+                            )
+                        }
+                        snapToAlignment="start"
+                        snapToInterval={250} // Adjust based on your card width + gap
+                        decelerationRate="fast"
+                    />
+                </View>
+                <View className="flex-row justify-between px-10">
+                    <Text className="font-bold">Latest Joined Users</Text>
+                    <TouchableOpacity
+                        onPress={() => {
+                            router.push("/screen/(tabs)/Events");
+                        }}
+                        className="flex-row items-center"
+                    >
+                        <Text className="text-[--light-dark-color]">
+                            Manage All User{" "}
+                        </Text>
+                        <Icon.AntDesign
+                            name="caretright"
+                            size={15}
+                            color={Color["light-dark-color"]}
+                        />
+                    </TouchableOpacity>
+                </View>
+                <View className="flex-1 bg-[#F5F7FA]">
+                    <Text className="text-xl font-bold text-[#212121] p-4">
+                        User List
+                    </Text>
+                    {users.map((item, index, array) => {
+                        return(
+                            <View key={index} className="flex-row items-center bg-white p-3 mx-4 rounded-2xl mb-3 shadow-md">
+                                <Image
+                                    source={{ uri: item.avatar }}
+                                    className="w-12 h-12 rounded-full mr-3"
+                                />
+                                <View>
+                                    <Text className="text-lg font-semibold text-[#212121]">
+                                        {item.name}
+                                    </Text>
+                                    <Text className="text-sm text-[#888]">
+                                        {item.username}
+                                    </Text>
+                                </View>
+                            </View>
+                        )
+                    })}
+                </View>
+                <View className="flex-row justify-between px-10">
+                    <Text className="font-bold">Image gallery</Text>
+                    <TouchableOpacity
+                        onPress={() => {
+                            router.push("/screen/(tabs)/Events");
+                        }}
+                        className="flex-row items-center"
+                    >
+                        <Text className="text-[--light-dark-color]">
+                            Manage Images{" "}
+                        </Text>
+                        <Icon.AntDesign
+                            name="caretright"
+                            size={15}
+                            color={Color["light-dark-color"]}
+                        />
+                    </TouchableOpacity>
+                </View>
+                <FlatList
+                    data={images}
+                    numColumns={2}
+                    keyExtractor={(item, i) => i.toString()}
+                    columnWrapperStyle={{ justifyContent: "space-evenly" }}
+                    contentContainerStyle={{ gap: 12 }}
+                    scrollEnabled={false}
+                    renderItem={({ item }) => (
+                        <View className="w-[40%] aspect-square bg-white rounded-2xl shadow-md overflow-hidden mt-3">
+                            <Image
+                                source={{ uri: item.url }}
+                                className="w-full h-full"
+                            />
+                        </View>
+                    )}
+                />
+            </ScrollView>
+        </SafeAreaView>
+    );
+};
+export default Index;

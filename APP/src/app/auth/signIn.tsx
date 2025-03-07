@@ -3,9 +3,9 @@ import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
 import { Theme } from "@/constants/Colors";
 import Button from "@/components/ui/button";
 import { useRouter } from "expo-router";
-import { signin } from "#/src/services/auth";
-import { useUserStore } from "#/src/store/useUserStore";
-import useAlert from "#/src/store/useAlert";
+import { signin } from "@services/auth";
+import { useUserStore } from "@store/useUserStore";
+import useAlert from "@store/useAlert";
 
 export default function SignInScreen() {    
     const [email, setEmail] = useState<string>("");

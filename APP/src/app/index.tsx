@@ -8,12 +8,12 @@ import {
     ActivityIndicator
 } from "react-native";
 import { useEffect ,useState} from "react";
-import { Color, Theme } from "@/constants/Colors";
+import { Color, Theme } from "@constants/Colors";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { verifyUser } from "@services/auth";
-import { useUserStore } from "#/src/store/useUserStore";
-import useAlert from "../store/useAlert";
+import { useUserStore } from "@store/useUserStore";
+import useAlert from "@store/useAlert";
 export default function HomeScreen() {
     const setUser = useUserStore((state) => state.setUserOnly);
     const router = useRouter();
@@ -67,7 +67,7 @@ export default function HomeScreen() {
                 <Text className="text-[--accent-color] font-bold">
                     Join hands for social service and national development.
                 </Text>
-                <ActivityIndicator size={50}/>
+                <ActivityIndicator size={50} color={'#fff'}/>
             </View>
         </View>
     );

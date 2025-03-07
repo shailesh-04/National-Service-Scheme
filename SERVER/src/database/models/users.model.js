@@ -6,6 +6,7 @@ try {
         conn.query("SELECT * FROM users", res);
     };
     model.updateAll = async (id, body, res) => {
+        console.log(body);
         conn.query(
             "UPDATE users SET name=?, email=?, password=?, phone=?, role=?, is_deleted=? WHERE id = " +
                 id,
@@ -29,19 +30,33 @@ try {
         );
     };
     model.findAll = async (res) => {
-        conn.query("SELECT id,name, email, password, phone,role,img FROM users", res);
+        conn.query(
+            "SELECT id,name, email, password, phone,role,img FROM users",
+            res
+        );
     };
 
     model.findOne = async (id, res) => {
-        conn.query("SELECT id,name, email, phone,role,about,img FROM users where id = ?", id, res);
+        conn.query(
+            "SELECT id,name, email, phone,role,about,img FROM users where id = ?",
+            id,
+            res
+        );
     };
     model.fineUser = async (id, res) => {
-        conn.query("SELECT id,name, email, phone,role,about,img FROM users where is_deleted=FALSE AND id = ?", id, res);
+        conn.query(
+            "SELECT id,name, email, phone,role,about,img FROM users where is_deleted=FALSE AND id = ?",
+            id,
+            res
+        );
     };
     model.update = async (id, body, res) => {
         conn.query(
-            "UPDATE users SET name = ?, email = ?, password = ?, phone = ? WHERE id = " +
-                id,
+            body[3]
+                ? "UPDATE users SET name = ?, email = ?, password = ?, phone = ? WHERE id = " +
+                      id
+                : "UPDATE users SET name = ?, email = ?, phone = ? WHERE id = " +
+                      id,
             body,
             res
         );
@@ -50,11 +65,15 @@ try {
         conn.query("DELETE FROM users WHERE id = " + id + ";", res);
     };
     model.uploadImage = async (body, res) => {
-        conn.query("UPDATE users SET img = ? WHERE id = ?",body, res);
+        conn.query("UPDATE users SET img = ? WHERE id = ?", body, res);
     };
-    model.getEventUser = async (body,res)=>{
-        conn.query("SELECT id,name,email,phone,role,img FROM users WHERE id = ?",body,res);
-    }
+    model.getEventUser = async (body, res) => {
+        conn.query(
+            "SELECT id,name,email,phone,role,img FROM users WHERE id = ?",
+            body,
+            res
+        );
+    };
 } catch (error) {
     catchErr(error, "user.model");
 }

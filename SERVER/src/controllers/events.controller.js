@@ -1,5 +1,58 @@
 import { catchErr } from "#color";
 import model from "#models/events.model.js";
+export const All = async (req, res) => {
+    try {
+        model.All((err, data) => {
+            if (err) return res.status(406).json({ message: err.sqlMessage });
+            res.status(200).json(data);
+        });
+    } catch (error) {
+        catchErr(error, "event.controll.findall");
+        if (err)
+            return res
+                .status(500)
+                .json({ message: "Internal Server Error : " + error });
+    }
+};
+export const AllUpdate = (req, res) => {
+    try {
+        const id = req.params.id;
+        const {
+            name,
+            description,
+            location,
+            start_time,
+            end_time,
+            numOFUser,
+            created_by,
+            is_deleted,
+        } = req.body;
+        model.AllUpdate(
+            id,
+            [
+                name,
+                description,
+                location,
+                start_time,
+                end_time,
+                numOFUser,
+                created_by,
+                is_deleted,
+            ],
+            (err, data) => {
+                if (err)
+                    return res.status(406).json({ message: err.sqlMessage });
+                res.status(200).json("Succsessfully Update Event..");
+            }
+        );
+    } catch (error) {
+        catchErr(error, "event.controll.update");
+        if (err)
+            return res
+                .status(500)
+                .json({ message: "Internal Server Error : " + error });
+    }
+};
 export const create = async (req, res) => {
     try {
         const {
@@ -30,20 +83,6 @@ export const create = async (req, res) => {
 export const findAll = async (req, res) => {
     try {
         model.findAll((err, data) => {
-            if (err) return res.status(406).json({ message: err.sqlMessage });
-            res.status(200).json(data);
-        });
-    } catch (error) {
-        catchErr(error, "event.controll.findall");
-        if (err)
-            return res
-                .status(500)
-                .json({ message: "Internal Server Error : " + error });
-    }
-};
-export const All = async (req, res) => {
-    try {
-        model.All((err, data) => {
             if (err) return res.status(406).json({ message: err.sqlMessage });
             res.status(200).json(data);
         });
@@ -98,45 +137,7 @@ export const update = (req, res) => {
                 .json({ message: "Internal Server Error : " + error });
     }
 };
-export const AllUpdate = (req, res) => {
-    try {
-        const id = req.params.id;
-        const {
-            name,
-            description,
-            location,
-            start_time,
-            end_time,
-            numOFUser,
-            created_by,
-            is_deleted,
-        } = req.body;
-        model.AllUpdate(
-            id,
-            [
-                name,
-                description,
-                location,
-                start_time,
-                end_time,
-                numOFUser,
-                created_by,
-                is_deleted,
-            ],
-            (err, data) => {
-                if (err)
-                    return res.status(406).json({ message: err.sqlMessage });
-                res.status(200).json("Succsessfully Update Event..");
-            }
-        );
-    } catch (error) {
-        catchErr(error, "event.controll.update");
-        if (err)
-            return res
-                .status(500)
-                .json({ message: "Internal Server Error : " + error });
-    }
-};
+
 export const remove = (req, res) => {
     try {
         const id = req.params.id;

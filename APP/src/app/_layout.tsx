@@ -1,8 +1,8 @@
 import { Stack } from "expo-router";
 import "react-native-reanimated";
 import "#/global.css";
-import useAlert from "@/store/useAlert";
-import Notification from "#/src/components/Alert";
+import useAlert from "@store/useAlert";
+import Notification from "@components/Alert";
 import { useEffect } from "react";
 export default function RootLayout() {
     const alert = useAlert((state) => state.alert);

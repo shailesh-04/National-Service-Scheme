@@ -1,6 +1,6 @@
 import { Stack, useRouter } from "expo-router";
 import "react-native-reanimated";
-import { Color } from "#/src/constants/Colors";
+import { Color } from "@constants/Colors";
 import { TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 

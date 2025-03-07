@@ -17,6 +17,7 @@ type UserStoreType = {
     setUser: (user: UserType, token: string) => void;
     setUserOnly: (user: UserType) => void;
     //setToken: (token: string) => void;
+    updateUserField:(field:"id"|"name"|"email"|"phone"|"role"|"about"|"img",value:any)=>void
     clearUser: () => void;
 };
 
@@ -36,6 +37,11 @@ export const useUserStore = create<UserStoreType>()(
                 set({ user: null });
                 //mmkvStore.delete("accessToken"); // Correct MMKV method
             },
+            updateUserField: (field, value) => {
+                set((state) => ({
+                    user: state.user ? { ...state.user, [field]: value } : null,
+                }));
+            }
         }),
     //     {
     //         name: "user-storage",

@@ -1,23 +1,38 @@
 import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
-import { Theme, Color } from "@/constants/Colors";
+import { Theme, Color } from "@constants/Colors";
 import { useRouter } from "expo-router";
-import logo from "@assets/img/logo.png";
-import Button from "@/components/ui/button";
+import Button from "@components/ui/button";
 import { signup } from "@services/auth";
+import useAlert from "@store/useAlert";
+import { useUserStore } from "@store/useUserStore";
 export default function SignUpScreen() {
     const router = useRouter();
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [phone, setPhone] = useState("");
+    const setAlert = useAlert((e)=>e.setAlert);
+    const setUser = useUserStore((state) => state.setUser);
     const handelSubmit = () => {
-        signup({
-            name: name,
-            email: email,
-            password: password,
-            phone: phone,
-        });
+        signup(
+            {
+                name: name,
+                email: email,
+                password: password,
+                phone: phone,
+            },
+            (res, err) => {
+                if (err) {
+                    setAlert("Invalid email or password. Please try again.");
+                } else if (res) { 
+                    setAlert("You Are Succsessfuly SignIn!","success");
+                    setUser(res.data, res.token);
+                    router.replace("/screen/(tabs)");
+                }
+
+            }
+        );
     };
     return (
         <View
@@ -25,7 +40,7 @@ export default function SignUpScreen() {
             className="flex-1 bg-[--bg-color] items-center px-6"
         >
             <Image
-                source={logo}
+                source={require("@assets/img/logo.png")}
                 style={{ width: "70%", height: "30%", marginBottom: 24 }}
                 resizeMode="contain"
             />

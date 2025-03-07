@@ -1,7 +1,7 @@
 import { Tabs } from "expo-router";
 import { FontAwesome, AntDesign, MaterialIcons } from "@expo/vector-icons";
 import { Color } from "@/constants/Colors";
-import MyTabBar from "@/components/tabbar/MyTabBar";
+import MyTabBar from "@components/tabbar/MyTabBar";
 export default function TabLayout() {
     return (
         <Tabs tabBar={(props) => <MyTabBar {...props} />}>

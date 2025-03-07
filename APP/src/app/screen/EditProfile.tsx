@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     View,
     Text,
@@ -6,169 +6,135 @@ import {
     TouchableOpacity,
     Alert,
     ActivityIndicator,
+    ScrollView,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import axios from "axios";
-import Header from "#/src/components/Header";
-import UploadProfileImage from "#/src/components/UploadProfileImahe";
-import EditProfileHeader from "#/src/components/EditProfileHeader";
+import Header from "@components/Header";
+import UploadProfileImage from "@components/UploadProfileImahe";
+import EditProfileHeader from "@components/EditProfileHeader";
+import { LinearGradient } from "expo-linear-gradient";
+import { ProfileEdit, ProfileFormType, EditProfileImage } from "@services/user";
+import { useUserStore} from "@store/useUserStore";
+import useAlert from "@store/useAlert";
+import Animated, { FadeInUp } from "react-native-reanimated";
+import { FontAwesome } from "@expo/vector-icons";
+
 export const Color = {
     "main-color": "#4A43EC",
-    "bg-color": "#FFFFFF",
+    "bg-color": "#F5F7FA",
     "text-color": "#212121",
-    "light-dark-color": "#999",
+    "light-dark-color": "#888",
     "second-color": "#F0635A",
+    "gradient-start": "#4A43EC",
+    "gradient-end": "#2D2B7A",
+    "card-bg": "#FFFFFF",
 };
-import { updateProfile } from "#/src/services/user";
-
-interface ProfileForm {
-    name: string;
-    email: string;
-    phone: string;
-    newPassword?: string;
-    confirmPassword?: string;
-}
 
 const profileSchema = yup.object().shape({
     name: yup.string().required("Please enter your full name"),
-    email: yup
-        .string()
-        .email("Enter a valid email address")
-        .required("Email is required"),
-    phone: yup
-        .string()
-        .matches(/^[0-9]{10,15}$/, "Enter a valid phone number")
-        .required("Phone number is required"),
-    newPassword: yup
-        .string()
-        .min(6, "New password must be at least 6 characters")
-        .optional(),
-    confirmPassword: yup
-        .string()
-        .oneOf([yup.ref("newPassword")], "Passwords do not match")
-        .when("newPassword", {
-            is: (value: string) => value && value.length > 0,
-            then: (schema) => schema.required("Confirm password is required"),
-            otherwise: (schema) => schema.notRequired(),
-        }),
+    email: yup.string().email("Enter a valid email address").required("Email is required"),
+    phone: yup.string().matches(/^(?:[0-9]{10,15})?$/, "Enter a valid phone number"),
+    password: yup.string().matches(/^$|^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/, "Password must be at least 6 characters and include both letters and numbers"),
+    confirmPassword: yup.string().oneOf([yup.ref("password")], "Passwords do not match"),
 });
-
 const UpdateProfile = () => {
+    const setAlert = useAlert((e) => e.setAlert);
+    const { updateUserField,user } = useUserStore();
     const [loading, setLoading] = useState(false);
+    const [image, setImage] = useState<any | null>(null);
+    
     const {
         control,
         handleSubmit,
         formState: { errors },
-    } = useForm<ProfileForm>({
+    } = useForm<ProfileFormType>({
         resolver: yupResolver(profileSchema),
         defaultValues: {
-            name: "John Doe",
-            email: "johndoe@gmail.com",
-            phone: "1234567890",
-            newPassword: "",
+            name: user?.name,
+            email: user?.email,
+            phone: user?.phone,
+            password: "",
             confirmPassword: "",
-            
         },
     });
 
-    const onSubmit = async (data: ProfileForm) => {
-        setLoading(true);
-        try {
-            const response = await axios.post(
-                "https://your-api.com/update-profile",
-                data
-            );
-            Alert.alert(
-                "Success",
-                "Your profile has been updated successfully!"
-            );
-            console.log(response.data);
-        } catch (error) {
-            Alert.alert(
-                "Error",
-                "Failed to update profile. Please try again later."
-            );
-        } finally {
+    useEffect(() => {
+        setImage(user?.img ? user?.img : "");
+    }, []);
+    const Edit = (data:ProfileFormType)=>{
+        ProfileEdit(data, user?.id, (res, err) => {
             setLoading(false);
+            if (err) {
+                setAlert(err, "error");
+                return;
+            }
+            updateUserField("name",data.name);
+            updateUserField("email",data.email);
+            updateUserField("phone",data.phone);
+            setAlert(res, "success");
+            
+        });
+    }
+    const onSubmit = async (data: ProfileFormType) => {
+        setLoading(true);
+        if (image === user?.img) {
+            Edit(data);
+        } else {
+            const formData = new FormData();
+            formData.append("image", { uri: image, type: "image/jpeg", name: "upload.jpg" } as any);
+            EditProfileImage(formData, user?.id, (res, err) => {
+                setLoading(false);
+                if (err) {
+                    setAlert(err, "error");
+                    return;
+                }
+                setAlert(res, "success");
+                Edit(data);
+                updateUserField("img",image);
+            });
         }
     };
 
     return (
-        <View
-            className="flex-1 gap-2"
-            style={{ backgroundColor: Color["bg-color"] }}
-        >
+        <ScrollView className="flex-1" style={{ backgroundColor: Color["bg-color"] }}>
             <Header />
             <EditProfileHeader />
-            <UploadProfileImage/>
-            {[
-                { name: "name", label: "Full Name" },
-                { name: "email", label: "Email" },
-                { name: "phone", label: "Phone Number" },
-                { name: "newPassword", label: "New Password", secure: true },
-                {
-                    name: "confirmPassword",
-                    label: "Confirm Password",
-                    secure: true,
-                },
-            ].map((field) => (
-                <View key={field.name} className="mb-4 px-6">
-                    <Text className="text-gray-700 mb-1 font-medium">
-                        {field.label}
-                    </Text>
-                    <Controller
-                        control={control}
-                        name={field.name as keyof ProfileForm}
-                        render={({ field: { onChange, value } }) => (
-                            <TextInput
-                                value={value}
-                                onChangeText={onChange}
-                                secureTextEntry={field.secure}
-                                placeholder={field.label}
-                                className="border border-gray-300 rounded-md px-3 py-2 text-gray-800 bg-gray-100"
-                            />
+            <UploadProfileImage image={image} setImage={setImage} />
+            <View className="px-6 mt-4">
+                {["name", "email", "phone", "password", "confirmPassword"].map((field, index) => (
+                    <Animated.View entering={FadeInUp.duration(500)} key={field} className="mb-4">
+                        <Text className="text-gray-700 font-medium mb-1">{field.replace(/([A-Z])/g, " $1").trim()}</Text>
+                        <Controller
+                            control={control}
+                            name={field as keyof ProfileFormType}
+                            render={({ field: { onChange, value } }) => (
+                                <TextInput
+                                    value={value}
+                                    onChangeText={onChange}
+                                    secureTextEntry={field.includes("password")}
+                                    placeholder={field.replace(/([A-Z])/g, " $1").trim()}
+                                    className="border border-gray-300 rounded-lg px-3 py-2 bg-gray-100"
+                                />
+                            )}
+                        />
+                        {errors[field as keyof ProfileFormType] && (
+                            <Text className="text-red-500 text-sm mt-1">{errors[field as keyof ProfileFormType]?.message}</Text>
                         )}
-                    />
-                    {errors[field.name as keyof ProfileForm] && (
-                        <Text className="text-red-500 text-sm mt-1">
-                            {errors[field.name as keyof ProfileForm]?.message}
-                        </Text>
-                    )}
-                </View>
-            ))}
-
-            {/* Submit Button */}
+                    </Animated.View>
+                ))}
+            </View>
             {loading ? (
-                <ActivityIndicator
-                    size="large"
-                    color={Color["main-color"]}
-                    style={{ marginTop: 20 }}
-                />
+                <ActivityIndicator size="large" color={Color["main-color"]} style={{ marginTop: 20 }} />
             ) : (
-                <TouchableOpacity
-                    onPress={handleSubmit(onSubmit)}
-                    style={{
-                        backgroundColor: Color["main-color"],
-                        padding: 10,
-                        borderRadius: 8,
-                        marginTop: 20,
-                    }}
-                    className="w-[80%] m-auto"
-                >
-                    <Text
-                        style={{
-                            textAlign: "center",
-                            color: "white",
-                            fontSize: 18,
-                        }}
-                    >
-                        Update Profile
-                    </Text>
+                <TouchableOpacity onPress={handleSubmit(onSubmit)} className="w-[80%] m-auto mt-6">
+                    <LinearGradient colors={[Color["gradient-start"], Color["gradient-end"]]} className="p-4 rounded-lg">
+                        <Text className="text-white text-center font-semibold text-lg">Update Profile</Text>
+                    </LinearGradient>
                 </TouchableOpacity>
             )}
-        </View>
+        </ScrollView>
     );
 };
 

@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
     View,
     FlatList,
     Image,
     Text,
     TouchableOpacity,
-    Modal,
 } from "react-native";
 import { ImageProps } from "@/services/images";
 import * as Icon from "@expo/vector-icons";
@@ -15,7 +14,6 @@ import Animated, { useSharedValue, useAnimatedStyle, withSpring } from "react-na
 
 const ExploreCard: React.FC<{ event: ImageProps }> = ({ event }) => {
     const router = useRouter();
-    const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
     // Animation for card entrance
     const opacity = useSharedValue(0);
@@ -24,7 +22,7 @@ const ExploreCard: React.FC<{ event: ImageProps }> = ({ event }) => {
     useEffect(() => {
         opacity.value = withSpring(1, { damping: 10, stiffness: 100 });
         translateY.value = withSpring(0, { damping: 10, stiffness: 100 });
-    }, []);
+    }, [opacity, translateY]);
 
     const animatedStyle = useAnimatedStyle(() => ({
         opacity: opacity.value,
@@ -45,9 +43,7 @@ const ExploreCard: React.FC<{ event: ImageProps }> = ({ event }) => {
                     onPress={() => {
                         router.push({
                             pathname: "/screen/FullEvent",
-                            params: {
-                                data: JSON.stringify(event.id),
-                            },
+                            params: { data: event.id.toString() },
                         });
                     }}
                 >
@@ -66,48 +62,13 @@ const ExploreCard: React.FC<{ event: ImageProps }> = ({ event }) => {
                 columnWrapperStyle={{ justifyContent: "space-between" }}
                 contentContainerStyle={{ gap: 12 }}
                 scrollEnabled={false}
-                renderItem={({ item }) => <AnimatedImage item={item} onPress={() => setSelectedImage(item.imageurl)} />}
-            />
-
-            {/* Image Modal Preview */}
-            {selectedImage && (
-                <Modal transparent visible={true} animationType="fade">
-                    <View className="flex-1 bg-black/90 justify-center items-center">
-                        <TouchableOpacity
-                            className="absolute top-10 right-5"
-                            onPress={() => setSelectedImage(null)}
-                        >
-                            <Icon.AntDesign name="closecircle" size={30} color="#fff" />
-                        </TouchableOpacity>
-                        <Image source={{ uri: selectedImage }} className="w-[90%] h-[70%] rounded-lg" />
+                renderItem={({ item }) => (
+                    <View className="w-[48%] aspect-square bg-white rounded-2xl shadow-md overflow-hidden mt-3">
+                        <Image source={{ uri: item.imageurl }} className="w-full h-full" />
                     </View>
-                </Modal>
-            )}
+                )}
+            />
         </Animated.View>
-    );
-};
-
-// Animated Image Component
-const AnimatedImage: React.FC<{ item: any; onPress: () => void }> = ({ item, onPress }) => {
-    const scale = useSharedValue(1);
-
-    const animatedStyle = useAnimatedStyle(() => ({
-        transform: [{ scale: scale.value }],
-    }));
-
-    return (
-        <TouchableOpacity
-            className="w-[48%] aspect-square bg-white rounded-2xl shadow-md overflow-hidden mt-3"
-            onPress={() => {
-                scale.value = withSpring(0.95, { damping: 10, stiffness: 200 });
-                onPress();
-                scale.value = withSpring(1, { damping: 10, stiffness: 200 });
-            }}
-        >
-            <Animated.View style={animatedStyle}>
-                <Image source={{ uri: item.imageurl }} className="w-full h-full" />
-            </Animated.View>
-        </TouchableOpacity>
     );
 };
 

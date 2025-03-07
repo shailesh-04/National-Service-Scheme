@@ -8,6 +8,7 @@ try {
     model.updateAll = async (id,body,res) => {
         conn.query("UPDATE images SET E_id = ?, image = ? , is_deleted = ? WHERE id ="+id,body, res);
     };
+    
     model.create = async (body, res) => {
         conn.query("INSERT INTO images(E_id,imageurl) VALUES(?,?)", body, res);
     };

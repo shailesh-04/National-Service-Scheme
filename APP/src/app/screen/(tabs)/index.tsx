@@ -63,7 +63,7 @@ const Index: React.FC = () => {
     }, []);
     return (
         <SafeAreaView style={Theme} className="gap-8">
-            <Header />
+            <Header/>
             <ScrollView
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{

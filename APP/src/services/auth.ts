@@ -1,5 +1,5 @@
 
-import { api } from "./apiinterceptors";
+import { api,ExpireApi } from "./apiinterceptors";
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 type signupProps = {
@@ -8,8 +8,14 @@ type signupProps = {
     password: string,
     phone: string,
 }
-export async function signup(data: signupProps) {
-
+export async function signup(data: signupProps, res: (res: any, error: string|null) => void) {
+    api.post<SigninMainType>("/user/signup", data) // Fixed typo in endpoint
+        .then((response) => {
+            res(response.data, null); // Extracting `response.data`
+        })
+        .catch(error => {
+            res(null, 'SingUp Error : ' + (error.response?.data?.message || error.message));
+        });
 }
 export interface EventUserProps {
     id: number;
@@ -57,13 +63,13 @@ export const signin = (info: InfoType, res: (data: SigninMainType | null, error:
         });
 };
 
-export const verifyUser = (res: (data: SigninType[] | null, error: string | null,status?:number) => void): void => {
-    api.get<SigninType[]>("/user/singin") // Fixed typo in endpoint
+export const verifyUser = (res: (data: SigninType[] | null, error: string | null, status?: number) => void): void => {
+    ExpireApi.get<SigninType[]>("/user/singin") // Fixed typo in endpoint
         .then((response) => {
             res(response.data, null); // Extracting `response.data`
         })
         .catch(error => {
-            
-            res(null,(error.response?.data?.message || error.message), error.status);
+
+            res(null, (error.response?.data?.message || error.message), error.status);
         });
 } 
