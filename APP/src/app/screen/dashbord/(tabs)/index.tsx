@@ -20,7 +20,9 @@ import * as Icon from "@expo/vector-icons/";
 import { EventType, fetchUpcomingEvents } from "@services/event";
 import useAlert from "@store/useAlert";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
-import { useUserStore } from "@store/useUserStore";
+import { UserType, useUserStore } from "@store/dashbord/useUserStore";
+import HeaderAdmin from "../HeaderAdmin";
+import { api } from "#/src/services/apiinterceptors";
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 interface ImageProps {
     url: string;
@@ -34,37 +36,28 @@ type User = {
     username: string;
     avatar: string;
 };
-
-const users: User[] = [
-    {
-        id: "1",
-        name: "John Doe",
-        username: "@johndoe",
-        avatar: "https://i.pravatar.cc/150?img=1",
-    },
-    {
-        id: "2",
-        name: "Jane Smith",
-        username: "@janesmith",
-        avatar: "https://i.pravatar.cc/150?img=2",
-    },
-    {
-        id: "3",
-        name: "Alice Johnson",
-        username: "@alicej",
-        avatar: "https://i.pravatar.cc/150?img=3",
-    },
-];
-
 const Index: React.FC = () => {
     const router = useRouter();
     const [events, setEvents] = useState<EventType[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const { user } = useUserStore();
+    const { users, setUsers } = useUserStore();
     const { setAlert } = useAlert();
     useEffect(() => {
         fetchData();
+        loadUsers();
+       
     }, []);
+    const loadUsers = async () => {
+        setLoading(true);
+        try {
+            const response = await api.get<UserType[]>(`/user/dashbord/`);
+            setUsers(response.data);
+        } catch (error) {
+            setAlert("Check Your Network");
+        }
+        setLoading(false);
+        
+    };
     const fetchData = () => {
         setLoading(true);
         fetchUpcomingEvents((data: EventType[], err: string) => {
@@ -74,6 +67,7 @@ const Index: React.FC = () => {
                 return;
             }
             setEvents(data);
+            
         });
     };
     const images: ImageProps[] = [
@@ -95,61 +89,7 @@ const Index: React.FC = () => {
     }, []);
     return (
         <SafeAreaView style={Theme} className="gap-8 pb-32">
-            <View
-                className=" rounded-b-[30px]  flex-row justify-between items-center px-6 py-10 relative"
-                style={{ backgroundColor: Color["main-color"] }}
-            >
-                <StatusBar backgroundColor={Color["main-color"]} />
-                <View className="gap-3 mt-5">
-                    <View className="flex-row gap-3">
-                        <View className="w-10 h-10">
-                            <Image
-                                source={require("@assets/img/logo.png")}
-                                className="w-12 h-12 rounded-full overflow-hidden"
-                                style={{ backgroundColor: Color["bg-color"] }}
-                            />
-                        </View>
-                        <Text
-                            className=" font-bold text-[20px]"
-                            style={{ color: Color["bg-color"] }}
-                        >
-                            NSS
-                        </Text>
-                    </View>
-                    <Text
-                        className=" font-bold"
-                        style={{ color: Color["bg-color"] }}
-                    >
-                        National Service Scheme
-                    </Text>
-                </View>
-                {user?.role == "a" ? (
-                    <TouchableOpacity
-                        onPress={() => {
-                            router.push("/screen/(tabs)");
-                        }}
-                    >
-                        <Text className="text-[--second-color] font-bold border-b border-[--second-color]">
-                            Home
-                        </Text>
-                    </TouchableOpacity>
-                ) : (
-                    ""
-                )}
-                <TouchableOpacity
-                    className="bg-[#ffffff22]  rounded-full w-10 h-10 items-center justify-center"
-                    onPress={() => {
-                        router.push("/screen/notification/Notificatoin");
-                    }}
-                >
-                    <Ionicons
-                        name="notifications-outline"
-                        size={24}
-                        color={`${Color["bg-color"]}`}
-                    />
-                </TouchableOpacity>
-            </View>
-
+            <HeaderAdmin />
             <ScrollView
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{
@@ -177,7 +117,7 @@ const Index: React.FC = () => {
                                     color={Color["second-color"]}
                                 />
                                 <Text className="text-white text-lg font-bold mt-2">
-                                    300
+                                    {users.length}
                                 </Text>
                                 <Text className="text-gray-400">Users</Text>
                             </View>
@@ -264,7 +204,7 @@ const Index: React.FC = () => {
                     <Text className="font-bold">Latest Joined Users</Text>
                     <TouchableOpacity
                         onPress={() => {
-                            router.push("/screen/(tabs)/Events");
+                            router.push("/screen/dashbord/(tabs)/Users");
                         }}
                         className="flex-row items-center"
                     >
@@ -283,10 +223,14 @@ const Index: React.FC = () => {
                         User List
                     </Text>
                     {users.map((item, index, array) => {
-                        return(
-                            <View key={index} className="flex-row items-center bg-white p-3 mx-4 rounded-2xl mb-3 shadow-md">
+                        if(index>=5) return;
+                        return (
+                            <View
+                                key={index}
+                                className="flex-row items-center bg-white p-3 mx-4 rounded-2xl mb-3 shadow-md"
+                            >
                                 <Image
-                                    source={{ uri: item.avatar }}
+                                    source={{ uri: item.img }}
                                     className="w-12 h-12 rounded-full mr-3"
                                 />
                                 <View>
@@ -294,11 +238,11 @@ const Index: React.FC = () => {
                                         {item.name}
                                     </Text>
                                     <Text className="text-sm text-[#888]">
-                                        {item.username}
+                                        {item.name}
                                     </Text>
                                 </View>
                             </View>
-                        )
+                        );
                     })}
                 </View>
                 <View className="flex-row justify-between px-10">

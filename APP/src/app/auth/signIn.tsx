@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Image ,ActivityIndicator} from "react-native";
 import { Theme } from "@/constants/Colors";
 import Button from "@/components/ui/button";
 import { useRouter } from "expo-router";
@@ -7,7 +7,9 @@ import { signin } from "@services/auth";
 import { useUserStore } from "@store/useUserStore";
 import useAlert from "@store/useAlert";
 
-export default function SignInScreen() {    
+export default function SignInScreen() {
+
+    const [loading, setLoading] = useState<boolean>(false);
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [error, setError] = useState<string | null>(null); // General error state
@@ -22,6 +24,7 @@ export default function SignInScreen() {
     };
 
     const handleSubmit = () => {
+        setLoading(true);
         setError(null);
         setEmailError(null);
 
@@ -36,6 +39,7 @@ export default function SignInScreen() {
         }
 
         signin({ email, password }, (res, err) => {
+            setLoading(false);
             if (err) {
                 setError("Invalid email or password. Please try again.");
             } else if (res) { 
@@ -97,8 +101,10 @@ export default function SignInScreen() {
             <TouchableOpacity className="justify-start mb-5 w-full items-end">
                 <Text className="text-blue-400">Forgot Password?</Text>
             </TouchableOpacity>
-
+            {loading?<ActivityIndicator/>:
+            
             <Button onPress={handleSubmit}>SIGN IN</Button>
+            }
 
             <View className="flex-row mt-4">
                 <Text>Don’t have an account? </Text>

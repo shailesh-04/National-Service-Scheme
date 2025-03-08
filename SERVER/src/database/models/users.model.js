@@ -6,10 +6,10 @@ try {
         conn.query("SELECT * FROM users", res);
     };
     model.updateAll = async (id, body, res) => {
-        console.log(body);
         conn.query(
-            "UPDATE users SET name=?, email=?, password=?, phone=?, role=?, is_deleted=? WHERE id = " +
-                id,
+            `UPDATE users SET name=?, email=?, ${
+                body[4] ? "password=?," : ""
+            } phone=?, role=?, is_deleted=? WHERE id = ${id}`,
             body,
             res
         );

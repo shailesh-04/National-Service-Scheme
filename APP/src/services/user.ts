@@ -48,7 +48,7 @@ export const ProfileEdit = (data: ProfileFormType, id: number | undefined, res: 
 };
 
 
-export const EditProfileImage = (data: any, id: number | undefined, res: (data: any, error: string) => void): void => {
+export const EditProfileImage = async (data: any, id: number | undefined, res: (data: any, error: string) => void) => {
     api.put<any>(`/user/image/${id}`, data, {
         headers: { "Content-Type": "multipart/form-data" },
     })

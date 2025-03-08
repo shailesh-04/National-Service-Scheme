@@ -17,7 +17,7 @@ import  cloudinary from "#middleware/cloudinary.middleware.js";
 import { authenticate } from "#middleware/auth.middleware.js";
 const router = Router();
 try {
-    router.get("/dashbord",authenticate, All);
+    router.get("/dashbord", All);
     router.put("/dashbord/:id",updateAll);
 
     router.get("/", findAll);

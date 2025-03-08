@@ -21,17 +21,15 @@ export const updateAll = (req, res) => {
     try {
         const id = req.params.id;
         const { name, email, password, phone, role, is_deleted } = req.body;
-        model.updateAll(
-            id,
-            [name, email, password, phone, role, is_deleted],
-            (err, data) => {
-                if (err)
-                    return res.status(406).json({ message: err.sqlMessage });
-                res.status(200).json(
-                    "Succsessfuly Update User Profile:"
-                );
-            }
-        );
+        const pass =
+            password == ""
+                ? [name, email, phone, role, is_deleted]
+                : [name, email, password, phone, role, is_deleted];
+
+        model.updateAll(id, pass, (err, data) => {
+            if (err) return res.status(406).json({ message: err.sqlMessage });
+            res.status(200).json("Succsessfuly Update User Profile:");
+        });
     } catch (error) {
         catchErr(error, "user.controll.update");
         if (err)
@@ -54,12 +52,9 @@ export const signup = async (req, res) => {
                     res.cookie("token", token);
                     res.status(200).json({ token: token, data: data[0] });
                 } else
-                    return res
-                        .status(404)
-                        .json({
-                            mesaage:
-                                "Acount Is Not Create",
-                        });
+                    return res.status(404).json({
+                        mesaage: "Acount Is Not Create",
+                    });
             });
         });
     } catch (error) {
@@ -80,12 +75,10 @@ export const singin = async (req, res) => {
                 res.cookie("token", token);
                 res.status(200).json({ token: token, data: data[0] });
             } else
-                return res
-                    .status(404)
-                    .json({
-                        mesaage:
-                            "Your Inserted Email And Passaword Is Not Match Any User",
-                    });
+                return res.status(404).json({
+                    mesaage:
+                        "Your Inserted Email And Passaword Is Not Match Any User",
+                });
         });
     } catch (error) {
         catchErr(error, "user.controll.sinin");

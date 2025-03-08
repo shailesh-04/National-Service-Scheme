@@ -59,7 +59,7 @@ const FullEvent: React.FC = () => {
     return (
         <SafeAreaView style={Theme} className="flex-1 relative">
             <ScrollView className="">
-                <View className="w-full h-72">
+                <View className="w-full h-[60%]">
                     <Image
                         source={{ uri: event?.image }}
                         className="w-full h-full"

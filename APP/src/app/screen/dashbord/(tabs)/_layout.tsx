@@ -12,13 +12,13 @@ export default function TabLayout() {
                     headerShown: false,
                 }}
             />
-            {/* <Tabs.Screen
-                name="Events"
+             <Tabs.Screen
+                name="Users"
                 options={{
-                    title: "Events",
+                    title: "Users",
                     headerShown: false,
                 }}
-            />
+            />{/*
             <Tabs.Screen
                 name="Explore"
                 options={{
@@ -36,3 +36,4 @@ export default function TabLayout() {
         </Tabs>
     );
 }
+

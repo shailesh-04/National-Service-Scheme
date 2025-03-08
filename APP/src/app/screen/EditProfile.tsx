@@ -20,6 +20,7 @@ import { useUserStore} from "@store/useUserStore";
 import useAlert from "@store/useAlert";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import { FontAwesome } from "@expo/vector-icons";
+import Button from "#/src/components/ui/button";
 
 export const Color = {
     "main-color": "#4A43EC",
@@ -42,7 +43,8 @@ const profileSchema = yup.object().shape({
 const UpdateProfile = () => {
     const setAlert = useAlert((e) => e.setAlert);
     const { updateUserField,user } = useUserStore();
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [updated, setUpdated] = useState<boolean>(true);
     const [image, setImage] = useState<any | null>(null);
     
     const {
@@ -100,7 +102,7 @@ const UpdateProfile = () => {
     return (
         <ScrollView className="flex-1" style={{ backgroundColor: Color["bg-color"] }}>
             <Header />
-            <EditProfileHeader />
+            <EditProfileHeader updates={updated}/>
             <UploadProfileImage image={image} setImage={setImage} />
             <View className="px-6 mt-4">
                 {["name", "email", "phone", "password", "confirmPassword"].map((field, index) => (
@@ -112,7 +114,10 @@ const UpdateProfile = () => {
                             render={({ field: { onChange, value } }) => (
                                 <TextInput
                                     value={value}
-                                    onChangeText={onChange}
+                                    onChangeText={(text) => {
+                                        onChange(text); 
+                                        setUpdated(false); // Set updated to false when user changes any field
+                                    }}
                                     secureTextEntry={field.includes("password")}
                                     placeholder={field.replace(/([A-Z])/g, " $1").trim()}
                                     className="border border-gray-300 rounded-lg px-3 py-2 bg-gray-100"
@@ -128,11 +133,9 @@ const UpdateProfile = () => {
             {loading ? (
                 <ActivityIndicator size="large" color={Color["main-color"]} style={{ marginTop: 20 }} />
             ) : (
-                <TouchableOpacity onPress={handleSubmit(onSubmit)} className="w-[80%] m-auto mt-6">
-                    <LinearGradient colors={[Color["gradient-start"], Color["gradient-end"]]} className="p-4 rounded-lg">
-                        <Text className="text-white text-center font-semibold text-lg">Update Profile</Text>
-                    </LinearGradient>
-                </TouchableOpacity>
+                <Button onPress={handleSubmit(onSubmit)} className="w-[70%] m-auto mt-10">
+                    Update Profile
+                </Button>
             )}
         </ScrollView>
     );

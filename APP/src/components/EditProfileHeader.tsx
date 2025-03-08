@@ -1,16 +1,22 @@
 import { View, Text, TouchableOpacity, Modal } from "react-native";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import * as Icons from "@expo/vector-icons";
 import { Color } from "../constants/Colors";
 import { LinearGradient } from "expo-linear-gradient";
-const EditProfileHeader = () => {
+interface EditProfileHeaderProps{
+    updates:boolean;
+}
+const EditProfileHeader:React.FC<EditProfileHeaderProps> = ({updates}) => {
     const navigation = useNavigation();
     const [showConfirm, setShowConfirm] = useState(false);
 
     const handleBackPress = () => {
-        setShowConfirm(true);
+        if(!updates)
+            setShowConfirm(true);
+        else
+            handleConfirm(true);
     };
 
     const handleConfirm = (confirm: boolean) => {
