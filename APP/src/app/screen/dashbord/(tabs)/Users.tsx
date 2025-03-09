@@ -19,13 +19,15 @@ import {
 } from "react-native-reanimated";
 import Animated, { FadeInDown, FadeOutUp } from "react-native-reanimated"; // Reanimated
 import { useUserStore, UserType } from "@store/dashbord/useUserStore";
-import { Theme } from "#/src/constants/Colors";
+import { Color, Theme } from "#/src/constants/Colors";
 import { api } from "#/src/services/apiinterceptors";
 import useAlert from "#/src/store/useAlert";
 import HeaderAdmin from "../HeaderAdmin";
+import Button from "#/src/components/ui/button";
 
 const UserScreen = () => {
-    const { users, removeUser, setUsers, updateUser,clearUsers } = useUserStore();
+    const { users, removeUser, setUsers, updateUser, clearUsers } =
+        useUserStore();
     const [loading, setLoading] = useState(false);
     const [isDeleted, setIsDelted] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
@@ -108,9 +110,9 @@ const UserScreen = () => {
 
     const handleEdit = (id: number) => {
         navigation.push({
-            pathname:"/screen/dashbord/EditUser",
-            params:{
-                userId:id
+            pathname: "/screen/dashbord/EditUser",
+            params: {
+                userId: id,
             },
         }); // Navigate to Edit Page
     };
@@ -119,31 +121,45 @@ const UserScreen = () => {
         opacity: opacity.value,
         transform: [{ translateY: translateY.value }],
     }));
-    const filteredUsers = isDeleted ? users : users.filter(user => !user.is_deleted);
+    const filteredUsers = isDeleted
+        ? users
+        : users.filter((user) => !user.is_deleted);
     return (
-        <SafeAreaView style={Theme} className="bg-[--bg-color] flex-1 ">
+        <SafeAreaView style={Theme} className="bg-[--bg-color] flex-1 relative">
             <HeaderAdmin />
             <View className="px-5 mt-3 h-[70%] ">
                 <View className="flex-row justify-between mt-4 items-center">
                     <Text className="text-[--text-color] text-xl font-semibold mb-4">
                         User Dashboard
                     </Text>
-                    <Text className=" w-auto flex-1 text-right ">Show Deleted</Text>
-                    <TouchableOpacity className=" ml-5 border items-center justify-center h-10 w-10 rounded-2xl mr-10"
-                    onPress={()=>{
-                        setIsDelted(!isDeleted);
-                        const temp = users;
-                        clearUsers();
-                        setUsers(temp);
-
-                    }}> 
-                        {
-                            isDeleted?
-                            <Feather name="check" size={24} color="black" />:
+                    <Text className=" w-auto flex-1 text-right ">
+                        Show Deleted
+                    </Text>
+                    <TouchableOpacity
+                        className=" ml-5 border items-center justify-center h-10 w-10 rounded-2xl mr-10"
+                        onPress={() => {
+                            setIsDelted(!isDeleted);
+                            const temp = users;
+                            clearUsers();
+                            setUsers(temp);
+                        }}
+                    >
+                        {isDeleted ? (
+                            <Feather name="check" size={24} color="black" />
+                        ) : (
                             <Feather name="x" size={24} color="black" />
-                        }
+                        )}
                     </TouchableOpacity>
                 </View>
+                <Button
+                    className="w-[40%] mb-5"
+                    style={{ width: "50%" }}
+                    onPress={() => {
+                        navigation.push("/screen/dashbord/NewUser");
+                    }}
+                >
+                    AddUser
+                </Button>
                 {loading ? (
                     <ActivityIndicator
                         size="large"
@@ -152,7 +168,7 @@ const UserScreen = () => {
                     />
                 ) : (
                     <FlatList
-                    className="mt-10"
+                        className=""
                         ref={flatListRef}
                         data={filteredUsers}
                         keyExtractor={(item) => item.id.toString()}
@@ -169,69 +185,84 @@ const UserScreen = () => {
                                     exiting={FadeOutUp}
                                     className="mb-3"
                                 >
-                                    <Animated.View
-                                        className="bg-[--main-color] p-4 rounded-xl flex-row items-center justify-between shadow-md"
-                                        style={animatedStyle}
-                                    >
-                                        <View className="flex-row items-center">
-                                            {item.img ? (
-                                                <Image
-                                                    source={{ uri: item.img }}
-                                                    className="w-12 h-12 rounded-full mr-3"
-                                                />
-                                            ) : (
-                                                <View className="w-12 h-12 bg-[--second-color] rounded-full flex items-center justify-center">
-                                                    <Text className="text-white text-lg font-semibold">
-                                                        {item.name[0]}
-                                                    </Text>
-                                                </View>
-                                            )}
-                                            <View>
-                                                <Text className="text-[--text-color] font-semibold">
-                                                    {item.name}
-                                                </Text>
-                                                <Text className="text-[--light-dark-color]">
-                                                    {item.email}
-                                                </Text>
-                                            </View>
-                                        </View>
-                                        <View className="flex-row gap-3">
-                                            <TouchableOpacity
-                                                onPress={() =>
-                                                    handleEdit(item.id)
-                                                }
-                                            >
-                                                <Feather
-                                                    name="edit"
-                                                    size={22}
-                                                    color="white"
-                                                />
-                                            </TouchableOpacity>
-                                            <TouchableOpacity
-                                                onPress={() =>
-                                                    handleToggleCheckbox(
-                                                        item.id
-                                                    )
-                                                }
-                                            >
-                                                {selectedUsersForDeletion.includes(
-                                                    item.id
-                                                ) ? (
-                                                    <AntDesign
-                                                        name="checksquare"
-                                                        size={22}
-                                                        color="red"
+                                    <TouchableOpacity onPress={()=>{
+                                        navigation.push({
+                                            pathname: "/screen/dashbord/ViewUser",
+                                            params: { user: JSON.stringify(item) },
+                                          })
+                                    }}>
+                                        <Animated.View
+                                            className="bg-[--bg-color] p-4 rounded-xl flex-row items-center justify-between shadow-md"
+                                            style={animatedStyle}
+                                        >
+                                            <View className="flex-row items-center gap-5">
+                                                {item.img ? (
+                                                    <Image
+                                                        source={{
+                                                            uri: item.img,
+                                                        }}
+                                                        className="w-12 h-12 rounded-full mr-3"
                                                     />
                                                 ) : (
-                                                    <AntDesign
-                                                        name="checksquareo"
-                                                        size={22}
-                                                        color="white"
-                                                    />
+                                                    <View className="w-12 h-12 bg-[--second-color] rounded-full flex items-center justify-center">
+                                                        <Text className="text-white text-lg font-semibold">
+                                                            {item.name[0]}
+                                                        </Text>
+                                                    </View>
                                                 )}
-                                            </TouchableOpacity>
-                                        </View>
-                                    </Animated.View>
+                                                <View>
+                                                    <Text className="text-[--text-color] font-semibold">
+                                                        {item.name}
+                                                    </Text>
+                                                    <Text className="text-[--light-dark-color]">
+                                                        {item.email}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                            <View className="flex-row gap-3">
+                                                <TouchableOpacity
+                                                    onPress={() =>
+                                                        handleEdit(item.id)
+                                                    }
+                                                >
+                                                    <Feather
+                                                        name="edit"
+                                                        size={22}
+                                                        color={
+                                                            Color["main-color"]
+                                                        }
+                                                    />
+                                                </TouchableOpacity>
+                                                <TouchableOpacity
+                                                    onPress={() =>
+                                                        handleToggleCheckbox(
+                                                            item.id
+                                                        )
+                                                    }
+                                                >
+                                                    {selectedUsersForDeletion.includes(
+                                                        item.id
+                                                    ) ? (
+                                                        <AntDesign
+                                                            name="checksquare"
+                                                            size={22}
+                                                            color="red"
+                                                        />
+                                                    ) : (
+                                                        <AntDesign
+                                                            name="checksquareo"
+                                                            size={22}
+                                                            color={
+                                                                Color[
+                                                                    "main-color"
+                                                                ]
+                                                            }
+                                                        />
+                                                    )}
+                                                </TouchableOpacity>
+                                            </View>
+                                        </Animated.View>
+                                    </TouchableOpacity>
                                 </Animated.View>
                             );
                         }}

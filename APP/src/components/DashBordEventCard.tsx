@@ -49,7 +49,14 @@ const EventCard: React.FC<EventProps> = ({ data }) => {
                         : data.name}
                 </Text>
                 <View className="flex-row gap-3 px-3">
-                    <Button className="bg-transparent border border-[--main-color] ">
+                    <Button className="bg-transparent border border-[--main-color] "
+                    onPress={()=>{
+                        router.push({
+                            pathname:"/screen/dashbord/EditEvent",
+                            params:{eventId:data.id}
+                        })
+                    }}
+                    >
                         <Text className="text-[--main-color]">Edit</Text>
                     </Button>
                 </View>

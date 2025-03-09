@@ -14,7 +14,7 @@ interface AlertProps {
   onClose: (value: string | null) => void;
 }
 
-const Alert: React.FC<AlertProps> = ({ message, type = "info", onClose }) => {
+export const Alert: React.FC<AlertProps> = ({ message, type = "info", onClose }) => {
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(-50);
 
@@ -67,5 +67,8 @@ const Alert: React.FC<AlertProps> = ({ message, type = "info", onClose }) => {
     </Animated.View>
   );
 };
-
-export default Alert;
+import useAlert from "../store/useAlert";
+const  setAlert = (alert: string, type?: "success" | "error" | "info" | "warn")=>{
+  const setAlerData = useAlert(state=>setAlert);
+  setAlerData(alert,type);
+}

@@ -3,7 +3,7 @@ import { catchErr } from "#color";
 function model() {}
 try {
     model.All = async (res) => {
-        conn.query("SELECT * FROM users", res);
+        conn.query("SELECT * FROM users order by id desc", res);
     };
     model.updateAll = async (id, body, res) => {
         conn.query(

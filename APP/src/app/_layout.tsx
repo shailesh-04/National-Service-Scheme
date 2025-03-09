@@ -2,7 +2,7 @@ import { Stack } from "expo-router";
 import "react-native-reanimated";
 import "#/global.css";
 import useAlert from "@store/useAlert";
-import Notification from "@components/Alert";
+import {Alert} from "@components/Alert";
 import { useEffect } from "react";
 export default function RootLayout() {
     const alert = useAlert((state) => state.alert);
@@ -11,7 +11,7 @@ export default function RootLayout() {
     return (
         <>
             {alert && (
-                <Notification
+                <Alert
                     message={alert}
                     type={type}
                     onClose={clearAlert}

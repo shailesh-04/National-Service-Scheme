@@ -39,6 +39,31 @@ export const updateAll = (req, res) => {
     }
 };
 
+export const newUser = async (req, res) => {
+    try {
+        const { name, email, password, phone } = req.body;
+        model.create([name, email, password, phone], (err, data) => {
+            if (err) return res.status(406).json({ message: err.sqlMessage });
+            model.singin([email, password], async (err, data) => {
+                if (err)
+                    return res.status(406).json({ message: err.sqlMessage });
+                if (data.length > 0) {
+                    res.status(200).json({ data: data[0] });
+                } else
+                    return res.status(404).json({
+                        mesaage: "Acount Is Not Create",
+                    });
+            });
+        });
+    } catch (error) {
+        catchErr(error, "user.controll.sinup");
+        if (err)
+            return res
+                .status(500)
+                .json({ message: "Internal Server Error : " + error });
+    }
+};
+
 export const signup = async (req, res) => {
     try {
         const { name, email, password, phone } = req.body;

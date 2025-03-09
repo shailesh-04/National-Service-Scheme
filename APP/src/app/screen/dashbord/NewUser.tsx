@@ -18,12 +18,9 @@ import { Color, Theme } from "#/src/constants/Colors";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import Header from "#/src/components/Header";
-import HeaderAdmin from "./HeaderAdmin";
 import UploadProfileImage from "#/src/components/UploadProfileImahe";
 import { StatusBar } from "expo-status-bar";
-import { EditProfileImage } from "#/src/services/user";
-
+import { createUser, EditProfileImage } from "#/src/services/user";
 // Validation Schema
 const profileSchema = yup.object().shape({
     name: yup.string().required("Please enter your full name"),
@@ -36,6 +33,7 @@ const profileSchema = yup.object().shape({
         .matches(/^(?:[0-9]{10,15})?$/, "Enter a valid phone number"),
     password: yup
         .string()
+        .required("Password is Required")
         .matches(
             /^$|^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
             "Password must be at least 6 characters and include both letters and numbers"
@@ -43,6 +41,7 @@ const profileSchema = yup.object().shape({
     confirmPassword: yup
         .string()
         .oneOf([yup.ref("password")], "Passwords do not match"),
+        
     role: yup
         .string()
         .oneOf(["1", "2", "3", "a"], "Invalid role")
@@ -51,11 +50,10 @@ const profileSchema = yup.object().shape({
     is_deleted: yup.boolean(),
 });
 
-const UpdateUserScreen = () => {
+const AddUserScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
-    const { userId } = route.params as { userId: number }; // Get user ID from navigation
-    const { updateUser, users, getUser } = useUserStore();
+    const { addUser } = useUserStore();
     const [loading, setLoading] = useState<boolean>(false);
     const [image, setImage] = useState<string | null>("");
     const {
@@ -77,69 +75,57 @@ const UpdateUserScreen = () => {
         },
     });
 
-    useEffect(() => {
-        fetchUserData();
-    }, []);
-
-    const fetchUserData = async () => {
-        const user = getUser(Number(userId));
-        if (user) {
-            setValue("name", user.name);
-            setValue("email", user.email);
-            setValue("phone", user.phone);
-            setValue("is_deleted", user.is_deleted);
-            setValue("role", user.role ? user.role : "1");
-            setImage(user.img ? user.img : null);
-        }
-    };
-    async function Edit(data: any) {
-        try {
-            setLoading(true);
-            await api.put(`/user/dashbord/${userId}`, {
+    const onSubmit = async (data: any) => {
+        setLoading(true);
+        await createUser(
+            {
                 name: data.name,
                 email: data.email,
-                phone: data.phone,
-                is_deleted: data.is_deleted,
                 password: data.password,
-                role: data.role,
-            });
-            setLoading(false);
-            updateUser(userId, "name", data.name);
-            updateUser(userId, "email", data.email);
-            updateUser(userId, "phone", data.phone);
-            updateUser(userId, "password", data.password);
-            updateUser(userId, "is_deleted", data.is_deleted);
-            updateUser(userId, "role", data.role);
-            Alert.alert("Success", "User updated successfully!", [
-                { text: "OK", onPress: () => navigation.goBack() },
-            ]);
-        } catch (error) {
-            setLoading(false);
-            Alert.alert("Error", "Failed to update user.");
-        }
-    }
-
-    const onSubmit = async (data: any) => {
-        const user = getUser(Number(userId));
-        if (image === user?.img) {
-            await Edit(data);
-        } else {
-            const formData = new FormData();
-            formData.append("image", {
-                uri: image,
-                type: "image/jpeg",
-                name: "upload.jpg",
-            } as any);
-            setLoading(true);
-            await EditProfileImage(formData, user?.id, async (res, err) => {
-                setLoading(false);
+                phone: data.phone,
+            },
+            (res, err) => {
                 if (err) {
-                    Alert.alert("Error", "Failed to update user. : Re Try...");
+                    Alert.alert("Add User Error! ReTry.", err);
+                    setLoading(false);
                     return;
                 }
-               await  Edit(data);
-            });
-        }
+                addUser({
+                    id: res.data.id,
+                    name: res.data.name,
+                    email: res.data.email,
+                    phone: res.data.phone,
+                    role: res.data.role,
+                    about: res.data.about,
+                    password: res.data.password,
+                    is_deleted: res.data.is_deleted,
+                    img: image ? image : res.data.img,
+                });
+                if (image) {
+                    const formData = new FormData();
+                    formData.append("image", {
+                        uri: image,
+                        type: "image/jpeg",
+                        name: "upload.jpg",
+                    } as any);
+                    EditProfileImage(formData, res.data.id, (res, err) => {
+                        if (err) {
+                            Alert.alert(
+                                "Error",
+                                "Failed to update user. : Re Try..."
+                            );
+                            return;
+                        }
+                        Alert.alert("Success", "User updated successfully!", [
+                            { text: "OK", onPress: () => navigation.goBack() },
+                        ]);
+                    });
+                } else
+                    Alert.alert("Success", "User updated successfully!", [
+                        { text: "OK", onPress: () => navigation.goBack() },
+                    ]);
+            }
+        );
     };
     return (
         <ScrollView style={Theme} className="flex-1 bg-[--bg-color] pt-10">
@@ -153,7 +139,7 @@ const UpdateUserScreen = () => {
                         <Feather name="arrow-left" size={30} color="#000" />
                     </TouchableOpacity>
                     <Text className="text-2xl font-bold text-left w-[65%]">
-                        Edit User
+                        Add New Uesr
                     </Text>
                 </View>
                 <UploadProfileImage image={image} setImage={setImage} />
@@ -169,6 +155,7 @@ const UpdateUserScreen = () => {
                             placeholderTextColor="#888"
                             value={value}
                             onChangeText={onChange}
+                            cursorColor="#444"
                         />
                     )}
                 />
@@ -184,6 +171,7 @@ const UpdateUserScreen = () => {
                         <TextInput
                             className="bg-[--card-background] text-[--text-color] rounded-xl p-4 mb-2 border"
                             placeholder="Email"
+                            cursorColor="#444"
                             placeholderTextColor="#888"
                             keyboardType="email-address"
                             value={value}
@@ -207,6 +195,7 @@ const UpdateUserScreen = () => {
                             keyboardType="phone-pad"
                             value={value}
                             onChangeText={onChange}
+                            cursorColor="#444"
                         />
                     )}
                 />
@@ -228,6 +217,7 @@ const UpdateUserScreen = () => {
                                     secureTextEntry
                                     value={value}
                                     onChangeText={onChange}
+                                    cursorColor="#444"
                                 />
                             )}
                         />
@@ -251,6 +241,7 @@ const UpdateUserScreen = () => {
                                     secureTextEntry
                                     value={value}
                                     onChangeText={onChange}
+                                    cursorColor="#444"
                                 />
                             )}
                         />
@@ -335,7 +326,7 @@ const UpdateUserScreen = () => {
                             <ActivityIndicator size="small" color="white" />
                         ) : (
                             <Text className="text-white text-lg font-semibold">
-                                Update
+                                Submit
                             </Text>
                         )}
                     </TouchableOpacity>
@@ -346,4 +337,4 @@ const UpdateUserScreen = () => {
     );
 };
 
-export default UpdateUserScreen;
+export default AddUserScreen;

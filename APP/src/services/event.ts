@@ -1,5 +1,5 @@
 import { api } from "./apiinterceptors";
-
+import { EventsType } from "@store/dashbord/useEventStore";
 export interface EventType {
     id: number;
     name: string;
@@ -11,8 +11,6 @@ export interface EventType {
     image: string;
     created_by: string;
 }
-
-// Generic function to handle API requests
 const handleRequest = async <T>(endpoint: string, res: (data: T[], error: string) => void): Promise<void> => {
     try {
         const response = await api.get<T[]>(endpoint);
@@ -24,7 +22,7 @@ const handleRequest = async <T>(endpoint: string, res: (data: T[], error: string
 };
 
 // Fetch upcoming events
-export const fetchUpcomingEvents = (res: (data: EventType[], error: string) => void): void => {
+export const fetchUpcomingEvents = async (res: (data: EventType[], error: string) => void): void => {
     handleRequest<EventType>("/event/upcoming", res);
 };
 
@@ -37,3 +35,10 @@ export const allEvent = (res: (data: EventType[], error: string) => void): void 
 export const fetchEvent = (id: number, res: (data: EventType[], error: string) => void): void => {
     handleRequest<EventType>(`/event/${id}`, res);
 };
+
+
+export const fetchAllEvent = (res: (data: EventsType[], error: string) => void): void => {
+    handleRequest<EventsType>(`/event/dashbord`, res);
+};
+
+

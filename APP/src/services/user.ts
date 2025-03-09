@@ -71,3 +71,20 @@ export const singOut = (res: (message:any, error: string) => void): void => {
             res([], error?.response?.data?.message || "Check Your Network"); // Error case
         });
 };
+
+type signupProps = {
+    name: string,
+    email: string,
+    password: string,
+    phone: string,
+}
+
+export async function createUser(data: signupProps, res: (res: any, error: string|null) => void) {
+    api.post<any>("/user/dashbord", data) // Fixed typo in endpoint
+        .then((response) => {
+            res(response.data, null); // Extracting `response.data`
+        })
+        .catch(error => {
+            res(null, 'SingUp Error : ' + (error.response?.data?.message || error.message));
+        });
+}

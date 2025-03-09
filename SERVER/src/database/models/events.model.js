@@ -4,14 +4,17 @@ function model() {}
 try {
     model.All = async (res) => {
         conn.query(
-            `SELECT * FROM events`,res);
+            `SELECT * FROM events ORDER BY 
+                DATE(end_time) = CURDATE() ASC,
+                start_time DESC `,res);
     } ;
 
     model.AllUpdate = async (id, body, res) => {
         conn.query(`UPDATE events SET 
             name=       ?, 
             description=?, 
-            location=   ?, 
+            location=   ?,
+            image=      ?,
             start_time= ?, 
             end_time=   ?,
             numOFUser=  ?,
@@ -20,6 +23,14 @@ try {
             WHERE id = ${id}; `,body,res);
     };
     
+    model.createFull = async (body,res) => {
+        conn.query(
+            `INSERT INTO events (name, description, location,image, start_time, end_time, created_by)
+            VALUES (?,?,?,?,?,?,?);`,
+            body,
+            res
+        );
+    };
     model.create = async (body,res) => {
         conn.query(
             `INSERT INTO events (name, description, location, start_time, end_time, created_by)
@@ -66,6 +77,13 @@ try {
     model.remove = async (id, res) => {
         conn.query(
             `UPDATE events SET is_deleted = TRUE WHERE id = ?;`,
+            [id],
+            res
+        );
+    };
+    model.restore = async (id, res) => {
+        conn.query(
+            `UPDATE events SET is_deleted = false WHERE id = ?;`,
             [id],
             res
         );

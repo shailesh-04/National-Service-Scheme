@@ -17,28 +17,9 @@ export const All = async (req, res) => {
 export const AllUpdate = (req, res) => {
     try {
         const id = req.params.id;
-        const {
-            name,
-            description,
-            location,
-            start_time,
-            end_time,
-            numOFUser,
-            created_by,
-            is_deleted,
-        } = req.body;
-        model.AllUpdate(
-            id,
-            [
-                name,
-                description,
-                location,
-                start_time,
-                end_time,
-                numOFUser,
-                created_by,
-                is_deleted,
-            ],
+        const {name,description,location,start_time,end_time,numOFUser,created_by,is_deleted,image} = req.body;
+        const file = req.file ? req.file.path:image;
+        model.AllUpdate(id,[ name,description,location,file,start_time,end_time,numOFUser,created_by,Boolean(is_deleted)],
             (err, data) => {
                 if (err)
                     return res.status(406).json({ message: err.sqlMessage });
@@ -51,6 +32,49 @@ export const AllUpdate = (req, res) => {
             return res
                 .status(500)
                 .json({ message: "Internal Server Error : " + error });
+    }
+};
+export const createFull = async (req, res) => {
+    try {
+        const {
+            name,
+            description,
+            location,
+            start_time,
+            end_time,
+            created_by,
+        } = req.body;
+        const file = req.file ? req.file.path : "";
+        model.createFull(
+            [
+                name,
+                description,
+                location,
+                file,
+                start_time,
+                end_time,
+                created_by,
+            ],
+            (err, result) => {
+                if (err)
+                    return res.status(406).json({ message: err.sqlMessage });
+                model.findOne(result.insertId, (err, data) => {
+                    if (err)
+                        return res
+                            .status(406)
+                            .json({ message: err.sqlMessage });
+                    res.status(201).json({
+                        meaage: "Successfully Add New Event..",
+                        data: data,
+                    });
+                });
+            }
+        );
+    } catch (error) {
+        catchErr(error, "event.controll.create");
+        return res
+            .status(500)
+            .json({ message: "Internal Server Error : " + error });
     }
 };
 export const create = async (req, res) => {
@@ -142,6 +166,22 @@ export const remove = (req, res) => {
     try {
         const id = req.params.id;
         model.remove(id, (err, data) => {
+            if (err) return res.status(406).json({ message: err.sqlMessage });
+            if (data.length > 0) res.status(200).json(data);
+            res.status(200).json("Succsessfully Delete Delete..");
+        });
+    } catch (error) {
+        catchErr(error, "event.controll.remove");
+        if (err)
+            return res
+                .status(500)
+                .json({ message: "Internal Server Error : " + error });
+    }
+};
+export const restore = (req, res) => {
+    try {
+        const id = req.params.id;
+        model.restore(id, (err, data) => {
             if (err) return res.status(406).json({ message: err.sqlMessage });
             if (data.length > 0) res.status(200).json(data);
             res.status(200).json("Succsessfully Delete Delete..");

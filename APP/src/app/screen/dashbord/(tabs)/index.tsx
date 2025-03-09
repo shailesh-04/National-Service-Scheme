@@ -17,18 +17,19 @@ import EventCard from "@components/DashBordEventCard";
 import { useRouter } from "expo-router";
 import Header from "@components/Header";
 import * as Icon from "@expo/vector-icons/";
-import { EventType, fetchUpcomingEvents } from "@services/event";
+import { EventType, fetchAllEvent, fetchUpcomingEvents } from "@services/event";
 import useAlert from "@store/useAlert";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { UserType, useUserStore } from "@store/dashbord/useUserStore";
 import HeaderAdmin from "../HeaderAdmin";
 import { api } from "#/src/services/apiinterceptors";
+import { useEventStore } from "#/src/store/dashbord/useEventStore";
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 interface ImageProps {
     url: string;
 }
 interface EventProps {
-    events: EventType[];
+    upcommingEvents: EventType[];
 }
 type User = {
     id: string;
@@ -38,36 +39,46 @@ type User = {
 };
 const Index: React.FC = () => {
     const router = useRouter();
-    const [events, setEvents] = useState<EventType[]>([]);
+    const { events, setEvents } = useEventStore();
+    const [upcommingEvents, setUpcommingEvent] = useState<EventType[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const { users, setUsers } = useUserStore();
     const { setAlert } = useAlert();
     useEffect(() => {
-        fetchData();
         loadUsers();
-       
+        fetchUpcommintEventData();
+        loadEvent();
     }, []);
+    const loadEvent = async ()=>{
+        setLoading(true);
+        await fetchAllEvent((events, err) => {
+            if (err) {
+                setAlert(err, "error");
+                return;
+            }
+            setEvents(events);
+            setLoading(false);
+        });
+    }
     const loadUsers = async () => {
         setLoading(true);
         try {
             const response = await api.get<UserType[]>(`/user/dashbord/`);
             setUsers(response.data);
+            setLoading(false);
         } catch (error) {
             setAlert("Check Your Network");
         }
-        setLoading(false);
-        
     };
-    const fetchData = () => {
+    const fetchUpcommintEventData = async() => {
         setLoading(true);
-        fetchUpcomingEvents((data: EventType[], err: string) => {
-            setLoading(false);
+        await fetchUpcomingEvents((data: EventType[], err: string) => {
             if (err) {
                 setAlert(err, "error");
                 return;
             }
-            setEvents(data);
-            
+            setUpcommingEvent(data);
+            setLoading(false);
         });
     };
     const images: ImageProps[] = [
@@ -85,7 +96,7 @@ const Index: React.FC = () => {
         },
     ];
     const onRefresh = React.useCallback(() => {
-        if (events.length < 1) fetchData();
+        if (upcommingEvents.length < 1) fetchUpcommintEventData();
     }, []);
     return (
         <SafeAreaView style={Theme} className="gap-8 pb-32">
@@ -110,7 +121,14 @@ const Index: React.FC = () => {
                         </Text>
 
                         <View className="w-full flex-row justify-around">
-                            <View className="items-center bg-[--main-color] p-5 rounded-xl w-28">
+                            <TouchableOpacity
+                                onPress={() => {
+                                    router.push(
+                                        "/screen/dashbord/(tabs)/Users"
+                                    );
+                                }}
+                                className="items-center bg-[--main-color] p-5 rounded-xl w-28"
+                            >
                                 <FontAwesome5
                                     name="users"
                                     size={24}
@@ -120,19 +138,27 @@ const Index: React.FC = () => {
                                     {users.length}
                                 </Text>
                                 <Text className="text-gray-400">Users</Text>
-                            </View>
+                            </TouchableOpacity>
 
-                            <View className="items-center bg-[--main-color]  p-5 rounded-xl w-28">
+                            <TouchableOpacity
+                                onPress={() => {
+                                    router.push(
+                                        "/screen/dashbord/(tabs)/Events"
+                                    );
+                                }}
+                                className="items-center bg-[--main-color]  p-5 rounded-xl w-28"
+                            >
                                 <FontAwesome5
                                     name="calendar-alt"
                                     size={24}
                                     color={Color["second-color"]}
                                 />
+
                                 <Text className="text-white text-lg font-bold mt-2">
-                                    30
+                                    {events.length}
                                 </Text>
                                 <Text className="text-gray-400">Events</Text>
-                            </View>
+                            </TouchableOpacity>
 
                             <View className="items-center bg-[--main-color]  p-5 rounded-xl w-28">
                                 <FontAwesome5
@@ -166,7 +192,7 @@ const Index: React.FC = () => {
                         </TouchableOpacity>
                     </View>
                     <FlatList
-                        data={events}
+                        data={upcommingEvents}
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={({ item }) => <EventCard data={item} />}
                         horizontal
@@ -223,7 +249,7 @@ const Index: React.FC = () => {
                         User List
                     </Text>
                     {users.map((item, index, array) => {
-                        if(index>=5) return;
+                        if (index >= 5) return;
                         return (
                             <View
                                 key={index}

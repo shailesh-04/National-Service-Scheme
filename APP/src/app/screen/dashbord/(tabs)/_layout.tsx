@@ -18,7 +18,15 @@ export default function TabLayout() {
                     title: "Users",
                     headerShown: false,
                 }}
-            />{/*
+            />
+            <Tabs.Screen
+                name="Events"
+                options={{
+                    title: "Events",
+                    headerShown: false,
+                }}
+            />
+            {/*
             <Tabs.Screen
                 name="Explore"
                 options={{

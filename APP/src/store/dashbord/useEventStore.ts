@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export interface EventType {
+export interface EventsType {
     id: number;
     name: string;
     description?: string;
@@ -14,15 +14,16 @@ export interface EventType {
 }
 
 type EventStoreType = {
-    events: EventType[];  // Store multiple events as an array
-    setEvents: (events: EventType[]) => void;
-    addEvent: (event: EventType) => void;
-    updateEvent: (id: number, field: keyof EventType, value: any) => void;
+    events: EventsType[];  // Store multiple events as an array
+    setEvents: (events: EventsType[]) => void;
+    addEvent: (event: EventsType) => void;
+    getEvent : (id:number)=>EventsType | null;
+    updateEvent: (id: number, field: keyof EventsType, value: any) => void;
     removeEvent: (id: number) => void;
     clearEvents: () => void;
 };
 
-export const useEventStore = create<EventStoreType>((set) => ({
+export const useEventStore = create<EventStoreType>((set,get) => ({
     events: [],
     
     setEvents: (events) => {
@@ -32,7 +33,6 @@ export const useEventStore = create<EventStoreType>((set) => ({
     addEvent: (event) => {
         set((state) => ({ events: [...state.events, event] }));
     },
-
     updateEvent: (id, field, value) => {
         set((state) => ({
             events: state.events.map((event) =>
@@ -40,13 +40,16 @@ export const useEventStore = create<EventStoreType>((set) => ({
             ),
         }));
     },
-
     removeEvent: (id) => {
         set((state) => ({
             events: state.events.filter((event) => event.id !== id),
         }));
     },
-
+     getEvent: (Id: number): EventsType | null=> {
+            const state = get(); 
+            return state.events.find((event) => event.id === Id) || null;
+        },
+    
     clearEvents: () => {
         set({ events: [] });
     },

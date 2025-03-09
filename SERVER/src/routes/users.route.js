@@ -11,7 +11,8 @@ import {
     getEventUser,
     All,
     updateAll,
-    verifyUser
+    verifyUser,
+    newUser
 } from "#controllers/users.contraller.js";
 import  cloudinary from "#middleware/cloudinary.middleware.js";
 import { authenticate } from "#middleware/auth.middleware.js";
@@ -19,6 +20,7 @@ const router = Router();
 try {
     router.get("/dashbord", All);
     router.put("/dashbord/:id",updateAll);
+    router.post("/dashbord", newUser);
 
     router.get("/", findAll);
     router.post("/signup", signup);
