@@ -68,7 +68,8 @@ export const Alert: React.FC<AlertProps> = ({ message, type = "info", onClose })
   );
 };
 import useAlert from "../store/useAlert";
-const  setAlert = (alert: string, type?: "success" | "error" | "info" | "warn")=>{
+
+export const  setAlert = (alert: string, type?: "success" | "error" | "info" | "warn")=>{
   const setAlerData = useAlert(state=>setAlert);
   setAlerData(alert,type);
 }

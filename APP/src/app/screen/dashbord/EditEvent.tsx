@@ -54,7 +54,7 @@ const eventSchema = yup.object().shape({
 
 const AddEventScreen = () => {
     const navigation = useNavigation();
-    const { userId } = useLocalSearchParams();
+    const { eventId } = useLocalSearchParams();
     const { user } = useUserStore();
     const { addEvent, updateEvent, getEvent } = useEventStore();
     const [loading, setLoading] = useState<boolean>(false);
@@ -91,27 +91,32 @@ const AddEventScreen = () => {
         return `${year}-${month}-${day} ${hours}:${minutes}`;
     }
     useEffect(() => {
-        const parsedEvent = getEvent(Number(userId));
+        const parsedEvent = getEvent(Number(eventId));
         if (parsedEvent) {
             setValue("name", parsedEvent.name);
-            setValue("description", parsedEvent.description?parsedEvent.description:'');
-            setValue("location", parsedEvent.location?parsedEvent.location:'');
+            setValue(
+                "description",
+                parsedEvent.description ? parsedEvent.description : ""
+            );
+            setValue(
+                "location",
+                parsedEvent.location ? parsedEvent.location : ""
+            );
             setValue("start_time", todate(parsedEvent.start_time));
             setValue("end_time", todate(parsedEvent.end_time));
             setValue("is_delete", parsedEvent.is_deleted);
             setValue("image", parsedEvent.image);
-            setImage(parsedEvent.image?parsedEvent.image:'');
+            setImage(parsedEvent.image ? parsedEvent.image : "");
             setId(parsedEvent.id);
-        }
-        else
-        Alert.alert("Error", "No Data Found", [
-            {
-                text: "OK",
-                onPress: () => {
-                    navigation.goBack();
+        } else
+            Alert.alert("Error", "No Data Found", [
+                {
+                    text: "OK",
+                    onPress: () => {
+                        navigation.goBack();
+                    },
                 },
-            },
-        ]);   
+            ]);
     }, []);
     const onSubmit = async (form: any) => {
         const formData = new FormData();
@@ -156,7 +161,7 @@ const AddEventScreen = () => {
     return (
         <ScrollView style={Theme} className="flex-1 bg-[--bg-color] py-10">
             <StatusBar backgroundColor={Color["bg-color"]} />
-            <View className="mt-5 px-6">
+            <View className="mt-5 px-6 pb-32">
                 {/* Header */}
                 <View className="flex-row justify-between items-center mb-5 relative">
                     <Text className="text-2xl font-bold text-center w-full">
@@ -172,7 +177,7 @@ const AddEventScreen = () => {
                 {/* Image Upload */}
                 <View className="items-center">
                     <TouchableOpacity
-                        className=" h-52 w-full border rounded  relative overflow-hidden"
+                        className=" h-52 w-full border rounded-lg  relative overflow-hidden"
                         onPress={pickImage}
                     >
                         {image ? (

@@ -22,7 +22,7 @@ const handleRequest = async <T>(endpoint: string, res: (data: T[], error: string
 };
 
 // Fetch upcoming events
-export const fetchUpcomingEvents = async (res: (data: EventType[], error: string) => void): void => {
+export const fetchUpcomingEvents = async (res: (data: EventType[], error: string) => void):Promise<any> => {
     handleRequest<EventType>("/event/upcoming", res);
 };
 

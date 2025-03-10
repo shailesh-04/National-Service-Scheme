@@ -5,15 +5,11 @@ import Animated, {
     useAnimatedScrollHandler,
 } from "react-native-reanimated";
 import { Color } from "@/constants/Colors";
-
+import { StorageImagesType } from "../services/storage";
 const { width } = Dimensions.get("window");
 
-interface ImageProps {
-    url: string;
-}
-
 interface EmagisProps {
-    images: ImageProps[];
+    images: StorageImagesType[];
     title: string;
 }
 
@@ -75,7 +71,8 @@ const ImageSlider: React.FC<EmagisProps> = ({ images, title }) => {
                             }}
                         >
                             <Image
-                                source={{ uri:image.url }}
+                                source={{ uri:image.imageurl }}
+                                
                                 style={{
                                     width: "90%",
                                     height: 250,

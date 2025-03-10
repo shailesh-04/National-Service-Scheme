@@ -54,7 +54,7 @@ const Events: React.FC = () => {
                     </Text>
 
                     <Button
-                        style={{ width: "20%" }}
+                        style={{ width: "fit-content" }}
                         onPress={() => {
                             router.push({
                                 pathname: "/screen/dashbord/NewEvent",

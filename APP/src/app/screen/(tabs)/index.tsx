@@ -18,6 +18,7 @@ import Header from "@components/Header";
 import * as Icon from "@expo/vector-icons/";
 import { EventType, fetchUpcomingEvents } from "@services/event";
 import useAlert from "@store/useAlert";
+import { getGallery, StorageImagesType } from "#/src/services/storage";
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 interface ImageProps {
     url: string;
@@ -29,41 +30,32 @@ const Index: React.FC = () => {
     const router = useRouter();
     const [events, setEvents] = useState<EventType[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const setAlert = useAlert((e)=>e.setAlert);
+    const [gallery, setGallery] = useState<StorageImagesType[] | null>(null);
+    const setAlert = useAlert((e) => e.setAlert);
     useEffect(() => {
         fetchData();
+        getGallery((data, err) => {
+            if (err) setAlert(err, "error");
+            setGallery(data.images);
+        });
     }, []);
     const fetchData = () => {
         setLoading(true);
         fetchUpcomingEvents((data: EventType[], err: string) => {
             setLoading(false);
             if (err) {
-                setAlert(err,'error');
+                setAlert(err, "error");
                 return;
             }
             setEvents(data);
         });
     };
-    const images: ImageProps[] = [
-        {
-            url: "https://picsum.photos/200/300?random=9",
-        },
-        {
-            url: "https://picsum.photos/200/300?random=10",
-        },
-        {
-            url: "https://picsum.photos/200/300?random=11",
-        },
-        {
-            url: "https://picsum.photos/200/300?random=12",
-        },
-    ];
     const onRefresh = React.useCallback(() => {
         if (events.length < 1) fetchData();
     }, []);
     return (
         <SafeAreaView style={Theme} className="gap-8">
-            <Header/>
+            <Header />
             <ScrollView
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{
@@ -130,10 +122,16 @@ const Index: React.FC = () => {
                         snapToInterval={250} // Adjust based on your card width + gap
                         decelerationRate="fast"
                     />
-
                 </View>
-
-                <ImageSlider images={images} title="Photos" />
+                {gallery ? (
+                    <ImageSlider images={gallery} title="Photos" />
+                ) : (
+                    <View className="bg-white w-full py-20 items-center justify-center">
+                        <Text className="text-[#999] font-black">
+                            Not Images For Gallery
+                        </Text>
+                    </View>
+                )}
 
                 <View className="items-center h-52">
                     <Text className="font-black text-3xl">

@@ -24,6 +24,7 @@ import { UserType, useUserStore } from "@store/dashbord/useUserStore";
 import HeaderAdmin from "../HeaderAdmin";
 import { api } from "#/src/services/apiinterceptors";
 import { useEventStore } from "#/src/store/dashbord/useEventStore";
+import { getGallery, StorageImagesType } from "#/src/services/storage";
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 interface ImageProps {
     url: string;
@@ -43,24 +44,31 @@ const Index: React.FC = () => {
     const [upcommingEvents, setUpcommingEvent] = useState<EventType[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const { users, setUsers } = useUserStore();
+    const [gallery, setGallery] = useState<StorageImagesType[] | null>(null);
+    const [changeImageValue, setChangeImageValue] = useState<any>("");
     const { setAlert } = useAlert();
     useEffect(() => {
-        loadUsers();
         fetchUpcommintEventData();
-        loadEvent();
     }, []);
-    const loadEvent = async ()=>{
+    
+    const fetchUpcommintEventData = async () => {
         setLoading(true);
-        await fetchAllEvent((events, err) => {
+        getGallery((data, err) => {
+            setLoading(false);
+            if (err) return;
+            setGallery(data.images);
+            setChangeImageValue(data.imageId);
+        });
+        setLoading(true);
+        fetchAllEvent((events, err) => {
             if (err) {
-                setAlert(err, "error");
+                
                 return;
             }
             setEvents(events);
             setLoading(false);
         });
-    }
-    const loadUsers = async () => {
+
         setLoading(true);
         try {
             const response = await api.get<UserType[]>(`/user/dashbord/`);
@@ -69,34 +77,20 @@ const Index: React.FC = () => {
         } catch (error) {
             setAlert("Check Your Network");
         }
-    };
-    const fetchUpcommintEventData = async() => {
+
         setLoading(true);
-        await fetchUpcomingEvents((data: EventType[], err: string) => {
+        fetchUpcomingEvents((data: EventType[], err: string) => {
+            setLoading(false);
             if (err) {
-                setAlert(err, "error");
+               
                 return;
             }
             setUpcommingEvent(data);
-            setLoading(false);
         });
+
     };
-    const images: ImageProps[] = [
-        {
-            url: "https://picsum.photos/200/300?random=9",
-        },
-        {
-            url: "https://picsum.photos/200/300?random=10",
-        },
-        {
-            url: "https://picsum.photos/200/300?random=11",
-        },
-        {
-            url: "https://picsum.photos/200/300?random=12",
-        },
-    ];
     const onRefresh = React.useCallback(() => {
-        if (upcommingEvents.length < 1) fetchUpcommintEventData();
+     fetchUpcommintEventData();
     }, []);
     return (
         <SafeAreaView style={Theme} className="gap-8 pb-32">
@@ -251,7 +245,13 @@ const Index: React.FC = () => {
                     {users.map((item, index, array) => {
                         if (index >= 5) return;
                         return (
-                            <View
+                            <TouchableOpacity
+                                onPress={() => {
+                                    router.push({
+                                        pathname: "/screen/dashbord/ViewUser",
+                                        params: { user: JSON.stringify(item) },
+                                    });
+                                }}
                                 key={index}
                                 className="flex-row items-center bg-white p-3 mx-4 rounded-2xl mb-3 shadow-md"
                             >
@@ -267,7 +267,7 @@ const Index: React.FC = () => {
                                         {item.name}
                                     </Text>
                                 </View>
-                            </View>
+                            </TouchableOpacity>
                         );
                     })}
                 </View>
@@ -275,7 +275,10 @@ const Index: React.FC = () => {
                     <Text className="font-bold">Image gallery</Text>
                     <TouchableOpacity
                         onPress={() => {
-                            router.push("/screen/(tabs)/Events");
+                            router.push({
+                                pathname:"/screen/dashbord/ManageImages",
+                                params:{imageId:changeImageValue}
+                            });
                         }}
                         className="flex-row items-center"
                     >
@@ -290,7 +293,7 @@ const Index: React.FC = () => {
                     </TouchableOpacity>
                 </View>
                 <FlatList
-                    data={images}
+                    data={gallery}
                     numColumns={2}
                     keyExtractor={(item, i) => i.toString()}
                     columnWrapperStyle={{ justifyContent: "space-evenly" }}
@@ -299,7 +302,7 @@ const Index: React.FC = () => {
                     renderItem={({ item }) => (
                         <View className="w-[40%] aspect-square bg-white rounded-2xl shadow-md overflow-hidden mt-3">
                             <Image
-                                source={{ uri: item.url }}
+                                source={{ uri: item.imageurl }}
                                 className="w-full h-full"
                             />
                         </View>

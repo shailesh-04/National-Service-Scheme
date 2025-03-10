@@ -23,6 +23,9 @@ const icons: Record<string, (size?: number, color?: string) => JSX.Element> = {
     Users: (size = 24, color = "black") => (
         <FontAwesome name="user-circle-o" size={size} color={color} />
     ),
+    Images: (size = 24, color = "black") => (
+        <FontAwesome name="image" size={size} color={color} />
+    ),
 };
 export interface TabCardProps {
     isFocused: boolean;

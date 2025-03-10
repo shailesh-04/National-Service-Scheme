@@ -108,11 +108,16 @@ const AddUserScreen = () => {
                         type: "image/jpeg",
                         name: "upload.jpg",
                     } as any);
-                    EditProfileImage(formData, res.data.id, (res, err) => {
+                     EditProfileImage(formData, res.data.id, (res, err) => {
+                        setLoading(false);
                         if (err) {
                             Alert.alert(
                                 "Error",
-                                "Failed to update user. : Re Try..."
+                                "Fail Image Upload! Update Image From User Profile : "+err,
+                                [
+                                    { text: "OK", onPress: () => navigation.goBack() },
+                                    {text:"cansel"}
+                                ]
                             );
                             return;
                         }
@@ -121,6 +126,7 @@ const AddUserScreen = () => {
                         ]);
                     });
                 } else
+                setLoading(false);
                     Alert.alert("Success", "User updated successfully!", [
                         { text: "OK", onPress: () => navigation.goBack() },
                     ]);

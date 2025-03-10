@@ -144,7 +144,7 @@ const UpdateUserScreen = () => {
     return (
         <ScrollView style={Theme} className="flex-1 bg-[--bg-color] pt-10">
             <StatusBar backgroundColor={Color["bg-color"]} />
-            <View className=" mt-5 px-6 ">
+            <View className=" mt-5 px-6 pb-32">
                 <View className="flex-row  justify-between items-center mb-5">
                     <TouchableOpacity
                         className="flex-row items-center justify-center"

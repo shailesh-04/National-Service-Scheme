@@ -1,8 +1,17 @@
-import cloudinary from "../config/cloudinary.js";
+import cloudinary from "#config/cloudinary.config.js";
 
-export const distroy = (imageId)=>{
-  cloudinary
-  .delete_resources(['samples/cld-sample-video', 'samples/dance-2', 'samples/elephants', 'samples/sea-turtle'], 
-    { type: 'upload', resource_type: 'video' })
-  .then(console.log);
-}
+/**
+ * Deletes an image from Cloudinary storage.
+ * @param {string} publicId - The public ID of the image to delete.
+ * @returns {Promise<object>} - The result of the deletion process.
+ */
+export const removeImage = async (publicId) => {
+  try {
+    const result = await cloudinary.uploader.destroy(publicId);
+    return result;
+  } catch (error) {
+    throw new Error(`Failed to delete image: ${error.message}`);
+  }
+};
+
+export default { removeImage };

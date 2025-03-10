@@ -6,7 +6,7 @@ try {
         conn.query("SELECT * FROM images", res);
     };
     model.updateAll = async (id,body,res) => {
-        conn.query("UPDATE images SET E_id = ?, image = ? , is_deleted = ? WHERE id ="+id,body, res);
+        conn.query("UPDATE images SET E_id = ?, imageurl = ? , is_deleted = ? WHERE id ="+id,body, res);
     };
     
     model.create = async (body, res) => {
@@ -18,6 +18,13 @@ try {
     model.eventEmages = async (res) => {
         conn.query(`SELECT images.id,images.E_id,images.imageurl, events.name AS event_name FROM images LEFT JOIN events ON images.E_id = events.id;`, res);
     };
+    model.GetImages = (IDs,callback)=>{
+        conn.query(`SELECT * FROM images where id IN(${IDs});`,callback);
+    }
+
+    model.remove = (id,callback)=>{
+        conn.query(`DELETE FROM images WHERE id  = ${id};`,callback);
+    }
 } catch (error) {
     catchErr(error, "imagis.model");
 }

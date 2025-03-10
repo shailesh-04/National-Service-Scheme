@@ -26,6 +26,13 @@ export default function TabLayout() {
                     headerShown: false,
                 }}
             />
+            <Tabs.Screen
+                name="Images"
+                options={{
+                    title: "Images",
+                    headerShown: false,
+                }}
+            />
             {/*
             <Tabs.Screen
                 name="Explore"
