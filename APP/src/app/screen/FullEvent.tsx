@@ -7,24 +7,33 @@ import {
     TouchableOpacity,
     ScrollView,
     ActivityIndicator,
+    Alert,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Color, Theme } from "@constants/Colors";
 import { EventType } from "@services/event";
-import * as Icons from "@expo/vector-icons";
+import Icons from "#/src/components/Icons";
 import { date, returnValue } from "@components/date";
 import { LinearGradient } from "expo-linear-gradient";
 import { fetchUser, EventUserProps } from "@services/user";
 import { fetchEvent } from "@services/event";
-import useAlert from "@store/useAlert";
+import Button from "#/src/components/ui/button";
+
+import { api } from "#/src/services/apiinterceptors";
+import { useUserStore } from "#/src/store/useUserStore";
+import useAlert from "#/src/store/useAlert";
 const FullEvent: React.FC = () => {
     const router = useRouter();
+    const mainUser = useUserStore((s) => s.user);
+    const { setAlert } = useAlert();
     const [user, setUser] = useState<EventUserProps[] | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    const [loading1, setLoading1] = useState<boolean>(false);
     const [event, setEvent] = useState<EventType | null>(null);
     const [dateTime, setDateTime] = useState<returnValue | null>(null);
+    const [registed, setRegisted] = useState<boolean>(false);
     const { data } = useLocalSearchParams();
-    const setAlert = useAlert(s=>s.setAlert);
+
     useEffect(() => {
         const parsedEvent = JSON.parse(data as string);
         if (Number.isInteger(parsedEvent)) {
@@ -35,6 +44,7 @@ const FullEvent: React.FC = () => {
                 }
                 setDateTime(date(data1[0].start_time, data1[0].end_time));
                 setEvent(data1[0]);
+                check(parsedEvent);
                 fetchUser(data1[0].created_by, (data, err) => {
                     if (err) {
                         setAlert(err);
@@ -45,6 +55,7 @@ const FullEvent: React.FC = () => {
             });
         } else {
             setEvent(parsedEvent);
+            check(parsedEvent.id);
             setDateTime(date(parsedEvent.start_time, parsedEvent.end_time));
             fetchUser(parsedEvent.created_by, (data, err) => {
                 if (err) {
@@ -56,6 +67,34 @@ const FullEvent: React.FC = () => {
             setLoading(false);
         }
     }, []);
+    async function check(id: number) {
+        try {
+            setLoading1(true);
+            const responce = await api.post("event-registration/check", {
+                user_id: mainUser?.id,
+                event_id: id,
+            });
+            if (!responce.data.message) setRegisted(true);
+            setLoading1(false);
+        } catch (error) {
+            setLoading1(false);
+        }
+    }
+    async function onRegister() {
+        try {
+            setLoading1(true);
+            const responce = await api.post("event-registration", {
+                user_id: mainUser?.id,
+                event_id: event?.id,
+            });
+            setAlert(responce.data.message, "success");
+            setLoading1(false);
+            setRegisted(true);
+        } catch (error) {
+            console.error(error);
+            setLoading1(false);
+        }
+    }
     return (
         <SafeAreaView style={Theme} className="flex-1 relative">
             <ScrollView className="">
@@ -67,25 +106,49 @@ const FullEvent: React.FC = () => {
                     />
                 </View>
                 <View className="items-center mt-[-30px]">
-                    <View className="flex-row items-center gap-4 bg-[--bg-color] px-5 py-4 rounded-full">
-                        <Icons.Feather
-                            name="users"
-                            size={20}
-                            color={Color["bg-color"]}
-                            className="bg-[#00000033] rounded-full p-2"
-                        />
-                        <Text
-                            className=" font-semibold text-[12px]"
-                            style={{ color: `${Color["main-color"]}aa` }}
-                        >
-                            +{event?.numOFUser} Going
-                        </Text>
-                        <TouchableOpacity className="bg-[--main-color] p-2 rounded-xl ms-16">
-                            <Text className="text-[--bg-color] text-[11px]">
-                                Register
-                            </Text>
+                    {mainUser?.role == "a" ? (
+                        <TouchableOpacity className="flex-row items-center gap-4 bg-[--bg-color] px-5 py-4 w-[80%] rounded-full"
+                        onPress={()=>{
+                            router.push({
+                                pathname:"/screen/dashbord/ManageRegistration",
+                                params:{id:event?.id}
+                            })
+                        }}>
+                            <Icons.Feather
+                                name="users"
+                                size={20}
+                                color={Color["bg-color"]}
+                                className="bg-[#00000033] rounded-full p-2"
+                            />
+                            <View className="flex-row gap-6">
+                                <Text
+                                    className=" font-semibold text-[12px]"
+                                    style={{
+                                        color: `${Color["main-color"]}aa`,
+                                    }}
+                                >
+                                    +{event?.numOFUser} Going
+                                </Text>
+                                <Text>|</Text>
+                                <Text className="text-blue-700 underline">Manage Register User</Text>
+                            </View>
                         </TouchableOpacity>
-                    </View>
+                    ) : (
+                        <View className="flex-row items-center gap-4 bg-[--bg-color] px-5 py-4 w-[80%] rounded-full">
+                            <Icons.Feather
+                                name="users"
+                                size={20}
+                                color={Color["bg-color"]}
+                                className="bg-[#00000033] rounded-full p-2"
+                            />
+                            <Text
+                                className=" font-semibold text-[12px]"
+                                style={{ color: `${Color["main-color"]}aa` }}
+                            >
+                                +{event?.numOFUser} Going
+                            </Text>
+                        </View>
+                    )}
                 </View>
                 <View className="px-5">
                     <View className=" mt-10">
@@ -217,6 +280,44 @@ const FullEvent: React.FC = () => {
                     Event Details
                 </Text>
             </View>
+            {registed ? (
+                <View className="items-center mb-10">
+                    <Text>Registed In this Event</Text>
+                </View>
+            ) : (
+                <View className="items-center mb-10">
+                    {loading1 ? (
+                        <ActivityIndicator />
+                    ) : (
+                        <Button
+                            style={{
+                                width: "80%",
+                                boxShadow: "0px 1px 10px #777",
+                            }}
+                            onPress={() => {
+                                Alert.alert(
+                                    "🎟️ Event Registration", // Engaging title
+                                    "Are you sure you want to register for this event? 🎉 This will secure your spot!", // Clear & engaging message
+                                    [
+                                        {
+                                            text: "✅ Yes, Register Me!",
+                                            onPress: () => onRegister(),
+                                        },
+                                        {
+                                            text: "❌ No, Maybe Later",
+                                            style: "cancel",
+                                        },
+                                    ]
+                                );
+                            }}
+                        >
+                            <Text className="text-[15px] underline">
+                                Register
+                            </Text>
+                        </Button>
+                    )}
+                </View>
+            )}
         </SafeAreaView>
     );
 };

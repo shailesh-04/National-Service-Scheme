@@ -7,7 +7,7 @@ export const table = {
     location VARCHAR(255),
     start_time DATETIME NOT NULL,
     end_time DATETIME NOT NULL,
-    numOFUser INT DEFAULT 0,
+    numOFUser INT NOT NULL DEFAULT 0,
     image VARCHAR(255),
     created_by INT,
     is_deleted BOOLEAN DEFAULT FALSE,

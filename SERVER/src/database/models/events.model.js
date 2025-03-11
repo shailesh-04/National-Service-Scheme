@@ -105,6 +105,13 @@ try {
             res
         );
     };
+    model.addNUmOfUser = async (id,res) => {
+        conn.query(
+            `UPDATE events SET numOFUser = numOFUser + 1 WHERE id = ?;`,
+            [id],
+            res
+        );
+    };
 } catch (error) {
     catchErr(error, "user.model");
 }

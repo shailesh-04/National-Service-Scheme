@@ -14,11 +14,11 @@ import { StatusBar } from "expo-status-bar";
 import { verifyUser } from "@services/auth";
 import { useUserStore } from "@store/useUserStore";
 import useAlert from "@store/useAlert";
+import { setAlert } from "../components/Alert";
 export default function HomeScreen() {
     const setUser = useUserStore((state) => state.setUserOnly);
     const router = useRouter();
     const [loading, setLoading] = useState<boolean>(true);
-    const setAlert = useAlert((state) => state.setAlert);
     const callingApi = ()=>{
         verifyUser((res, err,status) => {
         setLoading(false);
@@ -44,7 +44,13 @@ export default function HomeScreen() {
         });
     }
     useEffect(() => {
-        callingApi();
+        const timeInterval = setInterval(() => {
+            callingApi();
+        }, 10000);
+    
+        return () => {
+            clearInterval(timeInterval);
+        };
     }, []);
 
     return (

@@ -48,7 +48,7 @@ const HeaderAdmin = () => {
             ) : (
                 ""
             )}
-            <TouchableOpacity
+            {/* <TouchableOpacity
                 className="bg-[#ffffff22]  rounded-full w-10 h-10 items-center justify-center"
                 onPress={() => {
                     router.push("/screen/notification/Notificatoin");
@@ -59,7 +59,7 @@ const HeaderAdmin = () => {
                     size={24}
                     color={`${Color["bg-color"]}`}
                 />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </View>
     );
 };

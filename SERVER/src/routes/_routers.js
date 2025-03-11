@@ -3,6 +3,7 @@ import user from  "./users.route.js";
 import event from "./events.route.js";
 import emages from "./emages.route.js";
 import storage from "./storage.route.js";
+import registratios from "./registration.route.js"
 import {catchErr} from "#color";
 const router = Router();
 try {
@@ -10,6 +11,7 @@ try {
     router.use("/event",event);
     router.use("/images",emages);
     router.use("/storage",storage);
+    router.use("/event-registration",registratios);
 
 } catch (error) {
     catchErr(error,"_routes");

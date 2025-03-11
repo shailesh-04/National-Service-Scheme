@@ -50,7 +50,8 @@ export const useUserStore = create<UserStoreType>((set,get) => ({
     },
     getUser: (userId: number): UserType | null=> {
         const state = get(); 
-        return state.users.find((user) => user.id === userId) || null;
+        console.log(state.users.find((user) => user.id == userId) || null)
+        return state.users.find((user) => user.id == userId) || null;
     },
 
     clearUsers: () => {
