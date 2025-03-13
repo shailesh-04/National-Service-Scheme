@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Sidebar</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <style>
+        :root {
+            --bg-black100: #353535;
+            --bg-black50: #eef0f4;
+            --bg-black20: #414546;
+            --main-color: rgb(132, 0, 255);
+            ;
+        }
+
+        .dashboard {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card {
+            background: var(--bg-black100);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 300px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .number {
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--main-color);
+        }
+
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: auto;
+        }
+
+        body.dark {
+            --bg-black100: #fff;
+            --bg-black50: #000;
+            --bg-black20: #eef0f4;
+        }
+
+        .menu {
+            position: absolute;
+            width: 60px;
+            height: 600px;
+            background-color: var(--bg-black50);
+            z-index: 2;
+            top: 0;
+            bottom: 0;
+            left: 10px;
+            margin: auto;
+            border-radius: .8rem;
+            transition: .3s ease .15s;
+            font-family: sans-serif;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+
+        }
+
+        .menu.open {
+            width: 240px;
+        }
+
+        .menu a {
+            text-decoration: none;
+        }
+
+        .menu .actionBar {
+            width: 100%;
+            height: 10%;
+            padding: 0.5rem;
+            overflow: hidden;
+        }
+
+        .menu .actionBar div {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            border-radius: .5rem;
+            transition: .3s ease;
+        }
+
+        .menu .actionBar div button {
+            background-color: transparent;
+            outline: none;
+            border: none;
+            border-radius: .5rem;
+            color: var(--bg-black100);
+            width: 45px;
+            height: 45px;
+            transition: .3s ease;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .menu .actionBar div button:hover {
+            background-color: var(--main-color);
+        }
+
+        .menu .actionBar div h3 {
+            width: calc(100% - 45px);
+            text-align: center;
+        }
+
+        .menu .optionsBar {
+            overflow: hidden;
+            display: flex;
+            width: 100%;
+            height: 60%;
+            padding: 0 .5rem;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .menu .optionsBar .menuItem {
+            width: 100%;
+            height: 45px;
+            margin: 0.3rem;
+        }
+
+        .menu .optionsBar .menuItem .menuOption {
+            font-size: 1rem;
+            outline: none;
+            border: none;
+            background-color: transparent;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            border-radius: .5rem;
+            transition: .3s ease;
+            cursor: pointer;
+        }
+
+        .menu .optionsBar .menuItem .menuOption:hover {
+            background-color: var(--main-color);
+        }
+
+        .menu .optionsBar .menuItem .menuOption i {
+            width: 45px;
+            text-align: center;
+            color: var(--bg-black100);
+        }
+
+        .menu .optionsBar .menuItem .menuOption h5 {
+            width: calc(100% - 45px);
+        }
+
+        .menuText {
+            color: var(--bg-black20);
+            transform: translateX(-250px);
+            opacity: 0;
+            transition: transform .3s ease .1s;
+        }
+
+        .menuText.open2 {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .menu .menuBreak {
+            width: 100%;
+            height: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu .menuBreak hr {
+            width: 50%;
+            height: 3px;
+            background-color: var(--bg-black100);
+            border: none;
+            border-radius: 5px;
+        }
+
+        .menu .menuUser {
+            width: 100%;
+            height: 10px;
+            padding: 4.5rem 0 3rem 0;
+        }
+
+        .menu .menuUser a {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            padding: 0.5rem;
+            position: relative;
+        }
+
+        .menu .menuUser a div {
+            width: 45px;
+            height: 45px;
+            position: relative;
+            border-radius: .5rem;
+        }
+
+        .menu .menuUser a div img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: .5rem;
+        }
+
+        .menu .menuUser a .username {
+            width: calc(70% - 45px);
+        }
+
+        .menu .menuUser a p {
+            width: calc(30% - 45px);
+        }
+
+        .menu .menuUser a:hover p {
+            animation: animArrow .3s ease 2;
+        }
+
+        @keyframes animArrow {
+            0% {
+                transform: translateX(0);
+            }
+
+            50% {
+                transform: translateX(5px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        .menu .menuUser .userInfo {
+            position: absolute;
+            width: 10rem;
+            height: 8rem;
+            opacity: 0;
+            color: var(--bg-black50);
+            pointer-events: none;
+            top: 58%;
+            left: 1.5rem;
+            transition: .3s ease;
+            transform: scale(0);
+            transform-origin: bottom left;
+        }
+
+        .menu .menuUser .userInfo div {
+            position: relative;
+            width: 100%;
+            height: calc(100% - 20px);
+            box-shadow: 0px 0px 40px rgba(0, 0, 0, .3);
+            background-color: var(--bg-black100);
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 1rem;
+            border-bottom-right-radius: 1rem;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-direction: column;
+        }
+
+        .menu .menuUser .userInfo div h1 {
+            font-size: 4rem;
+        }
+
+        .menu .menuUser .userInfo div::before {
+            content: '';
+            position: absolute;
+            bottom: -18px;
+            left: -2px;
+            width: 0;
+            height: 0;
+            border-top: 15px solid transparent;
+            border-bottom: 15px solid transparent;
+            border-right: 15px solid var(--bg-black100);
+            transform: rotate(45deg);
+        }
+
+        .menu .menuUser:hover .userInfo {
+            pointer-events: all;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .menu .themeBar {
+            overflow: hidden;
+            width: 100%;
+            height: 10%;
+            padding: .5rem;
+        }
+
+        .menu .themeBar div {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            border-radius: .5rem;
+            transition: .3s ease;
+        }
+
+        .menu .themeBar div button {
+            background-color: transparent;
+            outline: none;
+            border: none;
+            border-radius: .5rem;
+            color: var(--bg-black100);
+            width: 100%;
+            height: 45px;
+            transition: .3s ease;
+            font-size: 1rem;
+        }
+
+        .menu .themeBar div button:hover {
+            background-color: var(--main-color);
+        }
+
+        .menu .optionsBar .menuItem .menuOption:hover .menuText,
+        .menu .optionsBar .menuItem .menuOption:hover i,
+        .menu .actionBar div button:hover i,
+        .menu .themeBar div button:hover i {
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <nav id="menu" class="menu">
+        <div class="actionBar">
+            <div>
+                <button id="menuBtn">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <h3 class="menuText">Dashboard</h3>
+            </div>
+        </div>
+
+        <ul class="optionsBar">
+            <li class="menuItem">
+                <a href="/" class="menuOption">
+                    <i class="fa-solid fa-house"></i>
+                    <h5 class="menuText">Home</h5>
+                </a>
+            </li>
+
+            <li class="menuBreak">
+                <hr>
+            </li>
+
+            <li class="menuItem">
+                <button id="productManagerBtn" class="menuOption" onclick="window.location.href='/emages'">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    <h5 class="menuText">Events Manager</h5>
+                </button>
+            </li>
+
+            <li class="menuItem">
+                <button id="constantManagerBtn" class="menuOption" onclick="window.location.href='/event'">
+                    <i class="fa-solid fa-users"></i>
+                    <h5 class="menuText">Users Manager</h5>
+                </button>
+            </li>
+
+            <li class="menuItem">
+                <button id="orderManagerBtn" class="menuOption" onclick="window.location.href='/users'">
+                    <i class="fa-solid fa-image"></i>
+                    <h5 class="menuText">Images Manager</h5>
+                </button>
+            </li>
+        </ul>
+
+        <div class="menuUser">
+            <a>
+                <div>
+
+                    <% if (user && user.img) { %>
+                        <img src="<%= user.img %>" alt="image">
+                        <% } %>
+
+                </div>
+                            <% if (user && user.name) { %>
+                                <h5 class="username menuText">
+                                    <%= user.name %>
+                                </h5>
+                                <% } %>
+
+
+
+
+                                    <p class="menuText" onclick="logout()"><i
+                                            class="fa-solid fa-right-from-bracket"></i></p>
+            </a>
+        </div>
+
+        <div class="themeBar">
+            <div>
+                <button id="themeChangeBtn"><i class="fa-solid "></i></button>
+            </div>
+        </div>
+    </nav>
+
+
+    <div class="absolute bg-[#eef0f4] right-0 top-10 rounded-xl h-screen " style="width: calc(100% - 100px);">
+        <div class="dashboard">
+            <div class="card">
+                <h3>Users</h3>
+                <div class="number" id="users">0</div>
+            </div>
+            <div class="card">
+                <h3>Events</h3>
+                <div class="number" id="events">0</div>
+            </div>
+            <div class="card">
+                <h3>Images</h3>
+                <div class="number" id="images">0</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+        const menuBtn = document.getElementById('menuBtn');
+        const menu = document.getElementById('menu');
+        const menuText = document.querySelectorAll('.menuText');
+
+        menuBtn.addEventListener('click', () => {
+            menu.classList.toggle('open');
+            menuText.forEach(function (text, index) {
+                setTimeout(() => {
+                    text.classList.toggle('open2');
+                }, index * 50);
+            })
+        })
+
+        $(menuBtn).on('click', function (e) {
+            if ($(e.target).closest('#menu').length === 0) {
+                menu.classList.toggle('open');
+                menuText.forEach(function (text, index) {
+                    setTimeout(() => {
+                        text.classList.toggle('open2');
+                    }, index * 50);
+                })
+            }
+        })
+        $(document).on('click', function (e) {
+            if ($(e.target).closest('#menu').length === 0) {
+                menu.classList.remove('open');
+                menuText.forEach(function (text, index) {
+                    setTimeout(() => {
+                        text.classList.remove('open2');
+                    }, index * 50);
+                })
+            }
+        })
+
+        const dayNight = document.querySelector('#themeChangeBtn');
+        dayNight.addEventListener('click', () => {
+            document.body.classList.toggle('dark');
+            if (document.body.classList.contains('dark')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+            updateIcon();
+        })
+
+        function themeMode() {
+            if (localStorage.getItem('theme') !== null) {
+                if (localStorage.getItem('theme') === 'light') {
+                    document.body.classList.remove('dark');
+                } else {
+                    document.body.classList.add('dark');
+                }
+            }
+            updateIcon();
+        }
+        themeMode();
+
+        function updateIcon() {
+            if (document.body.classList.contains('dark')) {
+                dayNight.querySelector('i').classList.remove('fa-moon');
+                dayNight.querySelector('i').classList.add('fa-sun');
+            } else {
+                dayNight.querySelector('i').classList.remove('fa-sun');
+                dayNight.querySelector('i').classList.add('fa-moon');
+            }
+        }
+        async function logout() {
+            try {
+                const response = await fetch("/api/user/singout");
+                if (!response.ok) {
+                    throw new Error(`Response status: ${response.status}`);
+                }
+                const json = await response.json();
+                alert("SUccessfuy Logout..");
+                location.reload();
+            } catch (error) {
+                console.error(error.message);
+            }
+        }
+    </script>
+    <script>
+        function animateCounter(id, target) {
+            let count = 0;
+            let speed = Math.floor(2000 / target);
+            let interval = setInterval(() => {
+                count++;
+                document.getElementById(id).innerText = count;
+                if (count >= target) clearInterval(interval);
+            }, speed);
+        }
+
+        animateCounter('users', 120);
+        animateCounter('events', 45);
+        animateCounter('images', 300);
+    </script>
+</body>
+
+</html>

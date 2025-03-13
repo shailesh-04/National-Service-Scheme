@@ -1,56 +1,58 @@
 {
     "expo": {
-        "name": "App",
-        "slug": "App",
-        "version": "1.0.0",
-        "orientation": "portrait",
-        "icon": "./src/assets/images/icon.png",
-        "scheme": "myapp",
-        "userInterfaceStyle": "automatic",
-        "newArchEnabled": true,
-        "ios": {
-            "supportsTablet": true
+      "name": "App",
+      "slug": "App",
+      "owner": "your-expo-username",
+      "version": "1.0.0",
+      "orientation": "portrait",
+      "icon": "./src/assets/images/icon.png",
+      "scheme": "myapp",
+      "userInterfaceStyle": "automatic",
+      "newArchEnabled": true,
+      "ios": {
+        "supportsTablet": true
+      },
+      "android": {
+        "adaptiveIcon": {
+          "foregroundImage": "./src/assets/images/adaptive-icon.png",
+          "backgroundColor": "#ffffff"
         },
-        "android": {
-            "adaptiveIcon": {
-                "foregroundImage": "./src/assets/images/adaptive-icon.png",
-                "backgroundColor": "#ffffff"
-            },
-            "package": "com.anonymous.App"
-        },
-        "web": {
-            "bundler": "metro",
-            "output": "static",
-            "favicon": "./src/assets/images/favicon.png"
-        },
-        "plugins": [
-            "expo-router",
-            [
-                "expo-splash-screen",
-                {
-                    "image": "./src/assets/images/splash-icon.png",
-                    "imageWidth": 200,
-                    "resizeMode": "contain",
-                    "backgroundColor": "#ffffff"
-                }
-            ],
-            [
-                "expo-image-picker",
-                {
-                    "photosPermission": "The app accesses your photos to let you share them with your friends."
-                }
-            ]
+        "package": "com.anonymous.App"
+      },
+      "web": {
+        "bundler": "metro",
+        "output": "static",
+        "favicon": "./src/assets/images/favicon.png"
+      },
+      "plugins": [
+        "expo-router",
+        [
+          "expo-splash-screen",
+          {
+            "image": "./src/assets/images/splash-icon.png",
+            "imageWidth": 200,
+            "resizeMode": "contain",
+            "backgroundColor": "#ffffff"
+          }
         ],
-        "experiments": {
-            "typedRoutes": true
+        [
+          "expo-image-picker",
+          {
+            "photosPermission": "The app accesses your photos to let you share them with your friends."
+          }
+        ]
+      ],
+      "experiments": {
+        "typedRoutes": true
+      },
+      "extra": {
+        "router": {
+          "origin": false
         },
-        "extra": {
-            "router": {
-                "origin": false
-            },
-            "eas": {
-                "projectId": "1672f7e6-a18f-4327-8d8b-aad77b520f74"
-            }
+        "eas": {
+          "projectId": "1672f7e6-a18f-4327-8d8b-aad77b520f74"
         }
+      }
     }
-}
+  }
+  

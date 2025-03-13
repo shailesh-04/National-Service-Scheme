@@ -1,21 +1,27 @@
 import { Router } from "express";
 import {catchErr} from '#color';
+import { viewAuthenticate } from "#middleware/auth.middleware.js";
 const router = Router();
 try {
-    router.get("/users",(req,res)=>{
-
+    router.get("/users",viewAuthenticate,(req,res)=>{
         res.render('users');
     });
-    router.get("/signup",(req,res)=>{
-        res.render('signup');
+    router.get('/', async (req, res) => {
+        try {
+            const user = req.auth || null;
+             res.render('index', { user });
+        } catch (error) {
+            console.error(error);
+            if (!res.headersSent) {
+                return res.status(500).send("Internal Server Error");
+            }
+        }
     });
-    router.get("/signin",(req,res)=>{
-        res.render('signin');
-    });
-    router.get("/event",(req,res)=>{
+    
+    router.get("/event",viewAuthenticate,(req,res)=>{
         res.render("Event");
     });
-    router.get("/emages",(req,res)=>{
+    router.get("/emages",viewAuthenticate,(req,res)=>{
         res.render("images");
     });
 } catch (error) {

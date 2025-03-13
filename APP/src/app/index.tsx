@@ -44,13 +44,9 @@ export default function HomeScreen() {
         });
     }
     useEffect(() => {
-        const timeInterval = setInterval(() => {
             callingApi();
-        }, 10000);
-    
-        return () => {
-            clearInterval(timeInterval);
-        };
+
+
     }, []);
 
     return (

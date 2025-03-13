@@ -64,7 +64,7 @@ export const signin = (info: InfoType, res: (data: SigninMainType | null, error:
 };
 
 export const verifyUser = (res: (data: SigninType[] | null, error: string | null, status?: number) => void): void => {
-    ExpireApi.get<SigninType[]>("/user/singin") // Fixed typo in endpoint
+    api.get<SigninType[]>("/user/singin") // Fixed typo in endpoint
         .then((response) => {
             res(response.data, null); // Extracting `response.data`
         })
