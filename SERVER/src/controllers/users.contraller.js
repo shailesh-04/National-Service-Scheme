@@ -152,6 +152,30 @@ export const findOne = (req, res) => {
     }
 };
 
+export const profile = (req, res) => {
+    try {
+        const id = req.auth.id;
+        model.findOne(id, (err, data) => {
+            if (err) return res.status(406).json({ message: err.sqlMessage });
+            if (data.length > 0) res.status(200).json(data);
+            else
+                return res
+                    .status(404)
+                    .json(
+                        "You Are File UserID :" +
+                            id +
+                            " - It ID User Is Not Avalable.."
+                    );
+        });
+    } catch (error) {
+        catchErr(error, "user.controll.findOn");
+        if (err)
+            return res
+                .status(500)
+                .json({ message: "Internal Server Error : " + error });
+    }
+};
+
 export const update = (req, res) => {
     try {
         const id = req.params.id;

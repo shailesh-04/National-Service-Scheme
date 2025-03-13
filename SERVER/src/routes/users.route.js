@@ -12,15 +12,17 @@ import {
     All,
     updateAll,
     verifyUser,
-    newUser
+    newUser,
+    profile
 } from "#controllers/users.contraller.js";
 import  cloudinary from "#middleware/cloudinary.middleware.js";
-import { authenticate } from "#middleware/auth.middleware.js";
+import { authenticate,viewAuthenticate } from "#middleware/auth.middleware.js";
 const router = Router();
 try {
     router.get("/dashbord", All);
     router.put("/dashbord/:id",updateAll);
     router.post("/dashbord", newUser);
+    router.get("/getProfile",viewAuthenticate, profile);
 
     router.get("/", findAll);
     router.post("/signup", signup);

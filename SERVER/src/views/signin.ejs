@@ -34,7 +34,6 @@
 
             try {
                 const response = await axios.post('api/user/singin', { email, password });
-                    localStorage.setItem('token', response.data.token);
                     document.getElementById('message').textContent = "Login successful!";
                     document.getElementById('message').classList.replace("text-red-400", "text-green-400");
                     alert("successfuly Login");
@@ -48,3 +47,4 @@
 
 </body>
 </html>
+

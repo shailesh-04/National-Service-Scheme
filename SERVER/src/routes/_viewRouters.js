@@ -6,16 +6,8 @@ try {
     router.get("/users",viewAuthenticate,(req,res)=>{
         res.render('users');
     });
-    router.get('/', async (req, res) => {
-        try {
-            const user = req.auth || null;
-             res.render('index', { user });
-        } catch (error) {
-            console.error(error);
-            if (!res.headersSent) {
-                return res.status(500).send("Internal Server Error");
-            }
-        }
+    router.get('/', viewAuthenticate, (req, res) => {
+        res.render('index');
     });
     
     router.get("/event",viewAuthenticate,(req,res)=>{
