@@ -5,6 +5,7 @@ import {
     AntDesign,
     MaterialIcons,
     SimpleLineIcons,
+    Entypo,
 } from "@expo/vector-icons";
 
 const icons: Record<string, (size?: number, color?: string) => JSX.Element> = {
@@ -25,6 +26,9 @@ const icons: Record<string, (size?: number, color?: string) => JSX.Element> = {
     ),
     Images: (size = 24, color = "black") => (
         <FontAwesome name="image" size={size} color={color} />
+    ),
+    Store: (size = 24, color = "black") => (
+        <Entypo name="tools" size={size} color={color} />
     ),
 };
 export interface TabCardProps {

@@ -7,7 +7,7 @@ import {
     View,
     RefreshControl,
     TouchableOpacity,
-    Linking
+    Linking,
 } from "react-native";
 import Header from "@components/Header";
 import { Theme } from "@constants/Colors";
@@ -28,18 +28,16 @@ const EventImageList: React.FC = () => {
     }, []);
 
     const fetchData = () => {
-        if (events.length < 1) {
-            setLoading(true);
-            fetchImages((data: ImageData[], err: string) => {
-                setLoading(false);
-                if (err) {
-                    setAlert(err);
-                    return;
-                }
-                const groupedEvents = groupImagesByEvent(data);
-                setEvents(groupedEvents);
-            });
-        }
+        setLoading(true);
+        fetchImages((data: ImageData[], err: string) => {
+            setLoading(false);
+            if (err) {
+                setAlert(err,"warn");
+                return;
+            }
+            const groupedEvents = groupImagesByEvent(data);
+            setEvents(groupedEvents);
+        });
     };
 
     const groupImagesByEvent = (data: ImageData[]): ImageProps[] => {
@@ -59,11 +57,13 @@ const EventImageList: React.FC = () => {
 
     return (
         <SafeAreaView style={Theme} className="flex-1 bg-gray-100">
-            <HeaderAdmin/>
-            <TouchableOpacity className="p-3 items-center"
-            onPress={()=>{
-                Linking.openURL(`${process.env.EXPO_PUBLIC_URL}emages`);
-            }}>
+            <HeaderAdmin />
+            <TouchableOpacity
+                className="p-3 items-center"
+                onPress={() => {
+                    Linking.openURL(`${process.env.EXPO_PUBLIC_URL}emages`);
+                }}
+            >
                 <Text className="text-blue-700 underline">Manage Images</Text>
             </TouchableOpacity>
             <FlatList

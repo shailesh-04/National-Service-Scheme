@@ -2,24 +2,46 @@ import { catchErr } from "#color";
 import model from "#models/events.model.js";
 export const All = async (req, res) => {
     try {
-        model.All((err, data) => {
+        await model.All((err, data) => {
             if (err) return res.status(406).json({ message: err.sqlMessage });
             res.status(200).json(data);
         });
     } catch (error) {
-        catchErr(error, "event.controll.findall");
-        if (err)
-            return res
-                .status(500)
-                .json({ message: "Internal Server Error : " + error });
+        catchErr(error,"event.controll.findall");
+        return res
+            .status(500)
+            .json({ message: "Internal Server Error : " + error });
     }
 };
 export const AllUpdate = (req, res) => {
     try {
         const id = req.params.id;
-        const {name,description,location,start_time,end_time,numOFUser,created_by,is_deleted,image} = req.body;
-        const file = req.file ? req.file.path:image;
-        model.AllUpdate(id,[ name,description,location,file,start_time,end_time,numOFUser,created_by,Boolean(is_deleted)],
+        const {
+            name,
+            description,
+            location,
+            start_time,
+            end_time,
+            numOFUser,
+            created_by,
+            is_deleted,
+            image,
+        } = req.body;
+        const file = req.file ? req.file.path : image;
+        
+        model.AllUpdate(
+            id,
+            [
+                name,
+                description,
+                location,
+                file,
+                start_time,
+                end_time,
+                numOFUser,
+                created_by,
+                Boolean(is_deleted),
+            ],
             (err, data) => {
                 if (err)
                     return res.status(406).json({ message: err.sqlMessage });

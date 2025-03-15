@@ -8,6 +8,7 @@ import {
     ActivityIndicator,
     RefreshControl,
     SafeAreaView,
+    Dimensions,
 } from "react-native";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { AntDesign, Feather } from "@expo/vector-icons"; // Expo Icons
@@ -26,6 +27,7 @@ import HeaderAdmin from "../HeaderAdmin";
 import Button from "#/src/components/ui/button";
 
 const UserScreen = () => {
+    const { width, height } = Dimensions.get("window");
     const { users, removeUser, setUsers, updateUser, clearUsers } =
         useUserStore();
     const [loading, setLoading] = useState(false);
@@ -58,7 +60,7 @@ const UserScreen = () => {
                 .map((user) => user.id);
             setSelectedUsersForDeletion(deletedUserIds);
         } catch (error) {
-            setAlert("Check Your Network");
+            setAlert("faild data fetching","warn");
         }
         setLoading(false);
     };
@@ -127,7 +129,7 @@ const UserScreen = () => {
     return (
         <SafeAreaView style={Theme} className="bg-[--bg-color] flex-1 relative">
             <HeaderAdmin />
-            <View className="px-5 mt-3 h-[70%] ">
+            <View className="px-5 mt-3 " style={{height:height-200}}>
                 <View className="flex-row justify-between mt-4 items-center">
                     <Text className="text-[--text-color] text-xl font-semibold mb-4">
                         User Dashboard

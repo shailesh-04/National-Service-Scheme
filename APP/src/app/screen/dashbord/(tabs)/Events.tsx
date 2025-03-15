@@ -19,16 +19,15 @@ import { useEventStore } from "@store/dashbord/useEventStore"; // Import Zustand
 import Animated, { SlideInRight, SlideOutRight } from "react-native-reanimated";
 import { DeleteEvent, Restore } from "#/src/services/dashbord/event";
 import Button from "#/src/components/ui/button";
-
+import { Dimensions } from "react-native";
 const Events: React.FC = () => {
+    
+const { width, height } = Dimensions.get("window");
     const router = useRouter();
     const setAlert = useAlert((s) => s.setAlert);
 
     // Zustand store hooks
     const { events, setEvents, updateEvent, removeEvent } = useEventStore();
-
-    const [searchBox, setSearchBox] = useState(false);
-    const [searchText, setSearchText] = useState("");
     const [refreshing, setRefreshing] = useState(false);
 
     const fetchData = () => {
@@ -36,7 +35,7 @@ const Events: React.FC = () => {
         fetchAllEvent((events, err) => {
             setRefreshing(false);
             if (err) {
-                setAlert(err, "error");
+                setAlert("faild data fetching ", "warn");
                 return;
             }
             setEvents(events);
@@ -220,7 +219,8 @@ const Events: React.FC = () => {
                         );
                     }}
                     contentContainerStyle={{ gap: 10, paddingBottom: 20 }}
-                    className="h-[67%] px-7"
+                    className="px-7"
+                    style={{height:height-300}}
                     onRefresh={fetchData}
                     refreshing={refreshing}
                     ListEmptyComponent={

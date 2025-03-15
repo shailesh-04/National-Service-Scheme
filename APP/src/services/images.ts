@@ -17,7 +17,19 @@ export const fetchImages = (res: (data: ImageData[], error: string) => void): vo
             res(responce.data, '');
         }) 
         .catch(error => {
-            res([], 'Check Your Network'); // Error case
+            res([], 'Failed to fetch items'); // Error case
+        });
+};
+interface numOfImageIF {
+    numOfRow:number;
+}
+export const countRows = (res: (data: numOfImageIF[], error: string) => void): void => {
+    api.get<numOfImageIF[]>(`/images/countRows`)
+        .then((responce) => {
+            res(responce.data, '');
+        }) 
+        .catch(error => {
+            res([], 'Failed to fetch items'); // Error case
         });
 };
 

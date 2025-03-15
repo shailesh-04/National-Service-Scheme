@@ -1,24 +1,17 @@
-const fs = require('fs');
-const path = require('path');
+try {
+    console.log("Outer try block");
 
-function createMigrationFile() {
-    const timestamp = Date.now();
-    const fileName = `user_${timestamp}.migration.js`;
-    const filePath = path.join(process.cwd(), fileName);
-    
-    const content = `export const table = {
-    name: 'users',
-    columns: {
-        id: { type: 'integer', primary: true, autoIncrement: true },
-        name: { type: 'string', notNull: true },
-        email: { type: 'string', unique: true, notNull: true },
-        created_at: { type: 'timestamp', default: 'CURRENT_TIMESTAMP' }
+    try {
+        console.log("Inner try block");
+        throw new Error("Inner error");
+    } catch (innerError) {
+        console.error("Caught in inner catch:", innerError.message);
+        // You can rethrow the error if you want it to be caught by the outer catch
+        throw new Error("New error from inner catch");
     }
-};
-    `;
 
-    fs.writeFileSync(filePath, content);
-    console.log(`Migration file created: ${fileName}`);
+} catch (outerError) {
+    console.error("Caught in outer catch:", outerError.message);
+} finally {
+    console.log("Outer finally block - always executes");
 }
-
-createMigrationFile();

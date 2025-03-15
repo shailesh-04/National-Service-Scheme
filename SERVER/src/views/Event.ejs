@@ -22,122 +22,88 @@
         </form>
     </div>
     <div class="overflow-x-auto">
-        <table class="table-auto  border-collapse border border-gray-700 text-sm">
-            <thead>
-                <tr class="bg-gray-800">
-                    <th class="border border-gray-600 p-2">ID</th>
-                    <th class="border border-gray-600 p-2">Name</th>
-                    <th class="border border-gray-600 p-2">Description</th>
-                    <th class="border border-gray-600 p-2">Location</th>
-                    <th class="border border-gray-600 p-2">Start Time</th>
-                    <th class="border border-gray-600 p-2">End Time</th>
-                    <th class="border border-gray-600 p-2">Users</th>
-                    <th class="border border-gray-600 p-2">Created By</th>
-                    <th class="border border-gray-600 p-2">Deleted</th>
-                    <th class="border border-gray-600 p-2">Created At</th>
-                    <th class="border border-gray-600 p-2">Updated At</th>
-                    <th class="border border-gray-600 p-2">Actions</th>
-                    <th class="border border-gray-600 p-2">Image</th>
-                </tr>
-            </thead>
-            <tbody id="eventTableBody" class="bg-gray-700"></tbody>
-        </table>
+        <div id="eventContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+            <!-- Events will be dynamically added here -->
+        </div>
     </div>
 
     <script>
+        var flag = false;
         async function fetchEvents() {
             try {
                 const response = await axios.get('http://localhost:3000/api/event/dashbord');
                 const events = response.data;
-                const tableBody = document.getElementById('eventTableBody');
-                tableBody.innerHTML = '';
+                const eventContainer = document.getElementById('eventContainer');
+                eventContainer.innerHTML = '';
 
                 events.forEach(event => {
                     const formattedStartTime = event.start_time ? new Date(event.start_time).toISOString().slice(0, 16) : '';
                     const formattedEndTime = event.end_time ? new Date(event.end_time).toISOString().slice(0, 16) : '';
 
-                    const row = document.createElement('tr');
-                    row.classList.add("border", "border-gray-600");
-
-                    row.innerHTML = `
-                <td class='p-2'><input type='text' class='bg-gray-800 text-white p-1 w-full' value='${event.id}' readonly></td>
-                <td class='p-2'><input type='text' class='bg-gray-800 text-white p-1 w-full event-name' value='${event.name}'></td>
-                <td class='p-2'>
-                    <textarea class='bg-gray-800 text-white p-1 w-full event-description'>${event.description}</textarea>
-                </td>
-                <td class='p-2'><input type='text' class='bg-gray-800 text-white p-1 w-full event-location' value='${event.location}'></td>
-                <td class='p-2'><input type='datetime-local' class='bg-gray-800 text-white p-1 w-full event-start-time' value='${formattedStartTime}'></td>
-                <td class='p-2'><input type='datetime-local' class='bg-gray-800 text-white p-1 w-full event-end-time' value='${formattedEndTime}'></td>
-                <td class='p-2'><input type='number' class='bg-gray-800 text-white p-1 w-full event-numOFUser' value='${event.numOFUser}'></td>
-                <td class='p-2'><input type='number' class='bg-gray-800 text-white p-1 w-full event-created-by' value='${event.created_by || ''}'></td>
-                <td class='p-2'><input type='checkbox' class='event-is-deleted' ${event.is_deleted ? 'checked' : ''}></td>
-                <td class='p-2'><input type='text' class='bg-gray-800 text-white p-1 w-full' value='${event.created_at}' readonly></td>
-                <td class='p-2'><input type='text' class='bg-gray-800 text-white p-1 w-full' value='${event.updated_at}' readonly></td>
-                <td class='p-2'>
-                    <img src="${event.image}" class="w-14 h-14"/>
-                    <input type="file" class="bg-gray-800 text-white p-1 w-full image">
-                </td>
-                <td class='p-2'>
-                    <button class='bg-blue-500 text-white px-3 py-1 rounded update-btn' data-id='${event.id}'>Update</button>
-                    <button class='bg-yellow-500 text-white px-3 py-1 rounded image-update-btn' data-id='${event.id}'>Image Update</button>
-                </td>
-            `;
-                    tableBody.appendChild(row);
+                    const eventCard = document.createElement('div');
+                    eventCard.classList.add("bg-gray-800", "text-white", "p-4", "rounded-lg", "shadow", "space-y-2", "form-container");
+                    eventCard.innerHTML = `
+                     <div class='font-bold text-lg'><input type='text' class='bg-gray-700 text-white p-1 w-full event-name' value='${event.name}'></div>
+                    <textarea class='bg-gray-700 text-white p-1 w-full event-description'>${event.description}</textarea>
+                    <p class='text-sm text-gray-400'>Location: <input type='text' class='bg-gray-700 text-white p-1 w-full event-location' value='${event.location}'></p>
+                    <p class='text-sm text-gray-400'>Start: <input type='datetime-local' class='bg-gray-700 text-white p-1 w-full event-start-time' value='${formattedStartTime}'></p>
+                    <p class='text-sm text-gray-400'>End: <input type='datetime-local' class='bg-gray-700 text-white p-1 w-full event-end-time' value='${formattedEndTime}'></p>
+                    <p class='text-sm text-gray-400'>Users: <input type='number' class='bg-gray-700 text-white p-1 w-full event-numOFUser' value='${event.numOFUser}'></p>
+                    <p class='text-sm text-gray-400'>Created By: <input type='number' class='bg-gray-700 text-white p-1 w-full event-created-by' value='${event.created_by || ''}'></p>
+                    <p class='text-sm text-gray-400'>Deleted: <input type='checkbox' class='event-is-deleted' ${event.is_deleted ? 'checked' : ''}></p>
+                    <p class='text-xs text-gray-500'>Created At: <input type='text' class='bg-gray-700 text-white p-1 w-full' value='${event.created_at}' readonly></p>
+                    <p class='text-xs text-gray-500'>Updated At: <input type='text' class='bg-gray-700 text-white p-1 w-full' value='${event.updated_at}' readonly></p>
+                    <img src="${event.image}" class="w-full h-32 object-cover rounded event-image"/>
+                    <input type="file" class="bg-gray-700 text-white p-1 w-full image" onchange="previewImage(event)">
+                    <div class='flex justify-between mt-2'>
+                        <button class='bg-blue-500 text-white px-3 py-1 rounded update-btn' data-id='${event.id}'>Update</button>
+                    </div>
+                `;
+                    eventContainer.appendChild(eventCard);
                 });
             } catch (error) {
                 console.error("Error fetching events:", error);
             }
         }
 
-        async function UpdateImage(id) {
-            const row = document.querySelector(`[data-id='${id}']`).closest("tr");
-            const imageInput = row.querySelector(".image");
-
-            if (!imageInput.files.length) {
-                alert("Please select an image first.");
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append("image", imageInput.files[0]);
-
-            try {
-                await axios.put(`http://localhost:3000/api/event/image/${id}`, formData, {
-                    headers: { "Content-Type": "multipart/form-data" }
-                });
-
-                alert("Image updated successfully ✅");
-                await fetchEvents(); // Refresh the table after update
-            } catch (error) {
-                alert("❌ Error updating image!");
-                console.error("Error updating image:", error);
-            }
-        }
-
         document.addEventListener("DOMContentLoaded", async function () {
             await fetchEvents();
 
-            document.getElementById("eventTableBody").addEventListener("click", async function (event) {
+            document.getElementById("eventContainer").addEventListener("click", async function (event) {
                 const target = event.target;
-
                 if (target.classList.contains("update-btn")) {
                     // Handle full event update
-                    const row = target.closest("tr");
+                    const row = target.closest(".form-container");
                     const id = target.getAttribute("data-id");
-                    const updatedEvent = {
-                        name: row.querySelector(".event-name").value,
-                        description: row.querySelector(".event-description").value,
-                        location: row.querySelector(".event-location").value,
-                        start_time: row.querySelector(".event-start-time").value,
-                        end_time: row.querySelector(".event-end-time").value,
-                        numOFUser: parseInt(row.querySelector(".event-numOFUser").value) || 0,
-                        created_by: parseInt(row.querySelector(".event-created-by").value) || null,
-                        is_deleted: row.querySelector(".event-is-deleted").checked
-                    };
-
+                    const formData = new FormData();
+                    var updatedEvent = null;
+                    if (flag) {
+                        formData.append("name", row.querySelector(".event-name").value);
+                        formData.append("description", row.querySelector(".event-description").value);
+                        formData.append("location", row.querySelector(".event-location").value);
+                        formData.append("start_time", row.querySelector(".event-start-time").value);
+                        formData.append("end_time", row.querySelector(".event-end-time").value);
+                        formData.append("numOFUser", parseInt(row.querySelector(".event-numOFUser").value) || 0);
+                        formData.append("created_by", parseInt(row.querySelector(".event-created-by").value) || null);
+                        formData.append("is_deleted", row.querySelector(".event-is-deleted").checked);
+                        formData.append("image", row.querySelector(".image").files[0]); 
+                    }
+                    else {
+                         updatedEvent = {
+                            name: row.querySelector(".event-name").value,
+                            description: row.querySelector(".event-description").value,
+                            location: row.querySelector(".event-location").value,
+                            start_time: row.querySelector(".event-start-time").value,
+                            end_time: row.querySelector(".event-end-time").value,
+                            numOFUser: parseInt(row.querySelector(".event-numOFUser").value) || 0,
+                            created_by: parseInt(row.querySelector(".event-created-by").value) || null,
+                            is_deleted: row.querySelector(".event-is-deleted").checked,
+                            image: row.querySelector(".event-image").src,
+                        };
+                    }
                     try {
-                        await axios.put(`http://localhost:3000/api/event/dashbord/${id}`, updatedEvent);
-                        console.log(updatedEvent);
+                        await axios.put(`http://localhost:3000/api/event/dashbord/${id}`,updatedEvent?updatedEvent:formData);
+                    
                         alert("Event updated successfully ✅");
                         await fetchEvents(); // Refresh table after update
                     } catch (error) {
@@ -166,7 +132,7 @@
                 end_time: document.getElementById('end_time').value,
                 created_by: document.getElementById('created_by').value
             };
-            console.log(eventData);
+           
 
             try {
                 await axios.post('http://localhost:3000/api/event/', eventData);
@@ -176,6 +142,19 @@
                 console.error('Error inserting event:', error);
             }
         });
+        function previewImage(event) {
+            const box = event.target.parentNode;
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    flag = true;
+                    const imageLabel = box.querySelector(".event-image");
+                    imageLabel.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
     </script>
 </body>
 

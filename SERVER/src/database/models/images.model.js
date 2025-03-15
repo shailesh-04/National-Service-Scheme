@@ -25,6 +25,9 @@ try {
     model.remove = (id,callback)=>{
         conn.query(`DELETE FROM images WHERE id  = ${id};`,callback);
     }
+    model.countRows = (callback)=>{
+        conn.query(`SELECT COUNT(*) as 'numOfRow' FROM images;`,callback);
+    }
 } catch (error) {
     catchErr(error, "imagis.model");
 }

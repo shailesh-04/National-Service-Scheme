@@ -33,6 +33,13 @@ export default function TabLayout() {
                     headerShown: false,
                 }}
             />
+            <Tabs.Screen
+                name="Store"
+                options={{
+                    title: "Store",
+                    headerShown: false,
+                }}
+            />
             {/*
             <Tabs.Screen
                 name="Explore"

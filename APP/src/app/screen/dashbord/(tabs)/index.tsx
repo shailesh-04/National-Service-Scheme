@@ -25,6 +25,7 @@ import HeaderAdmin from "../HeaderAdmin";
 import { api } from "#/src/services/apiinterceptors";
 import { useEventStore } from "#/src/store/dashbord/useEventStore";
 import { getGallery, StorageImagesType } from "#/src/services/storage";
+import { countRows } from "#/src/services/images";
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 interface ImageProps {
     url: string;
@@ -46,6 +47,7 @@ const Index: React.FC = () => {
     const { users, setUsers } = useUserStore();
     const [gallery, setGallery] = useState<StorageImagesType[] | null>(null);
     const [changeImageValue, setChangeImageValue] = useState<any>("");
+    const [numOfImage, setNumOfImage] = useState<number>(0);
     const { setAlert } = useAlert();
     useEffect(() => {
         fetchUpcommintEventData();
@@ -82,10 +84,15 @@ const Index: React.FC = () => {
         fetchUpcomingEvents((data: EventType[], err: string) => {
             setLoading(false);
             if (err) {
-               
                 return;
             }
             setUpcommingEvent(data);
+        });
+
+        countRows((data,err)=>{
+            if(err)
+                return;
+            setNumOfImage(Number(data[0].numOfRow));
         });
 
     };
@@ -161,7 +168,7 @@ const Index: React.FC = () => {
                                     color={Color["second-color"]}
                                 />
                                 <Text className="text-white text-lg font-bold mt-2">
-                                    400
+                                    {numOfImage}
                                 </Text>
                                 <Text className="text-gray-400">Images</Text>
                             </View>

@@ -45,8 +45,6 @@ export default function HomeScreen() {
     }
     useEffect(() => {
             callingApi();
-
-
     }, []);
 
     return (

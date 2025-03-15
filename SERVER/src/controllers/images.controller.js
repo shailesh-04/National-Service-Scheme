@@ -87,6 +87,20 @@ export const eventEmages = (req, res) => {
                 .json({ message: "Internal Server Error : " + error });
     }
 };
+export const countRows = (req, res) => {
+    try {
+        model.countRows((err, data) => {
+            if (err) return res.status(406).json({ message: err.sqlMessage });
+            res.status(200).json(data);
+        });
+    } catch (error) {
+        catchErr(error, "event.controll.countRows");
+        if (err)
+            return res
+                .status(500)
+                .json({ message: "Internal Server Error : " + error });
+    }
+};
 export const remove = (req, res) => {
     try {
         const { id } = req.params;

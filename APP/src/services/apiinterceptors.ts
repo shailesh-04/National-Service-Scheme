@@ -23,6 +23,7 @@ api.interceptors.response.use(
     } else if (!error.response) {
       setAlert("Network Error: Server is unreachable.", "error");
     }
+    console.error(error);
     return Promise.reject(error);
   }
 );
@@ -43,6 +44,7 @@ ExpireApi.interceptors.response.use(
     } else if (!error.response) {
       setAlert("Network Error: Server is unreachable.", "error");
     }
+    console.error(error);
     return Promise.reject(error);
   }
 );
