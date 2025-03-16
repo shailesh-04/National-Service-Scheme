@@ -14,7 +14,8 @@ import {
     verifyUser,
     newUser,
     profile,
-    sendOtp
+    sendOtp,
+    editPassword
 } from "#controllers/users.contraller.js";
 import  cloudinary from "#middleware/cloudinary.middleware.js";
 import { authenticate,viewAuthenticate } from "#middleware/auth.middleware.js";
@@ -30,6 +31,8 @@ try {
     router.post("/sendOTP", sendOtp);
     router.post("/singin", singin);
     router.get("/singin",authenticate,verifyUser);
+    
+    router.put('/editPassword',editPassword);
     
     router.put('/image/:id',authenticate,cloudinary.upload.single('image'),uploadImage);
     router.get("/event/:id", getEventUser);

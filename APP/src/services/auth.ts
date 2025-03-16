@@ -7,6 +7,7 @@ type signupProps = {
     email: string,
     password: string,
     phone: string,
+    otp:string;
 }
 export async function signup(data: signupProps, res: (res: any, error: string|null) => void) {
     api.post<SigninMainType>("/user/signup", data) // Fixed typo in endpoint
@@ -14,7 +15,35 @@ export async function signup(data: signupProps, res: (res: any, error: string|nu
             res(response.data, null); // Extracting `response.data`
         })
         .catch(error => {
-            res(null, 'SingUp Error : ' + (error.response?.data?.message || error.message));
+            res(null, ( error.response?.data?.message));
+        });
+}
+interface ForgatePasswordType{
+    email:string;
+    password:string;
+    otp:string;
+}
+export async function forgatePassword(data:ForgatePasswordType, res: (res: any, error: string|null) => void) {
+    api.put<any>("/user/editPassword",data)
+        .then((response) => {
+            console.log(response);
+            res(response.data?.message , null);
+        })
+        .catch(error => {
+            res(null,(error.response?.data?.message));
+        });
+}
+interface SendOTPType{
+    email:string;
+}
+export async function sendOTP(data:SendOTPType, res: (res: any, error: string|null) => void) {
+    api.post<any>("/user/sendOTP", data)
+        .then((response) => {
+            console.log(response);
+            res(response.data?.message , null);
+        })
+        .catch(error => {
+            res(null,(error.response?.data?.message));
         });
 }
 export interface EventUserProps {
@@ -59,7 +88,7 @@ export const signin = (info: InfoType, res: (data: SigninMainType | null, error:
             res(response.data, null); // Extracting `response.data`
         })
         .catch(error => {
-            res(null, 'Invalid User: ' + (error.response?.data?.message || error.message));
+            res(null, 'Invalid User: ' + (error.response?.data?.message));
         });
 };
 

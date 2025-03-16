@@ -65,6 +65,24 @@ export const newUser = async (req, res) => {
                 .json({ message: "Internal Server Error : " + error });
     }
 };
+export const editPassword = (req, res) => {
+    try {
+        const { email, password,otp} = req.body;
+        if (!email || !password )
+            return res.status(406).json({ message: "Invalid Data.." });
+        if (otpMap.get(email) != otp) return res.status(401).json({ message: "Invalid OTP" });
+        model.editPassword(email,password, (err, data) => {
+            if (err) return res.status(406).json({ message: err.sqlMessage });
+            res.status(200).json({ message: "Successfully Change Your Password" });
+        });
+    } catch (error) {
+        catchErr(error, "user.controll.editPassword");
+        if (err)
+            return res
+                .status(500)
+                .json({ message: "Internal Server Error : " + error });
+    }
+};
 export const sendOtp = async (req, res) => {
     try {
         const { email } = req.body;
@@ -75,7 +93,8 @@ export const sendOtp = async (req, res) => {
         const otp = generateOTP();
         otpMap.set(email, otp);
         try {
-            await sendEmail(email,otp);
+            //await sendEmail(email,otp);
+            console.log(otp);
             res.status(200).json({ message: "OTP sent successfully" }); // Store OTP securely in DB or session
         } catch (error) {
             return res
@@ -93,9 +112,10 @@ export const sendOtp = async (req, res) => {
 export const signup = async (req, res) => {
     try {
         const { name, email, password, phone, otp } = req.body;
-        if (!name || !email || !password || !phone)
+        if (!name || !email || !password )
             return res.status(406).json({ message: "Invalid Data.." });
-        if (otpMap.get(email) != otp) return res.status(401).json({ error: "Invalid OTP" });
+        console.log(otpMap)
+        if (otpMap.get(email) != otp) return res.status(401).json({ message: "Invalid OTP" });
 
         model.create([name, email, password, phone], (err, data) => {
             if (err) return res.status(406).json({ message: err.sqlMessage });

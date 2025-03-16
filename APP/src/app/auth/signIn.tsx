@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Image ,ActivityIndicator} from "react-native";
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    Image,
+    ActivityIndicator,
+} from "react-native";
 import { Theme } from "@/constants/Colors";
 import Button from "@/components/ui/button";
 import { useRouter } from "expo-router";
@@ -8,7 +15,6 @@ import { useUserStore } from "@store/useUserStore";
 import useAlert from "@store/useAlert";
 
 export default function SignInScreen() {
-
     const [loading, setLoading] = useState<boolean>(false);
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
@@ -16,7 +22,7 @@ export default function SignInScreen() {
     const [emailError, setEmailError] = useState<string | null>(null); // Email validation error
     const router = useRouter();
     const setUser = useUserStore((state) => state.setUser);
-    const setAlert = useAlert(s=>s.setAlert);
+    const setAlert = useAlert((s) => s.setAlert);
 
     const validateEmail = (email: string) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -42,13 +48,13 @@ export default function SignInScreen() {
             setLoading(false);
             if (err) {
                 setError("Invalid email or password. Please try again.");
-            } else if (res) { 
-                setAlert("You Are Succsessfuly SignIn!","success");
+            } else if (res) {
+                setAlert("You Are Succsessfuly SignIn!", "success");
                 setUser(res.data, res.token);
                 router.replace("/screen/(tabs)");
             }
         });
-    };    
+    };
 
     return (
         <View
@@ -98,13 +104,18 @@ export default function SignInScreen() {
                 </Text>
             )}
 
-            {/* <TouchableOpacity className="justify-start mb-5 w-full items-end">
+            <TouchableOpacity className="justify-start mb-5 w-full items-end" onPress={()=>{
+                router.replace("/auth/forgetPass")
+            }}>
                 <Text className="text-blue-400">Forgot Password?</Text>
-            </TouchableOpacity> */}
-            {loading?<ActivityIndicator/>:
-            
-            <Button onPress={handleSubmit} className="mt-5">SIGN IN</Button>
-            }
+            </TouchableOpacity>
+            {loading ? (
+                <ActivityIndicator />
+            ) : (
+                <Button onPress={handleSubmit} className="mt-5">
+                    SIGN IN
+                </Button>
+            )}
 
             <View className="flex-row mt-4">
                 <Text>Don’t have an account? </Text>
@@ -117,7 +128,7 @@ export default function SignInScreen() {
 
             <TouchableOpacity
                 className="mt-10 p-4 font-bold rounded-lg"
-                onPress={() => router.push("/screen/(tabs)")}
+                onPress={() => router.replace("/screen/(tabs)")}
             >
                 <Text>SKIP</Text>
             </TouchableOpacity>

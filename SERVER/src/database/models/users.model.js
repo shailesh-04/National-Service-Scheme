@@ -29,6 +29,12 @@ try {
             res
         );
     };
+    model.editPassword = async (email,password,res) => {
+        conn.query(
+            "update users set password = ? where email = ? ",[email,password],
+            res
+        );
+    };
     model.findAll = async (res) => {
         conn.query(
             "SELECT id,name, email, password, phone,role,img FROM users",
