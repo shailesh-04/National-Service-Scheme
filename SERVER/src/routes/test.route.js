@@ -2,6 +2,7 @@ import { Router } from "express";
 const router = Router();
 import { catchErr } from "#color";
 import genarateOTP from "#services/genarateOTP.js";
+import transporter from "#config/email.config.js"
 try {
     router.post("/", async (req, res) => {
         const { email } = req.body;
