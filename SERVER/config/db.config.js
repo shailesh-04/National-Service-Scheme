@@ -15,18 +15,6 @@ const conn = mysql.createConnection({
           }
         : undefined,
 });
-
-conn.connect((err) => {
-    if (err) {
-        color(["❌ Database Connection Failed!", "brightRed", "bold"]);
-        color([`🔍 Error: ${err.message}`, "red", "italic"]);
-    } else {
-        
-color(["════════════════════════════════════", "brightMagenta", "bold"]);
-        color(["✅ Database Connected Successfully!", "brightGreen", "bold"]);
-    }
-});
-
 function connectToDatabase() {
     return new Promise((resolve, reject) => {
         conn.connect((err) => {
@@ -44,6 +32,6 @@ function connectToDatabase() {
         });
     });
 }
-//await connectToDatabase();
+await connectToDatabase();
 
 export default conn;
