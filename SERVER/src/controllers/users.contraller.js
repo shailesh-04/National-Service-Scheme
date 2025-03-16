@@ -3,6 +3,7 @@ import model from "#models/users.model.js";
 import { createToken } from "#services/jwt.service.js";
 import generateOTP from "#services/genarateOTP.js";
 import sendEmail from "#services/sendEmail.js";
+const otpMap = new Map();
 export const All = (req, res) => {
     try {
         model.All((err, data) => {
@@ -67,15 +68,19 @@ export const newUser = async (req, res) => {
 export const sendOtp = async (req, res) => {
     try {
         const { email } = req.body;
-        req.session.otp = generateOTP();
-        req.session.email = email;
+        if(!email)
+            return res
+                .status(500)
+                .json({ error: "Error sending email", message: error.message });
+        const otp = generateOTP();
+        otpMap.set(email, otp);
         try {
-            await sendEmail(email, req.session.otp);
-            res.status(200).json({ send: "OTP sent successfully" }); // Store OTP securely in DB or session
+            await sendEmail(email,otp);
+            res.status(200).json({ message: "OTP sent successfully" }); // Store OTP securely in DB or session
         } catch (error) {
             return res
                 .status(500)
-                .json({ error: "Error sending email", details: error.message });
+                .json({ error: "Error sending email", message: error.message });
         }
     } catch (error) {
         catchErr(error, "user.controll.send otp");
@@ -88,13 +93,9 @@ export const sendOtp = async (req, res) => {
 export const signup = async (req, res) => {
     try {
         const { name, email, password, phone, otp } = req.body;
-
         if (!name || !email || !password || !phone)
             return res.status(406).json({ message: "Invalid Data.." });
-        if(otp != req.session.otp || email != req.session.email)
-            return res
-                .status(500)
-                .json({ error: "Ivalid OTP"});
+        if (otpMap.get(email) != otp) return res.status(401).json({ error: "Invalid OTP" });
 
         model.create([name, email, password, phone], (err, data) => {
             if (err) return res.status(406).json({ message: err.sqlMessage });

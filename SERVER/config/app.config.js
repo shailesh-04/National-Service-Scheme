@@ -25,7 +25,7 @@ try {
             resave: false,
             saveUninitialized: true,
             cookie: {
-                secure: false, // Change to true if using HTTPS
+                secure: false,
                 maxAge: 1000 * 60 * 2, // 2 minutes
             },
         })
