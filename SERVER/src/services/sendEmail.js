@@ -1,7 +1,5 @@
 import { catchErr } from "#color";
-import generateOTP from "#services/genarateOTP.js";
 import transporter from "#config/email.config.js";
-
 async function sendEmail(email,otp) {
     try {
         if (!email) {
@@ -26,7 +24,6 @@ async function sendEmail(email,otp) {
             </div>
             `,
         };
-        
         await transporter.sendMail(mailOptions);
         return Promise.resolve({ message: "OTP sent successfully", otp });
     } catch (error) {
@@ -37,5 +34,4 @@ async function sendEmail(email,otp) {
         });
     }
 }
-
 export default sendEmail;

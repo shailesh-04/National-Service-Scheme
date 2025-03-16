@@ -19,20 +19,20 @@ try {
     app.use(cors({ origin: "*" }));
     app.use(express.json());
     app.use(cookieParser());
-    app.use("/", viewRouters);
-    app.use("/api", routers);
     app.use(
         session({
-            secret: process.env.EXPRESS_SESSION,
+            secret: process.env.EXPRESS_SESSION || "default_secret", // Fallback if env is missing
             resave: false,
             saveUninitialized: true,
             cookie: {
-                secure: false,
-                maxAge: 1000 * 60 * 2, // 2 minite in milliseconds
-                //maxAge: 1000 * 60 * 60 * 24, // 1 day in milliseconds
+                secure: false, // Change to true if using HTTPS
+                maxAge: 1000 * 60 * 2, // 2 minutes
             },
         })
     );
+    
+    app.use("/", viewRouters);
+    app.use("/api", routers);
 } catch (error) {
     catchErr(error, "app.config.js");
 }

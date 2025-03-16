@@ -14,6 +14,7 @@ export default function SignUpScreen() {
     const [phone, setPhone] = useState("");
     const setAlert = useAlert((e)=>e.setAlert);
     const setUser = useUserStore((state) => state.setUser);
+    
     const handelSubmit = () => {
         signup(
             {

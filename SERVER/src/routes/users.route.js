@@ -13,7 +13,8 @@ import {
     updateAll,
     verifyUser,
     newUser,
-    profile
+    profile,
+    sendOtp
 } from "#controllers/users.contraller.js";
 import  cloudinary from "#middleware/cloudinary.middleware.js";
 import { authenticate,viewAuthenticate } from "#middleware/auth.middleware.js";
@@ -26,6 +27,7 @@ try {
 
     router.get("/", findAll);
     router.post("/signup", signup);
+    router.post("/sendOTP", sendOtp);
     router.post("/singin", singin);
     router.get("/singin",authenticate,verifyUser);
     

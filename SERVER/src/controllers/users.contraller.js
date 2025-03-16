@@ -1,7 +1,8 @@
 import { catchErr } from "#color";
 import model from "#models/users.model.js";
 import { createToken } from "#services/jwt.service.js";
-
+import generateOTP from "#services/genarateOTP.js";
+import sendEmail from "#services/sendEmail.js";
 export const All = (req, res) => {
     try {
         model.All((err, data) => {
@@ -63,10 +64,38 @@ export const newUser = async (req, res) => {
                 .json({ message: "Internal Server Error : " + error });
     }
 };
-
+export const sendOtp = async (req, res) => {
+    try {
+        const { email } = req.body;
+        req.session.otp = generateOTP();
+        req.session.email = email;
+        try {
+            await sendEmail(email, req.session.otp);
+            res.status(200).json({ send: "OTP sent successfully" }); // Store OTP securely in DB or session
+        } catch (error) {
+            return res
+                .status(500)
+                .json({ error: "Error sending email", details: error.message });
+        }
+    } catch (error) {
+        catchErr(error, "user.controll.send otp");
+        if (error)
+            return res
+                .status(500)
+                .json({ message: "Internal Server Error : " + error });
+    }
+};
 export const signup = async (req, res) => {
     try {
-        const { name, email, password, phone } = req.body;
+        const { name, email, password, phone, otp } = req.body;
+
+        if (!name || !email || !password || !phone)
+            return res.status(406).json({ message: "Invalid Data.." });
+        if(otp != req.session.otp || email != req.session.email)
+            return res
+                .status(500)
+                .json({ error: "Ivalid OTP"});
+
         model.create([name, email, password, phone], (err, data) => {
             if (err) return res.status(406).json({ message: err.sqlMessage });
             model.singin([email, password], async (err, data) => {
