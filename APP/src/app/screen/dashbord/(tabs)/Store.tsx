@@ -23,10 +23,9 @@ const NSSStoreScreen = () => {
     const [items, setItems] = useState<NSSStoreItem[]>([]);
     const [itemName, setItemName] = useState("");
     const [numberOfItems, setNumberOfItems] = useState("");
-    const [error, setError] = useState<string|null>("");
+    const [error, setError] = useState<string | null>("");
     const [editingId, setEditingId] = useState<number | null>(null);
     const [refreshing, setRefreshing] = useState(false);
-
 
     useEffect(() => {
         loadItems();
@@ -36,8 +35,7 @@ const NSSStoreScreen = () => {
         try {
             setRefreshing(true);
             const data = await fetchItems();
-            if(!data.length)
-                setError("No Data Avalable..");
+            if (!data.length) setError("No Data Avalable..");
             setItems(data);
         } catch (error) {
             setError(String(error));
@@ -116,7 +114,11 @@ const NSSStoreScreen = () => {
                 <View className="flex-row w-full justify-evenly items-center">
                     {editingId && (
                         <TouchableOpacity
-                            onPress={() => setEditingId(null)}
+                            onPress={() => {
+                                setEditingId(null);
+                                setItemName("");
+                                setNumberOfItems("");
+                            }}
                             className="p-3"
                         >
                             <Icons.Feather
@@ -135,13 +137,13 @@ const NSSStoreScreen = () => {
                             {editingId ? "Update Item" : "Add Item"}
                         </Text>
                     </TouchableOpacity>
-
                 </View>
 
-                {error?
-                <Text className="mt-10 text-red-400">
-                    {error}
-                </Text>:''}
+                {error ? (
+                    <Text className="mt-10 text-red-400">{error}</Text>
+                ) : (
+                    ""
+                )}
 
                 <FlatList
                     data={items}

@@ -1,5 +1,5 @@
-import dotenv from "dotenv";
-dotenv.config();
+import {config} from "dotenv";
+config();
 import mysql from "mysql2";
 import color from "#color";
 const conn = mysql.createConnection({

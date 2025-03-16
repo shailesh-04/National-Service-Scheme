@@ -9,6 +9,7 @@ import {
     RefreshControl,
     FlatList,
     Image,
+    Dimensions,
 } from "react-native";
 import { Theme, Color } from "@constants/Colors";
 import ImageSlider from "@components/ImageSlider";
@@ -19,6 +20,7 @@ import * as Icon from "@expo/vector-icons/";
 import { EventType, fetchUpcomingEvents } from "@services/event";
 import useAlert from "@store/useAlert";
 import { getGallery, StorageImagesType } from "#/src/services/storage";
+import Icons from "#/src/components/Icons";
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 interface ImageProps {
     url: string;
@@ -28,6 +30,7 @@ interface EventProps {
 }
 const Index: React.FC = () => {
     const router = useRouter();
+    const { width, height } = Dimensions.get("window");
     const [events, setEvents] = useState<EventType[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [gallery, setGallery] = useState<StorageImagesType[] | null>(null);
@@ -60,7 +63,7 @@ const Index: React.FC = () => {
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{
                     gap: 30,
-                    paddingBottom: 200,
+                    paddingBottom: 400,
                 }}
                 refreshControl={
                     <RefreshControl
@@ -100,8 +103,14 @@ const Index: React.FC = () => {
                         }}
                         ListEmptyComponent={
                             !loading ? (
-                                <View className=" bg-white rounded-3xl p-5 items-center justify-center ">
-                                    <View className="w-[100px] h-[100px]">
+                                <View
+                                    className=" rounded-3xl p-5 items-center justify-center "
+                                    style={{
+                                        width: width / 1.8,
+                                        height: height / 7,
+                                    }}
+                                >
+                                    <View className="w-[100px]  ">
                                         <Image
                                             source={require("@assets/img/NotFoundEvent.png")}
                                             resizeMode="cover"
@@ -113,33 +122,56 @@ const Index: React.FC = () => {
                                     </Text>
                                 </View>
                             ) : (
-                                <View className=" bg-white rounded-3xl p-5 items-center justify-center ">
-                                    <View className="w-[100px] h-[100px]"></View>
-                                </View>
+                               <View
+                                    className=" rounded-3xl p-5 items-center justify-center "
+                                    style={{
+                                        width: width / 1.8,
+                                        height: height / 7,
+                                    }}
+                                ></View>
                             )
                         }
                         snapToAlignment="start"
-                        snapToInterval={250} // Adjust based on your card width + gap
+                        snapToInterval={300} // Adjust based on your card width + gap
                         decelerationRate="fast"
                     />
                 </View>
-                {gallery ? (
+                {gallery?.length ? (
                     <ImageSlider images={gallery} title="Photos" />
                 ) : (
-                    <View className="bg-white w-full py-20 items-center justify-center">
-                        <Text className="text-[#999] font-black">
-                            Not Images For Gallery
-                        </Text>
+                    <View className="items-center">
+                        <View
+                            className="bg-white  items-center justify-center"
+                            style={{
+                                width: "90%",
+                                height: height / 3.5,
+                                borderRadius: 15,
+                            }}
+                        >
+                            <Icons.Ionicons
+                                name="image-outline"
+                                size={150}
+                                color="#999"
+                            />
+                            <Text className="text-[#999] font-black text-2xl">
+                                No Avalable Image
+                            </Text>
+                        </View>
                     </View>
                 )}
 
-                <View className="items-center h-52">
+                <View className="ps-20 mt-20 h-52">
                     <Text className="font-black text-3xl">
                         THANKS FOR JOIN!
                     </Text>
-                    <Text className="w-full text-5xl ps-20 font-black text-[--main-color]">
+                    <Text className=" text-5xl  font-black text-[--main-color]">
                         NSS
                     </Text>
+                    <Icons.SimpleLineIcons
+                        name="emotsmile"
+                        size={150}
+                        color={`${Color["main-color"]}99`}
+                    />
                 </View>
             </ScrollView>
         </SafeAreaView>

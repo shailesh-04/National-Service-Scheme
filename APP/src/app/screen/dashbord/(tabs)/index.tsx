@@ -26,6 +26,7 @@ import { api } from "#/src/services/apiinterceptors";
 import { useEventStore } from "#/src/store/dashbord/useEventStore";
 import { getGallery, StorageImagesType } from "#/src/services/storage";
 import { countRows } from "#/src/services/images";
+import { width } from "#/src/constants/Dimention";
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 interface ImageProps {
     url: string;
@@ -204,7 +205,7 @@ const Index: React.FC = () => {
                         }}
                         ListEmptyComponent={
                             !loading ? (
-                                <View className=" bg-white rounded-3xl p-5 items-center justify-center ">
+                                <View className=" bg-white rounded-3xl p-5 items-center justify-center " style={{width:width/1.8}}>
                                     <View className="w-[100px] h-[100px]">
                                         <Image
                                             source={require("@assets/img/NotFoundEvent.png")}

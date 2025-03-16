@@ -6,13 +6,12 @@ import Animated, {
 } from "react-native-reanimated";
 import { Color } from "@/constants/Colors";
 import { StorageImagesType } from "../services/storage";
+import { height } from "../constants/Dimention";
 const { width } = Dimensions.get("window");
-
 interface EmagisProps {
     images: StorageImagesType[];
     title: string;
 }
-
 const ImageSlider: React.FC<EmagisProps> = ({ images, title }) => {
     const scrollX = useSharedValue(0);
     const scrollRef = React.useRef<Animated.ScrollView>(null);
@@ -36,7 +35,7 @@ const ImageSlider: React.FC<EmagisProps> = ({ images, title }) => {
                 setTimeout(() => {
                     scrollRef.current?.scrollTo({ x: 0, animated: false });
                     currentIndex = 0;
-                }, 500); // थोड़ा सा टाइम दें ताकि यूज़र को स्मूथ लगे
+                }, 500);
             }
         }, 3000);
         return () => clearInterval(interval);
@@ -44,7 +43,7 @@ const ImageSlider: React.FC<EmagisProps> = ({ images, title }) => {
 
     return (
         <View>
-            <View className="px-10 my-2">
+            <View className="px-10 my-2 mt-10">
                 <Text
                     className="text-[20px] font-bold"
                     style={{ color: `${Color["main-color"]}dd` }}
@@ -75,7 +74,7 @@ const ImageSlider: React.FC<EmagisProps> = ({ images, title }) => {
                                 
                                 style={{
                                     width: "90%",
-                                    height: 250,
+                                    height: height/3.5,
                                     borderRadius: 15,
                                 }}
                                 resizeMode="cover"

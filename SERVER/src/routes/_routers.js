@@ -7,6 +7,7 @@ import emages from "./emages.route.js";
 import storage from "./storage.route.js";
 import registratios from "./registration.route.js";
 import nss_store from "./nss_store.route.js";
+import test from "./test.route.js";
 const router = Router();
 try {
     router.use("/user",user);
@@ -15,6 +16,7 @@ try {
     router.use("/storage",storage);
     router.use("/event-registration",registratios);
     router.use("/nss_store",nss_store);
+    router.use("/test",test);
 
 } catch (error) {
     catchErr(error,"_routes");

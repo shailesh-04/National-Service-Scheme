@@ -98,12 +98,12 @@ export default function SignInScreen() {
                 </Text>
             )}
 
-            <TouchableOpacity className="justify-start mb-5 w-full items-end">
+            {/* <TouchableOpacity className="justify-start mb-5 w-full items-end">
                 <Text className="text-blue-400">Forgot Password?</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             {loading?<ActivityIndicator/>:
             
-            <Button onPress={handleSubmit}>SIGN IN</Button>
+            <Button onPress={handleSubmit} className="mt-5">SIGN IN</Button>
             }
 
             <View className="flex-row mt-4">

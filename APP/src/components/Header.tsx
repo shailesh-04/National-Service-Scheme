@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity,Dimensions} from "react-native";
 import { Theme, Color } from "@/constants/Colors";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StatusBar } from "expo-status-bar";
@@ -7,13 +7,13 @@ import { useRouter } from "expo-router";
 import { useUserStore } from "../store/useUserStore";
 
 const Header:React.FC = () => {
-    const [errorVisible, setErrorVisible] = useState(true);
+    const {width,height} = Dimensions.get("window");
     const router = useRouter();
     const roll = useUserStore(s=>s.user?.role);
     return (
         <View
-            className=" rounded-b-[30px]  flex-row justify-between items-center px-6 py-10 relative"
-            style={{ backgroundColor: Color["main-color"] }}
+            className=" rounded-b-[30px]  flex-row justify-between items-center px-6  relative"
+            style={{ backgroundColor: Color["main-color"],paddingVertical:height/25 }}
         >
             <StatusBar backgroundColor={Color["main-color"]} />
             <View className="gap-3 mt-5">

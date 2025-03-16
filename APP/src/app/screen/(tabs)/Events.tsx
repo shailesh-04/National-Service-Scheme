@@ -20,6 +20,7 @@ import Animated, {
     SlideInRight,
     SlideOutRight,
 } from "react-native-reanimated";
+import { height } from "#/src/constants/Dimention";
 
 const Events: React.FC = () => {
     const setAlert = useAlert((s) => s.setAlert);
@@ -100,14 +101,15 @@ const Events: React.FC = () => {
                     
                 <FlatList
                     data={events}
+                    style={{height:height/1.35}}
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={({ item }) => (
                         <Animated.View entering={FadeIn} exiting={FadeOut}>
                             <TabEventCard data={item} />
                         </Animated.View>
                     )}
-                    contentContainerStyle={{ gap: 10, paddingBottom: 20 }}
-                    className="h-[67%] px-7"
+                    contentContainerStyle={{ gap: 10 }}
+                    className=" px-7"
                     onRefresh={() => (events.length < 1 ? fetchData() : null)}
                     refreshing={refreshing}
                     ListEmptyComponent={

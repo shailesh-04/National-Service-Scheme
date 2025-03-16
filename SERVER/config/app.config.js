@@ -1,5 +1,5 @@
 import express from "express";
-import dotenv from "dotenv";
+import {config} from "dotenv";
 import routers from "#routes/_routers.js";
 import viewRouters from "#routes/_viewRouters.js";
 import cors from "cors";
@@ -10,7 +10,7 @@ import session from "express-session";
 import cookieParser from "cookie-parser";
 const app = express();
 try {
-    dotenv.config();
+    config();
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.join(path.dirname(__filename), "../");
     app.set("view engine", "ejs");

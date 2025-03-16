@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity,Dimensions} from "react-native";
 import { Feather, EvilIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Color } from "@/constants/Colors";
@@ -7,6 +7,7 @@ interface EventProps {
     data: EventType;
 }
 const EventCard: React.FC<EventProps> = ({ data }) => {
+    const {width,height} = Dimensions.get("window");
     const router = useRouter();
     const date = new Date(data.start_time)
         .toLocaleDateString("en-US", { month: "short", day: "numeric" })
@@ -17,10 +18,10 @@ const EventCard: React.FC<EventProps> = ({ data }) => {
                 pathname: "/screen/FullEvent",
                 params: { data: JSON.stringify(data) },
               });
-        }} className="w-[260px] gap-3 bg-[#fff] p-3 rounded-xl pb-4">
-            <View className=" ovserflow-hidden rounded-[20px] h-40 w-full relative">
+        }} className="gap-3 bg-[#fff] p-3 rounded-xl pb-4" style={{width:width/1.8}}>
+            <View className=" ovserflow-hidden rounded-[20px]  w-full relative" style={{height:height/7}}>
                 <Image
-                    source={{uri:`${data.image}?random=${data.id}`}}
+                    source={{uri:`${data.image}`}}
                     className="w-full h-full rounded-[20px]"
                     resizeMode="cover"
                 />
