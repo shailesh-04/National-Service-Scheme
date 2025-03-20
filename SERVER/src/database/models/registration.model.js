@@ -5,7 +5,8 @@ class RegistrationModel{
         conn.query("SELECT * FROM registration", res);
     };
     static async inEventfindUsers(id,res){
-        conn.query("SELECT * FROM registration WHERE event_id = ?",[id], res);
+        conn.query("SELECT * FROM registration WHERE event_id = ? ORDER BY id DESC", [id], res);
+
     };
     static async create(body, res){
         conn.query("INSERT INTO registration(user_id,event_id) VALUES(?,?)", body, res);

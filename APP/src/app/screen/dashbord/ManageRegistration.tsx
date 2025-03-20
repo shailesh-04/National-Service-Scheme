@@ -14,6 +14,7 @@ import { useUserStore } from "#/src/store/dashbord/useUserStore";
 import { Theme } from "#/src/constants/Colors";
 import { api } from "#/src/services/apiinterceptors";
 import { Ionicons } from "@expo/vector-icons";
+import { setAlert } from "#/src/components/Alert";
 
 const AcceptRejectScreen = () => {
     const { id } = useLocalSearchParams<{ id: string }>();
@@ -41,7 +42,7 @@ const AcceptRejectScreen = () => {
                 await fetchAllUsers();
             }
         } catch (error) {
-            Alert.alert("Error", "Failed to fetch users");
+            setAlert("Not Fetching Any Data","error");
         } finally {
             setLoading(false);
         }

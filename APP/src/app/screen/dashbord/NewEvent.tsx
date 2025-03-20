@@ -22,6 +22,7 @@ import { useEventStore } from "@store/dashbord/useEventStore";
 import { useUserStore } from "#/src/store/useUserStore";
 import Icons from "#/src/components/Icons";
 import { router } from "expo-router";
+import useAlert from "#/src/store/useAlert";
 // ✅ **Validation Schema**
 const eventSchema = yup.object().shape({
     name: yup
@@ -58,6 +59,7 @@ const AddEventScreen = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [image, setImage] = useState<string | null>(null);
     const [content, setContent] = useState<string>("");
+    const setAlert = useAlert((s) => s.setAlert);
     const {
         control,
         handleSubmit,
@@ -94,22 +96,16 @@ const AddEventScreen = () => {
                     return;
                 }
                 if (Array.isArray(res.data) && res.data.length > 0) {
-                    console.log(res)
+                    console.log(res);
                     addEvent(res.data[0]);
                 } else {
                     console.error("Invalid API response:", res.data);
                 }
-                Alert.alert("Success", "Event added successfully!", [
-                    {
-                        text: "OK",
-                        onPress: () => {
-                            navigation.goBack();
-                        },
-                    },
-                ]);
+                setAlert("Successfuly Create New Event !");
+                navigation.goBack();
             });
-        } else{
-        setLoading(false);
+        } else {
+            setLoading(false);
             Alert.alert("warning", "Must Be Select Any Iamge!", [
                 { text: "OK" },
             ]);
@@ -249,7 +245,7 @@ const AddEventScreen = () => {
                     render={({ field: { onChange, value } }) => (
                         <TextInput
                             className="bg-[--card-background] text-[--text-color] rounded-xl p-4 mb-2 border"
-                            placeholder="YYYY-MM-DD HH:MM:SS"
+                            placeholder="YYYY-MM-DD HH:MM"
                             placeholderTextColor="#888"
                             value={value}
                             onChangeText={onChange}
@@ -270,7 +266,7 @@ const AddEventScreen = () => {
                     render={({ field: { onChange, value } }) => (
                         <TextInput
                             className="bg-[--card-background] text-[--text-color] rounded-xl p-4 mb-2 border"
-                            placeholder="YYYY-MM-DD HH:MM:SS"
+                            placeholder="YYYY-MM-DD HH:MM"
                             placeholderTextColor="#888"
                             value={value}
                             onChangeText={onChange}

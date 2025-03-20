@@ -42,7 +42,7 @@
 
                     const eventCard = document.createElement('div');
                     eventCard.classList.add("bg-gray-800", "text-white", "p-4", "rounded-lg", "shadow", "space-y-2", "form-container");
-                    eventCard.innerHTML = `
+                    eventCard.innerHTML = `<p>${event.id}</p>
                      <div class='font-bold text-lg'><input type='text' class='bg-gray-700 text-white p-1 w-full event-name' value='${event.name}'></div>
                     <textarea class='bg-gray-700 text-white p-1 w-full event-description'>${event.description}</textarea>
                     <p class='text-sm text-gray-400'>Location: <input type='text' class='bg-gray-700 text-white p-1 w-full event-location' value='${event.location}'></p>
@@ -95,7 +95,6 @@
                             location: row.querySelector(".event-location").value,
                             start_time: row.querySelector(".event-start-time").value,
                             end_time: row.querySelector(".event-end-time").value,
-                            numOFUser: parseInt(row.querySelector(".event-numOFUser").value) || 0,
                             created_by: parseInt(row.querySelector(".event-created-by").value) || null,
                             is_deleted: row.querySelector(".event-is-deleted").checked,
                             image: row.querySelector(".event-image").src,

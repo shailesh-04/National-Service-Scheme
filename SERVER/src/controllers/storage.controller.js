@@ -55,7 +55,6 @@ class StorageController {
     }
     static async UpdateImageGallery(req,res){
         const data = req.body;
-        console.log(data);
         Storage.updateValue([data.value,"image-gallry"],(err)=>{
             if(err)
                 return res.status(500).json({ error: err.sqlMessage });

@@ -13,13 +13,16 @@ const EventCard: React.FC<EventProps> = ({ data }) => {
         .toLocaleDateString("en-US", { month: "short", day: "numeric" })
         .split(" ");
     return (
-        <TouchableOpacity onPress={()=>{
+        <TouchableOpacity  onPress={()=>{
             router.push({
                 pathname: "/screen/FullEvent",
                 params: { data: JSON.stringify(data) },
               });
-        }} className="gap-3 bg-[#fff] p-3 rounded-xl pb-4" style={{width:width/1.8}}>
-            <View className=" ovserflow-hidden rounded-[20px]  w-full relative" style={{height:height/7}}>
+        }} className="gap-3 bg-[#fff] p-3 rounded-xl pb-4" style={{width:width/1.8,
+            boxShadow:"0px 1px 5px #999"
+        }}>
+            <View className=" ovserflow-hidden rounded-[20px]  w-full relative" style={{height:height/7,
+            }}>
                 <Image
                     source={{uri:`${data.image}`}}
                     className="w-full h-full rounded-[20px]"

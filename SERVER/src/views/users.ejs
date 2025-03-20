@@ -119,6 +119,7 @@
             userCard.className = "bg-gray-800 text-white p-4 rounded-lg shadow space-y-2";
 
             userCard.innerHTML = `
+            <p>${item.id}</p>
                 <p class='font-bold text-lg'><input type="text" value="${item.name}" class="bg-gray-700 text-white p-1 w-full" id="name${item.id}"></p>
                 <p class='text-sm text-gray-400'>Email: <input type="email" value="${item.email}" class="bg-gray-700 text-white p-1 w-full" id="email${item.id}"></p>
                 <p class='text-sm text-gray-400'>Password: <input type="text" value="${item.password}" class="bg-gray-700 text-white p-1 w-full" id="password${item.id}"></p>

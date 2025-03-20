@@ -23,7 +23,7 @@ class Model {
                     image=?,
                     start_time=?, 
                     end_time=?,
-                    numOFUser=?,
+
                     created_by=?, 
                     is_deleted=?  
                     WHERE id = ${id}; `,

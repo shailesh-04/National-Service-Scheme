@@ -116,8 +116,8 @@ const Index: React.FC = () => {
                     />
                 }
             >
-                <View className="px-5 gap-5">
-                    <View className="flex-1 bg-[--bg-color] p-5 justify-center items-center">
+                <View className="px-5 gap-5 ">
+                    <View className="flex-1 bg-[--bg-color] p-5 justify-center items-center rounded-xl">
                         <Text className="text-[--text-color] text-2xl font-bold mb-5">
                             Dashboard
                         </Text>
@@ -129,7 +129,8 @@ const Index: React.FC = () => {
                                         "/screen/dashbord/(tabs)/Users"
                                     );
                                 }}
-                                className="items-center bg-[--main-color] p-5 rounded-xl w-28"
+                                className="items-center bg-[--main-color] p-5 rounded-xl"
+                                style={{width:width/4}}
                             >
                                 <FontAwesome5
                                     name="users"
@@ -148,7 +149,8 @@ const Index: React.FC = () => {
                                         "/screen/dashbord/(tabs)/Events"
                                     );
                                 }}
-                                className="items-center bg-[--main-color]  p-5 rounded-xl w-28"
+                                style={{width:width/4}}
+                                className="items-center bg-[--main-color]  p-5 rounded-xl"
                             >
                                 <FontAwesome5
                                     name="calendar-alt"
@@ -162,7 +164,8 @@ const Index: React.FC = () => {
                                 <Text className="text-gray-400">Events</Text>
                             </TouchableOpacity>
 
-                            <View className="items-center bg-[--main-color]  p-5 rounded-xl w-28">
+                            <View className="items-center bg-[--main-color]  p-5 rounded-xl"
+                            style={{width:width/4}}>
                                 <FontAwesome5
                                     name="image"
                                     size={24}
@@ -201,7 +204,7 @@ const Index: React.FC = () => {
                         showsHorizontalScrollIndicator={false}
                         contentContainerStyle={{
                             gap: 30,
-                            paddingHorizontal: 10,
+                            padding: 10,
                         }}
                         ListEmptyComponent={
                             !loading ? (
@@ -305,10 +308,12 @@ const Index: React.FC = () => {
                     numColumns={2}
                     keyExtractor={(item, i) => i.toString()}
                     columnWrapperStyle={{ justifyContent: "space-evenly" }}
-                    contentContainerStyle={{ gap: 12 }}
+                    contentContainerStyle={{ gap: 5 }}
                     scrollEnabled={false}
                     renderItem={({ item }) => (
-                        <View className="w-[40%] aspect-square bg-white rounded-2xl shadow-md overflow-hidden mt-3">
+                        <View className="aspect-square bg-white rounded-2xl shadow-md overflow-hidden mt-3" style={{
+                            width:width/2.3
+                        }}>
                             <Image
                                 source={{ uri: item.imageurl }}
                                 className="w-full h-full"

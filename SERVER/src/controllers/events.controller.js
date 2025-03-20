@@ -22,7 +22,6 @@ export const AllUpdate = (req, res) => {
             location,
             start_time,
             end_time,
-            numOFUser,
             created_by,
             is_deleted,
             image,
@@ -30,6 +29,7 @@ export const AllUpdate = (req, res) => {
         const file = req.file ? req.file.path : image;
         
         model.AllUpdate(
+         
             id,
             [
                 name,
@@ -38,7 +38,6 @@ export const AllUpdate = (req, res) => {
                 file,
                 start_time,
                 end_time,
-                numOFUser,
                 created_by,
                 Boolean(is_deleted),
             ],

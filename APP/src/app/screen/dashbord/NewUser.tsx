@@ -21,6 +21,7 @@ import * as yup from "yup";
 import UploadProfileImage from "#/src/components/UploadProfileImahe";
 import { StatusBar } from "expo-status-bar";
 import { createUser, EditProfileImage } from "#/src/services/user";
+import useAlert from "#/src/store/useAlert";
 // Validation Schema
 const profileSchema = yup.object().shape({
     name: yup.string().required("Please enter your full name"),
@@ -41,7 +42,7 @@ const profileSchema = yup.object().shape({
     confirmPassword: yup
         .string()
         .oneOf([yup.ref("password")], "Passwords do not match"),
-        
+
     role: yup
         .string()
         .oneOf(["1", "2", "3", "a"], "Invalid role")
@@ -74,7 +75,7 @@ const AddUserScreen = () => {
             is_deleted: false,
         },
     });
-
+    const setAlertData = useAlert(state => state.setAlert);
     const onSubmit = async (data: any) => {
         setLoading(true);
         await createUser(
@@ -108,28 +109,32 @@ const AddUserScreen = () => {
                         type: "image/jpeg",
                         name: "upload.jpg",
                     } as any);
-                     EditProfileImage(formData, res.data.id, (res, err) => {
+                    EditProfileImage(formData, res.data.id, (res, err) => {
                         setLoading(false);
                         if (err) {
+                         
                             Alert.alert(
                                 "Error",
-                                "Fail Image Upload! Update Image From User Profile : "+err,
+                                "Fail Image Upload! Update Image From User Profile : " +
+                                    err,
                                 [
-                                    { text: "OK", onPress: () => navigation.goBack() },
-                                    {text:"cansel"}
+                                    {
+                                        text: "OK",
+                                        onPress: () => navigation.goBack(),
+                                    },
+                                    { text: "cansel" },
                                 ]
                             );
                             return;
                         }
-                        Alert.alert("Success", "User updated successfully!", [
-                            { text: "OK", onPress: () => navigation.goBack() },
-                        ]);
+
+                        setAlertData("New User Successfully Create!", "success");
+                        navigation.goBack();
                     });
-                } else
-                setLoading(false);
-                    Alert.alert("Success", "User updated successfully!", [
-                        { text: "OK", onPress: () => navigation.goBack() },
-                    ]);
+                } else {
+                    setAlertData("New User Successfully Create!", "success");
+                    navigation.goBack();
+                }
             }
         );
     };

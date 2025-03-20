@@ -25,6 +25,7 @@ import { api } from "#/src/services/apiinterceptors";
 import useAlert from "#/src/store/useAlert";
 import HeaderAdmin from "../HeaderAdmin";
 import Button from "#/src/components/ui/button";
+import Icons from "#/src/components/Icons";
 
 const UserScreen = () => {
     const { width, height } = Dimensions.get("window");
@@ -60,7 +61,7 @@ const UserScreen = () => {
                 .map((user) => user.id);
             setSelectedUsersForDeletion(deletedUserIds);
         } catch (error) {
-            setAlert("faild data fetching","warn");
+            setAlert("faild data fetching", "warn");
         }
         setLoading(false);
     };
@@ -78,14 +79,15 @@ const UserScreen = () => {
         }
         const newDeletedStatus = !user.is_deleted; // Toggle is_deleted status
         Alert.alert(
-            "Delete User",
-            `Are you sure you want to ${
-                newDeletedStatus ? "delete" : "restore"
-            } this user?`,
+            newDeletedStatus?"Delete":"Restore",
+            `Are you sure you want to ${newDeletedStatus?"Delete":"Restore"} this user`,
             [
-                { text: "Cancel", style: "cancel" },
                 {
-                    text: "OK",
+                    text: "❌ No",
+                    style: "cancel",
+                },
+                {
+                    text: "✅ Yes",
                     onPress: async () => {
                         try {
                             // Send full user data with updated is_deleted status
@@ -124,12 +126,12 @@ const UserScreen = () => {
         transform: [{ translateY: translateY.value }],
     }));
     const filteredUsers = isDeleted
-        ? users
+        ? users.filter((user) => user.is_deleted)
         : users.filter((user) => !user.is_deleted);
     return (
         <SafeAreaView style={Theme} className="bg-[--bg-color] flex-1 relative">
             <HeaderAdmin />
-            <View className="px-5 mt-3 " style={{height:height-200}}>
+            <View className="px-5 mt-3 " style={{ height: height - 200 }}>
                 <View className="flex-row justify-between mt-4 items-center">
                     <Text className="text-[--text-color] text-xl font-semibold mb-4">
                         User Dashboard
@@ -149,13 +151,13 @@ const UserScreen = () => {
                         {isDeleted ? (
                             <Feather name="check" size={24} color="black" />
                         ) : (
-                            <Feather name="x" size={24} color="black" />
+                            ""
                         )}
                     </TouchableOpacity>
                 </View>
                 <Button
-                    className="w-[40%] mb-5"
-                    style={{ width: "50%" }}
+                    className=" mb-5 mt-5 m-auto"
+                    style={{ width: width / 1.2 }}
                     onPress={() => {
                         navigation.push("/screen/dashbord/NewUser");
                     }}
@@ -187,12 +189,17 @@ const UserScreen = () => {
                                     exiting={FadeOutUp}
                                     className="mb-3"
                                 >
-                                    <TouchableOpacity onPress={()=>{
-                                        navigation.push({
-                                            pathname: "/screen/dashbord/ViewUser",
-                                            params: { user: JSON.stringify(item) },
-                                          })
-                                    }}>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            navigation.push({
+                                                pathname:
+                                                    "/screen/dashbord/ViewUser",
+                                                params: {
+                                                    user: JSON.stringify(item),
+                                                },
+                                            });
+                                        }}
+                                    >
                                         <Animated.View
                                             className="bg-[--bg-color] p-4 rounded-xl flex-row items-center justify-between shadow-md"
                                             style={animatedStyle}
@@ -214,10 +221,20 @@ const UserScreen = () => {
                                                 )}
                                                 <View>
                                                     <Text className="text-[--text-color] font-semibold">
-                                                        {item.name}
+                                                        {item.name.length > 20
+                                                            ? item.name.substring(
+                                                                  0,
+                                                                  20
+                                                              ) + "..."
+                                                            : item.name}
                                                     </Text>
                                                     <Text className="text-[--light-dark-color]">
-                                                        {item.email}
+                                                        {item.email.length > 20
+                                                            ? item.email.substring(
+                                                                  0,
+                                                                  20
+                                                              ) + "..."
+                                                            : item.email}
                                                     </Text>
                                                 </View>
                                             </View>
@@ -245,20 +262,16 @@ const UserScreen = () => {
                                                     {selectedUsersForDeletion.includes(
                                                         item.id
                                                     ) ? (
-                                                        <AntDesign
-                                                            name="checksquare"
+                                                        <Icons.FontAwesome
+                                                            name="recycle"
                                                             size={22}
-                                                            color="red"
+                                                            color="green"
                                                         />
                                                     ) : (
                                                         <AntDesign
-                                                            name="checksquareo"
+                                                            name="delete"
                                                             size={22}
-                                                            color={
-                                                                Color[
-                                                                    "main-color"
-                                                                ]
-                                                            }
+                                                            color="red"
                                                         />
                                                     )}
                                                 </TouchableOpacity>

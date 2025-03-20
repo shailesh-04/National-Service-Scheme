@@ -17,6 +17,7 @@ import DataNotFound from "@components/DataNotFound";
 import useAlert from "@store/useAlert";
 import HeaderAdmin from "../HeaderAdmin";
 import Button from "#/src/components/ui/button";
+import { router } from "expo-router";
 
 const EventImageList: React.FC = () => {
     const [events, setEvents] = useState<ImageProps[]>([]);
@@ -58,14 +59,6 @@ const EventImageList: React.FC = () => {
     return (
         <SafeAreaView style={Theme} className="flex-1 bg-gray-100">
             <HeaderAdmin />
-            <TouchableOpacity
-                className="p-3 items-center"
-                onPress={() => {
-                    Linking.openURL(`${process.env.EXPO_PUBLIC_URL}emages`);
-                }}
-            >
-                <Text className="text-blue-700 underline">Manage Images</Text>
-            </TouchableOpacity>
             <FlatList
                 data={events}
                 className="px-5 py-4"

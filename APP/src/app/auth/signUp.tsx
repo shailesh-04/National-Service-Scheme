@@ -63,10 +63,10 @@ export default function SignUpScreen() {
 
         sendOTP({ email }, (res, err) => {
             if (err) {
-                setAlert(err,"success");
+                setAlert(err,"error");
                 return;
             }
-            setAlert(String(res));
+            setAlert(String(res),"success");
         });
     };
 

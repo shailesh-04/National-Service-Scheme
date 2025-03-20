@@ -16,6 +16,8 @@ import { useNavigation } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
 import Button from "#/src/components/ui/button";
 import { updateValue } from "#/src/services/storage";
+import { Color } from "../EditProfile";
+import useAlert from "#/src/store/useAlert";
 
 const ManageImages = () => {
     const [gallery, setGallery] = useState<ImageData[]>([]);
@@ -23,6 +25,7 @@ const ManageImages = () => {
     const { imageId } = useLocalSearchParams();
     const [selectedImages, setSelectedImages] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
+    const setAlert = useAlert((s) => s.setAlert);
     useEffect(() => {
         fetchImages((res, err) => {
             if (err) setAlert(err, "error");
@@ -41,18 +44,12 @@ const ManageImages = () => {
         setLoading(true);
         updateValue(selectedImages.join(), (res, err) => {
             setLoading(false);
-            if (err){
+            if (err) {
                 Alert.alert(err);
                 return;
-            } 
-            Alert.alert("Success", "Event added successfully!", [
-                {
-                    text: "OK",
-                    onPress: () => {
-                        navigation.goBack();
-                    },
-                },
-            ]);
+            }
+            setAlert("Home Gallery Updated Successfuly","success");
+            navigation.goBack();
         });
     }
     return (
@@ -60,11 +57,11 @@ const ManageImages = () => {
             <SafeAreaView className="py-10 h-[90%]">
                 <View className="flex-row justify-between items-center mb-5 relative bg-white py-5 rounded-full">
                     <Text className="text-[10px] text-center w-full">
-                        SELECT AND REMOVE IMAGE : GALLERY
+                        SELECT AND REMOVE IMAGE FOR HOME GALLERY
                     </Text>
                     <TouchableOpacity
                         onPress={() => navigation.goBack()}
-                        className="absolute left-10"
+                        className="absolute left-4"
                     >
                         <Icons.Feather
                             name="arrow-left"
@@ -93,7 +90,7 @@ const ManageImages = () => {
                                 style={{
                                     borderWidth: 2,
                                     borderColor: isSelected
-                                        ? "red"
+                                        ? `${Color["main-color"]}`
                                         : "transparent",
                                 }}
                             >

@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import { Color } from "@/constants/Colors";
 import { EventType } from "@services/event";
 import Button from "./ui/button";
+import { width } from "../constants/Dimention";
 interface EventProps {
     data: EventType;
 }
@@ -20,7 +21,8 @@ const EventCard: React.FC<EventProps> = ({ data }) => {
                     params: { data: JSON.stringify(data) },
                 });
             }}
-            className="w-[260px] gap-3 bg-[#fff] p-3 rounded-xl pb-4"
+            className="gap-3 bg-[#fff] p-3 rounded-xl pb-4"
+            style={{width:width/1.6,boxShadow:"0px 1px 5px #0202"}}
         >
             <View className=" ovserflow-hidden rounded-[20px] h-40 w-full relative">
                 <Image
@@ -37,18 +39,18 @@ const EventCard: React.FC<EventProps> = ({ data }) => {
                     </Text>
                 </View>
             </View>
-            <View className="gap-2 ps-2">
+            <View className="gap-2">
                 <Text
                     numberOfLines={1}
                     ellipsizeMode="tail"
-                    className="ps-1 text-[17px] font-bold"
+                    className="px-2 text-[17px] font-bold"
                     style={{ color: `${Color["text-color"]}dd` }}
                 >
                     {data.name.length > 18
                         ? data.name.substring(0, 18) + "..."
                         : data.name}
                 </Text>
-                <View className="flex-row gap-3 px-3">
+                <View className="flex-row gap-3">
                     <Button className="bg-transparent border border-[--main-color] "
                     onPress={()=>{
                         router.push({

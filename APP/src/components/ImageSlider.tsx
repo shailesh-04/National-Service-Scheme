@@ -67,15 +67,18 @@ const ImageSlider: React.FC<EmagisProps> = ({ images, title }) => {
                                 width,
                                 justifyContent: "center",
                                 alignItems: "center",
+                                paddingTop:10,
+                                paddingBottom:10
                             }}
                         >
                             <Image
-                                source={{ uri:image.imageurl }}
+                                source={{ uri: image.imageurl }}
                                 
                                 style={{
                                     width: "90%",
-                                    height: height/3.5,
+                                    height: height / 3,
                                     borderRadius: 15,
+                                    boxShadow:"0px 1px 5px #888",
                                 }}
                                 resizeMode="cover"
                             />

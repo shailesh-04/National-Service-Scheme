@@ -6,6 +6,7 @@ import {
     TouchableOpacity,
     FlatList,
     Image,
+    Alert,
 } from "react-native";
 import Header from "../HeaderAdmin";
 import { Theme, Color } from "@constants/Colors";
@@ -21,8 +22,7 @@ import { DeleteEvent, Restore } from "#/src/services/dashbord/event";
 import Button from "#/src/components/ui/button";
 import { Dimensions } from "react-native";
 const Events: React.FC = () => {
-    
-const { width, height } = Dimensions.get("window");
+    const { width, height } = Dimensions.get("window");
     const router = useRouter();
     const setAlert = useAlert((s) => s.setAlert);
 
@@ -97,8 +97,9 @@ const { width, height } = Dimensions.get("window");
                                     <TouchableOpacity
                                         onPress={() =>
                                             router.push({
-                                                pathname:"/screen/dashbord/EditEvent",
-                                                params:{ eventId: item.id}
+                                                pathname:
+                                                    "/screen/dashbord/EditEvent",
+                                                params: { eventId: item.id },
                                             })
                                         }
                                     >
@@ -110,56 +111,87 @@ const { width, height } = Dimensions.get("window");
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         onPress={() => {
-                                            item.is_deleted
-                                                ? Restore(
-                                                      item.id,
-                                                      (res, err) => {
-                                                          if (err) {
-                                                              setAlert(
-                                                                  "Edit Error" +
-                                                                      err,
-                                                                  "warn"
-                                                              );
-                                                              return;
-                                                          }
-                                                          updateEvent(
-                                                              item.id,
-                                                              "is_deleted",
-                                                              false
-                                                          );
-                                                      }
-                                                  )
-                                                : DeleteEvent(
-                                                      item.id,
-                                                      (res, err) => {
-                                                          if (err) {
-                                                              setAlert(
-                                                                  "Edit Error" +
-                                                                      err,
-                                                                  "warn"
-                                                              );
-                                                              return;
-                                                          }
-                                                          updateEvent(
-                                                              item.id,
-                                                              "is_deleted",
-                                                              true
-                                                          );
-                                                      }
-                                                  );
+                                            Alert.alert(
+                                                !item.is_deleted
+                                                    ? "Delete"
+                                                    : "Restore",
+                                                `Are you sure you want to ${
+                                                    !item.is_deleted
+                                                        ? "Delete"
+                                                        : "Restore"
+                                                } this Event`,
+                                                [
+                                                    {
+                                                        text: "❌ No",
+                                                        style: "cancel",
+                                                    },
+                                                    {
+                                                        text: "✅ Yes",
+                                                        onPress: async () => {
+                                                            item.is_deleted
+                                                                ? Restore(
+                                                                      item.id,
+                                                                      (
+                                                                          res,
+                                                                          err
+                                                                      ) => {
+                                                                          if (
+                                                                              err
+                                                                          ) {
+                                                                              setAlert(
+                                                                                  "Edit Error" +
+                                                                                      err,
+                                                                                  "error"
+                                                                              );
+                                                                              return;
+                                                                          }
+                                                                          updateEvent(
+                                                                              item.id,
+                                                                              "is_deleted",
+                                                                              false
+                                                                          );
+                                                                      }
+                                                                  )
+                                                                : DeleteEvent(
+                                                                      item.id,
+                                                                      (
+                                                                          res,
+                                                                          err
+                                                                      ) => {
+                                                                          if (
+                                                                              err
+                                                                          ) {
+                                                                              setAlert(
+                                                                                  "Edit Error" +
+                                                                                      err,
+                                                                                  "warn"
+                                                                              );
+                                                                              return;
+                                                                          }
+                                                                          updateEvent(
+                                                                              item.id,
+                                                                              "is_deleted",
+                                                                              true
+                                                                          );
+                                                                      }
+                                                                  );
+                                                        },
+                                                    },
+                                                ]
+                                            );
                                         }}
                                     >
                                         {item.is_deleted ? (
-                                            <Icon.AntDesign
-                                                name="delete"
+                                            <Icon.FontAwesome
+                                                name="recycle"
                                                 size={22}
-                                                color="red"
+                                                color="green"
                                             />
                                         ) : (
                                             <Icon.AntDesign
                                                 name="delete"
                                                 size={22}
-                                                color="green"
+                                                color="red"
                                             />
                                         )}
                                     </TouchableOpacity>
@@ -220,7 +252,7 @@ const { width, height } = Dimensions.get("window");
                     }}
                     contentContainerStyle={{ gap: 10, paddingBottom: 20 }}
                     className="px-7"
-                    style={{height:height-300}}
+                    style={{ height: height - 300 }}
                     onRefresh={fetchData}
                     refreshing={refreshing}
                     ListEmptyComponent={

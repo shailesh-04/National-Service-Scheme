@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "App",
-    "slug": "App",
+    "name": "NSS Mahuva",
+    "slug": "NSS-Mahuva",
     "owner": "marvel67821",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -17,7 +17,7 @@
         "foregroundImage": "./src/assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.anonymous.App",
+      "package": "com.anonymous.NSS-Mahuva",
       "permissions": [
         "android.permission.RECORD_AUDIO"
       ]

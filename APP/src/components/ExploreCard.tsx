@@ -1,16 +1,15 @@
 import React, { useEffect } from "react";
-import {
-    View,
-    FlatList,
-    Image,
-    Text,
-    TouchableOpacity,
-} from "react-native";
+import { View, FlatList, Image, Text, TouchableOpacity } from "react-native";
 import { ImageProps } from "@/services/images";
 import * as Icon from "@expo/vector-icons";
 import { Color } from "@/constants/Colors";
 import { useRouter } from "expo-router";
-import Animated, { useSharedValue, useAnimatedStyle, withSpring } from "react-native-reanimated";
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    withSpring,
+} from "react-native-reanimated";
+import Button from "./ui/button";
 
 const ExploreCard: React.FC<{ event: ImageProps }> = ({ event }) => {
     const router = useRouter();
@@ -30,13 +29,15 @@ const ExploreCard: React.FC<{ event: ImageProps }> = ({ event }) => {
     }));
 
     return (
-        <Animated.View 
+        <Animated.View
             style={animatedStyle}
             className="mb-6 p-4 bg-white rounded-xl shadow-lg"
         >
             <View className="flex-row justify-between items-center py-2">
                 <Text className="text-xl font-bold">
-                    {event.name.length > 20 ? event.name.substring(0, 20) + "..." : event.name}
+                    {event.name.length > 20
+                        ? event.name.substring(0, 20) + "..."
+                        : event.name}
                 </Text>
                 <TouchableOpacity
                     className="flex-row justify-center items-center"
@@ -47,12 +48,30 @@ const ExploreCard: React.FC<{ event: ImageProps }> = ({ event }) => {
                         });
                     }}
                 >
-                    <Text style={{ color: `${Color["text-color"]}88` }} className="text-[14px]">
+                    <Text
+                        style={{ color: `${Color["text-color"]}88` }}
+                        className="text-[14px]"
+                    >
                         See Event
                     </Text>
-                    <Icon.AntDesign name="caretright" size={15} color={`${Color["text-color"]}88`} />
+                    <Icon.AntDesign
+                        name="caretright"
+                        size={15}
+                        color={`${Color["text-color"]}88`}
+                    />
                 </TouchableOpacity>
             </View>
+            <Button
+                className="p-3 items-center mt-3 mb-3"
+                onPress={() => {
+                    router.push({
+                        pathname:"/screen/dashbord/UploadImages",
+                        params:{eventID:event.id}
+                    });
+                }}
+            >
+                <Text>Upload Images</Text>
+            </Button>
 
             {/* Image Grid */}
             <FlatList
@@ -63,9 +82,20 @@ const ExploreCard: React.FC<{ event: ImageProps }> = ({ event }) => {
                 contentContainerStyle={{ gap: 12 }}
                 scrollEnabled={false}
                 renderItem={({ item }) => (
-                    <View className="w-[48%] aspect-square bg-white rounded-2xl shadow-md overflow-hidden mt-3">
-                        <Image source={{ uri: item.imageurl }} className="w-full h-full" />
-                    </View>
+                    <TouchableOpacity
+                        className="w-[48%] aspect-square bg-white rounded-2xl shadow-md overflow-hidden mt-3"
+                        onPress={() => {
+                            router.push({
+                                pathname: "/screen/FullImage",
+                                params: { imageUrl: item.imageurl },
+                            });
+                        }}
+                    >
+                        <Image
+                            source={{ uri: item.imageurl }}
+                            className="w-full h-full"
+                        />
+                    </TouchableOpacity>
                 )}
             />
         </Animated.View>

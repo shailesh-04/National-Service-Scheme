@@ -22,6 +22,7 @@ import Button from "#/src/components/ui/button";
 import { api } from "#/src/services/apiinterceptors";
 import { useUserStore } from "#/src/store/useUserStore";
 import useAlert from "#/src/store/useAlert";
+import { height } from "#/src/constants/Dimention";
 const FullEvent: React.FC = () => {
     const router = useRouter();
     const mainUser = useUserStore((s) => s.user);
@@ -67,6 +68,10 @@ const FullEvent: React.FC = () => {
             setLoading(false);
         }
     }, []);
+    const toDay = new Date(); // Get current date as a Date object
+    const eventStartTime = event?.start_time
+        ? new Date(event.start_time)
+        : null;
     async function check(id: number) {
         try {
             setLoading1(true);
@@ -98,22 +103,26 @@ const FullEvent: React.FC = () => {
     return (
         <SafeAreaView style={Theme} className="flex-1 relative">
             <ScrollView className="">
-                <View className="w-full h-[60%]">
+                <View className="w-full " style={{height:height/2.5}}>
                     <Image
                         source={{ uri: event?.image }}
-                        className="w-full h-full"
-                        resizeMode="cover" // Shows full image without cropping
+                        className="w-full h-full rounded-3xl"
+                        resizeMode="cover" 
+                        
                     />
                 </View>
                 <View className="items-center mt-[-30px]">
                     {mainUser?.role == "a" ? (
-                        <TouchableOpacity className="flex-row items-center gap-4 bg-[--bg-color] px-5 py-4 w-[80%] rounded-full"
-                        onPress={()=>{
-                            router.push({
-                                pathname:"/screen/dashbord/ManageRegistration",
-                                params:{id:event?.id}
-                            })
-                        }}>
+                        <TouchableOpacity
+                            className="flex-row items-center gap-4 bg-[--bg-color] px-5 py-4 w-[80%] rounded-full"
+                            onPress={() => {
+                                router.push({
+                                    pathname:
+                                        "/screen/dashbord/ManageRegistration",
+                                    params: { id: event?.id },
+                                });
+                            }}
+                        >
                             <Icons.Feather
                                 name="users"
                                 size={20}
@@ -130,7 +139,9 @@ const FullEvent: React.FC = () => {
                                     +{event?.numOFUser} Going
                                 </Text>
                                 <Text>|</Text>
-                                <Text className="text-blue-700 underline">Manage Register User</Text>
+                                <Text className="text-blue-700 underline">
+                                    Manage Register User
+                                </Text>
                             </View>
                         </TouchableOpacity>
                     ) : (
@@ -280,42 +291,48 @@ const FullEvent: React.FC = () => {
                     Event Details
                 </Text>
             </View>
-            {registed ? (
-                <View className="items-center mb-10">
-                    <Text>Registed In this Event</Text>
-                </View>
+            {eventStartTime && toDay < eventStartTime ? (
+                registed ? (
+                    <View className="items-center mb-10">
+                        <Text>Registered in this Event</Text>
+                    </View>
+                ) : (
+                    <View className="items-center mb-10">
+                        {loading1 ? (
+                            <ActivityIndicator />
+                        ) : (
+                            <Button
+                                style={{
+                                    width: "80%",
+                                    boxShadow: "0px 1px 10px #777",
+                                }}
+                                onPress={() => {
+                                    Alert.alert(
+                                        "🎟️ Event Registration",
+                                        "Are you sure you want to register for this event? 🎉 This will secure your spot!",
+                                        [
+                                            {
+                                                text: "✅ Yes, Register Me!",
+                                                onPress: () => onRegister(),
+                                            },
+                                            {
+                                                text: "❌ No, Maybe Later",
+                                                style: "cancel",
+                                            },
+                                        ]
+                                    );
+                                }}
+                            >
+                                <Text className="text-[15px] underline">
+                                    Register
+                                </Text>
+                            </Button>
+                        )}
+                    </View>
+                )
             ) : (
                 <View className="items-center mb-10">
-                    {loading1 ? (
-                        <ActivityIndicator />
-                    ) : (
-                        <Button
-                            style={{
-                                width: "80%",
-                                boxShadow: "0px 1px 10px #777",
-                            }}
-                            onPress={() => {
-                                Alert.alert(
-                                    "🎟️ Event Registration", // Engaging title
-                                    "Are you sure you want to register for this event? 🎉 This will secure your spot!", // Clear & engaging message
-                                    [
-                                        {
-                                            text: "✅ Yes, Register Me!",
-                                            onPress: () => onRegister(),
-                                        },
-                                        {
-                                            text: "❌ No, Maybe Later",
-                                            style: "cancel",
-                                        },
-                                    ]
-                                );
-                            }}
-                        >
-                            <Text className="text-[15px] underline">
-                                Register
-                            </Text>
-                        </Button>
-                    )}
+                    <Text>This Event Is Expired</Text>
                 </View>
             )}
         </SafeAreaView>

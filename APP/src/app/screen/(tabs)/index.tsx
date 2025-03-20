@@ -63,7 +63,7 @@ const Index: React.FC = () => {
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{
                     gap: 30,
-                    paddingBottom: 400,
+                    paddingBottom: 300,
                 }}
                 refreshControl={
                     <RefreshControl
@@ -100,6 +100,7 @@ const Index: React.FC = () => {
                         contentContainerStyle={{
                             gap: 30,
                             paddingHorizontal: 10,
+                            paddingVertical:10,
                         }}
                         ListEmptyComponent={
                             !loading ? (
@@ -122,7 +123,7 @@ const Index: React.FC = () => {
                                     </Text>
                                 </View>
                             ) : (
-                               <View
+                                <View
                                     className=" rounded-3xl p-5 items-center justify-center "
                                     style={{
                                         width: width / 1.8,
@@ -160,18 +161,30 @@ const Index: React.FC = () => {
                     </View>
                 )}
 
-                <View className="ps-20 mt-20 h-52">
-                    <Text className="font-black text-3xl">
-                        THANKS FOR JOIN!
+                <View className=" px-5">
+                    <Text className=" text-2xl font-black text-[--main-color] underline">
+                        About National Service Scheme (NSS)
                     </Text>
-                    <Text className=" text-5xl  font-black text-[--main-color]">
-                        NSS
+                    <Text className="text-[#555] mt-5  px-4 border-x border-[--main-color] ">
+                        {"      "}The National Service Scheme (NSS) is a Central Sector
+                        Scheme of Government of India, Ministry of Youth Affairs
+                        & Sports. It provides opportunity to the student youth
+                        of 11th & 12th Class of schools at +2 Board level and
+                        student youth of Technical Institution, Graduate & Post
+                        Graduate at colleges and University level of India to
+                        take part in various Government led community service
+                        activities & programmes. {"\n       "}
+                        The primary objective of
+                        developing the personality and character of the student
+                        youth through voluntary community service. ‘Education
+                        through Service’ is the purpose of the NSS. NSS was
+                        launched in 1969 in 37 Universities involving about
+                        40,000 volunteers which has now spread over 657
+                        Universities and 51 +2 Councils/Directorates, covering
+                        20,669 Colleges/ Technical Institutions and 11,988
+                        Senior Secondary School. Since inception , over 7.4
+                        crore students have benefitted from NSS.
                     </Text>
-                    <Icons.SimpleLineIcons
-                        name="emotsmile"
-                        size={150}
-                        color={`${Color["main-color"]}99`}
-                    />
                 </View>
             </ScrollView>
         </SafeAreaView>

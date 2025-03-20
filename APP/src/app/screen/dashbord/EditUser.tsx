@@ -23,7 +23,7 @@ import HeaderAdmin from "./HeaderAdmin";
 import UploadProfileImage from "#/src/components/UploadProfileImahe";
 import { StatusBar } from "expo-status-bar";
 import { EditProfileImage } from "#/src/services/user";
-
+import useAlert from "#/src/store/useAlert";
 // Validation Schema
 const profileSchema = yup.object().shape({
     name: yup.string().required("Please enter your full name"),
@@ -58,6 +58,7 @@ const UpdateUserScreen = () => {
     const { updateUser, users, getUser } = useUserStore();
     const [loading, setLoading] = useState<boolean>(false);
     const [image, setImage] = useState<string | null>("");
+    const setAlert = useAlert(state=>state.setAlert);
     const {
         control,
         handleSubmit,
@@ -110,12 +111,11 @@ const UpdateUserScreen = () => {
             updateUser(userId, "password", data.password);
             updateUser(userId, "is_deleted", data.is_deleted);
             updateUser(userId, "role", data.role);
-            Alert.alert("Success", "User updated successfully!", [
-                { text: "OK", onPress: () => navigation.goBack() },
-            ]);
+            setAlert("User updated successfully!","success");
+                    navigation.goBack();
         } catch (error) {
             setLoading(false);
-            Alert.alert("Error", "Failed to update user.");
+            setAlert("Failed to update user.","error");
         }
     }
 
