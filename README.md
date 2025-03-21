@@ -65,9 +65,13 @@ This is a **National Service Scheme (NSS) App**, developed using **Node.js**, **
    ```sh
    npm install
    ```
-3. **Start the Expo development server**
+   -If Found Error
    ```sh
-   npx expo start
+   npm install --force
+   ```
+4. **Start the Expo development server**
+   ```sh
+   npm start
    ```
    This will launch the Metro Bundler, and you can scan the QR code with the Expo Go app.
 
