@@ -8,6 +8,7 @@ import {
     ScrollView,
     Image,
 } from "react-native";
+import { parse, formatISO, format } from "date-fns";
 import * as ImagePicker from "expo-image-picker";
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -37,20 +38,20 @@ const eventSchema = yup.object().shape({
     start_time: yup
         .string()
         .matches(
-            /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/,
-            "Start time must be in format YYYY-MM-DD HH:MM"
+            /^\d{2}-\d{2}-\d{4} \d{2}:\d{2} (AM|PM)$/,
+            "Start time must be in format DD-MM-YYYY HH:MM AM/PM"
         )
         .required("Start time is required"),
     end_time: yup
         .string()
         .matches(
-            /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/,
-            "End time must be in format YYYY-MM-DD HH:MM"
+            /^\d{2}-\d{2}-\d{4} \d{2}:\d{2} (AM|PM)$/,
+            "End time must be in format DD-MM-YYYY HH:MM AM/PM"
         )
         .required("End time is required"),
     image: yup.string().nullable(),
     created_by: yup.number(),
-    is_delete: yup.boolean(),
+    is_deleted: yup.boolean(),
 });
 
 const AddEventScreen = () => {
@@ -77,7 +78,7 @@ const AddEventScreen = () => {
             start_time: "",
             end_time: "",
             created_by: user?.id ? user.id : 0, // ✅ Not editable but stored
-            is_delete: false,
+            is_deleted: false,
             image: "",
         },
     });
@@ -87,10 +88,17 @@ const AddEventScreen = () => {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, "0"); // Month is zero-based
         const day = String(date.getDate()).padStart(2, "0");
-        const hours = String(date.getHours()).padStart(2, "0");
+
+        let hours = date.getHours();
         const minutes = String(date.getMinutes()).padStart(2, "0");
 
-        return `${year}-${month}-${day} ${hours}:${minutes}`;
+        const ampm = hours >= 12 ? "PM" : "AM";
+        hours = hours % 12 || 12; // Convert 24-hour time to 12-hour format
+
+        return `${day}-${month}-${year} ${String(hours).padStart(
+            2,
+            "0"
+        )}:${minutes} ${ampm}`;
     }
     useEffect(() => {
         const parsedEvent = getEvent(Number(eventId));
@@ -106,7 +114,7 @@ const AddEventScreen = () => {
             );
             setValue("start_time", todate(parsedEvent.start_time));
             setValue("end_time", todate(parsedEvent.end_time));
-            setValue("is_delete", parsedEvent.is_deleted);
+            setValue("is_deleted", parsedEvent.is_deleted);
             setValue("image", parsedEvent.image);
             setImage(parsedEvent.image ? parsedEvent.image : "");
             setId(parsedEvent.id);
@@ -129,9 +137,18 @@ const AddEventScreen = () => {
                     type: "image/jpeg",
                     name: "upload.jpg",
                 } as any);
-            } else formData.append(`${key}`, `${form[key]}`);
+            } else if (key == "start_time" || key == "end_time") {
+                const parsedDate = parse(
+                    form[key],
+                    "dd-MM-yyyy hh:mm a",
+                    new Date()
+                );
+                const sqlDateTime = format(parsedDate, "yyyy-MM-dd HH:mm:ss");
+                formData.append(`${key}`, sqlDateTime);
+            } else if (key == "is_deleted")
+                formData.append(`${key}`, form[key]);
+            else formData.append(`${key}`, `${form[key]}`);
         });
-        formData.append("is_deleted", `${deleted}`);
         setLoading(true);
         editEvent(id, formData, (res, err) => {
             setLoading(false);
@@ -139,7 +156,7 @@ const AddEventScreen = () => {
                 Alert.alert("Add Event Error! ReTry.", err);
                 return;
             }
-            setAlert("Successfuly Update Event!","success");
+            setAlert("Successfuly Update Event!", "success");
             navigation.goBack();
         });
     };
@@ -277,7 +294,7 @@ const AddEventScreen = () => {
                     render={({ field: { onChange, value } }) => (
                         <TextInput
                             className="bg-[--card-background] text-[--text-color] rounded-xl p-4 mb-2 border"
-                            placeholder="YYYY-MM-DD HH:MM"
+                            placeholder="DD-MM-YYYY HH:MM AM/PM"
                             placeholderTextColor="#888"
                             value={value}
                             onChangeText={onChange}
@@ -298,7 +315,7 @@ const AddEventScreen = () => {
                     render={({ field: { onChange, value } }) => (
                         <TextInput
                             className="bg-[--card-background] text-[--text-color] rounded-xl p-4 mb-2 border"
-                            placeholder="YYYY-MM-DD HH:MM"
+                            placeholder="DD-MM-YYYY HH:MM AM/PM"
                             placeholderTextColor="#888"
                             value={value}
                             onChangeText={onChange}
@@ -315,35 +332,35 @@ const AddEventScreen = () => {
 
                 <Controller
                     control={control}
-                    name="is_delete"
+                    name="is_deleted"
                     render={({ field: { onChange, value } }) => (
                         <TouchableOpacity
                             className="flex-row items-center justify-center mt-5"
                             onPress={() => {
                                 onChange(!value);
-                                setDeleted(!deleted);
+                                setDeleted(Boolean(value));
                             }}
                         >
                             <Text className="font-bold">Delete</Text>
                             {value ? (
-                                <Icons.AntDesign
-                                    name="delete"
-                                    size={25}
-                                    color="red"
+                                <Icons.FontAwesome
+                                    name="recycle"
+                                    size={22}
+                                    color="green"
                                 />
                             ) : (
                                 <Icons.AntDesign
                                     name="delete"
                                     size={25}
-                                    color="green"
+                                    color="red"
                                 />
                             )}
                         </TouchableOpacity>
                     )}
                 />
-                {errors.is_delete && (
+                {errors.is_deleted && (
                     <Text className="text-red-500">
-                        {errors.is_delete.message}
+                        {errors.is_deleted.message}
                     </Text>
                 )}
                 {/* Submit Button */}

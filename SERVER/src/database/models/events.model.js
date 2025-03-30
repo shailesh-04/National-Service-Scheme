@@ -15,6 +15,7 @@ class Model {
     }
     static async AllUpdate(id, body, res) {
         try {
+          
             conn.query(
                 `UPDATE events SET 
                     name= ?, 

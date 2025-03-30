@@ -37,7 +37,7 @@ try {
     router.put('/image/:id',authenticate,cloudinary.upload.single('image'),uploadImage);
     router.get("/event/:id", getEventUser);
 
-    router.get("/singout",authenticate,(req,res)=>{
+    router.get("/singout",(req,res)=>{
         res.clearCookie("token");
         res.status(200).json({ message: "Logged out successfully" });
     });

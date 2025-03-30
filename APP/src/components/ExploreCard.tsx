@@ -10,13 +10,13 @@ import Animated, {
     withSpring,
 } from "react-native-reanimated";
 import Button from "./ui/button";
+import { useUserStore } from "../store/useUserStore";
 
 const ExploreCard: React.FC<{ event: ImageProps }> = ({ event }) => {
     const router = useRouter();
-
-    // Animation for card entrance
     const opacity = useSharedValue(0);
     const translateY = useSharedValue(10);
+    const roll = useUserStore((s) => s.user?.role);
 
     useEffect(() => {
         opacity.value = withSpring(1, { damping: 10, stiffness: 100 });
@@ -61,17 +61,21 @@ const ExploreCard: React.FC<{ event: ImageProps }> = ({ event }) => {
                     />
                 </TouchableOpacity>
             </View>
-            <Button
-                className="p-3 items-center mt-3 mb-3"
-                onPress={() => {
-                    router.push({
-                        pathname:"/screen/dashbord/UploadImages",
-                        params:{eventID:event.id}
-                    });
-                }}
-            >
-                <Text>Upload Images</Text>
-            </Button>
+            {roll == "a" ? (
+                <Button
+                    className="p-3 items-center mt-3 mb-3"
+                    onPress={() => {
+                        router.push({
+                            pathname: "/screen/dashbord/UploadImages",
+                            params: { eventID: event.id },
+                        });
+                    }}
+                >
+                    <Text>Upload Images</Text>
+                </Button>
+            ) : (
+                ""
+            )}
 
             {/* Image Grid */}
             <FlatList

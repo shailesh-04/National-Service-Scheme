@@ -101,7 +101,7 @@ const AddEventScreen = () => {
                 } else {
                     console.error("Invalid API response:", res.data);
                 }
-                setAlert("Successfuly Create New Event !");
+                setAlert("Successfuly Create New Event !","success");
                 navigation.goBack();
             });
         } else {

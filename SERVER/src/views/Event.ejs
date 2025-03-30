@@ -37,9 +37,9 @@
                 eventContainer.innerHTML = '';
 
                 events.forEach(event => {
-                    const formattedStartTime = event.start_time ? new Date(event.start_time).toISOString().slice(0, 16) : '';
-                    const formattedEndTime = event.end_time ? new Date(event.end_time).toISOString().slice(0, 16) : '';
-
+                    const formattedStartTime = formatDateTimeLocal(new Date(event.start_time));
+                    const formattedEndTime = formatDateTimeLocal(new Date(event.end_time));
+                    console.log(new Date(event.start_time));
                     const eventCard = document.createElement('div');
                     eventCard.classList.add("bg-gray-800", "text-white", "p-4", "rounded-lg", "shadow", "space-y-2", "form-container");
                     eventCard.innerHTML = `<p>${event.id}</p>
@@ -86,23 +86,25 @@
                         formData.append("numOFUser", parseInt(row.querySelector(".event-numOFUser").value) || 0);
                         formData.append("created_by", parseInt(row.querySelector(".event-created-by").value) || null);
                         formData.append("is_deleted", row.querySelector(".event-is-deleted").checked);
-                        formData.append("image", row.querySelector(".image").files[0]); 
+                        formData.append("image", row.querySelector(".image").files[0]);
                     }
                     else {
-                         updatedEvent = {
+                        updatedEvent = {
                             name: row.querySelector(".event-name").value,
                             description: row.querySelector(".event-description").value,
                             location: row.querySelector(".event-location").value,
-                            start_time: row.querySelector(".event-start-time").value,
-                            end_time: row.querySelector(".event-end-time").value,
+                            start_time: row.querySelector(".event-start-time").value, // Ensuring UTC format
+                            end_time:row.querySelector(".event-end-time").value,
                             created_by: parseInt(row.querySelector(".event-created-by").value) || null,
                             is_deleted: row.querySelector(".event-is-deleted").checked,
                             image: row.querySelector(".event-image").src,
                         };
+
                     }
                     try {
-                        await axios.put(`http://localhost:3000/api/event/dashbord/${id}`,updatedEvent?updatedEvent:formData);
-                    
+                        console.log(updatedEvent ? updatedEvent : formData);
+                        await axios.put(`http://localhost:3000/api/event/dashbord/${id}`, updatedEvent ? updatedEvent : formData);
+
                         alert("Event updated successfully ✅");
                         await fetchEvents(); // Refresh table after update
                     } catch (error) {
@@ -131,7 +133,7 @@
                 end_time: document.getElementById('end_time').value,
                 created_by: document.getElementById('created_by').value
             };
-           
+
 
             try {
                 await axios.post('http://localhost:3000/api/event/', eventData);
@@ -146,7 +148,7 @@
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     flag = true;
                     const imageLabel = box.querySelector(".event-image");
                     imageLabel.src = e.target.result;
@@ -154,6 +156,15 @@
                 reader.readAsDataURL(file);
             }
         }
+        const formatDateTimeLocal = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+            const day = String(date.getDate()).padStart(2, "0");
+            const hours = String(date.getHours()).padStart(2, "0");
+            const minutes = String(date.getMinutes()).padStart(2, "0");
+
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        };
     </script>
 </body>
 

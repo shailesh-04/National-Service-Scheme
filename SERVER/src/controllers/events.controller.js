@@ -27,7 +27,6 @@ export const AllUpdate = (req, res) => {
             image,
         } = req.body;
         const file = req.file ? req.file.path : image;
-        
         model.AllUpdate(
          
             id,
@@ -39,7 +38,7 @@ export const AllUpdate = (req, res) => {
                 start_time,
                 end_time,
                 created_by,
-                Boolean(is_deleted),
+                String(is_deleted)=="true"?true:false,
             ],
             (err, data) => {
                 if (err)
