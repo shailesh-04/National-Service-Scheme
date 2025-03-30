@@ -18,15 +18,7 @@ try {
     app.set("views", path.join(__dirname, "src", "views"));
     app.use(express.static("public"));
     app.use(cors({
-        origin: function (origin, callback) {
-          console.log(origin);
-          if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-          } else {
-            console.log("Request Origin:", origin);
-            callback(new Error('Not allowed by CORS'));
-          }
-        }
+        origin: "*"
       }));
     app.use(express.json());
     app.use(cookieParser());
