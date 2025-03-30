@@ -33,5 +33,4 @@ function connectToDatabase() {
     });
 }
 await connectToDatabase();
-
 export default conn;

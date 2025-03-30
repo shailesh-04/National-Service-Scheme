@@ -23,6 +23,7 @@ import { useUserStore } from "#/src/store/useUserStore";
 import Icons from "#/src/components/Icons";
 import { router } from "expo-router";
 import useAlert from "#/src/store/useAlert";
+import { parse, formatISO, format } from "date-fns";
 // ✅ **Validation Schema**
 const eventSchema = yup.object().shape({
     name: yup
@@ -37,15 +38,15 @@ const eventSchema = yup.object().shape({
     start_time: yup
         .string()
         .matches(
-            /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/,
-            "Start time must be in format YYYY-MM-DD HH:MM"
+            /^\d{2}-\d{2}-\d{4} \d{2}:\d{2} (AM|PM|am|pm)$/,
+            "Start time must be in format DD-MM-YYYY HH:MM AM/PM"
         )
         .required("Start time is required"),
     end_time: yup
         .string()
         .matches(
-            /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/,
-            "End time must be in format YYYY-MM-DD HH:MM"
+            /^\d{2}-\d{2}-\d{4} \d{2}:\d{2} (AM|PM|am|pm)$/,
+            "End time must be in format DD-MM-YYYY HH:MM AM/PM"
         )
         .required("End time is required"),
     image: yup.string().nullable(),
@@ -80,7 +81,16 @@ const AddEventScreen = () => {
     const onSubmit = async (data: any) => {
         const formData = new FormData();
         Object.keys(data).forEach((key) => {
-            formData.append(`${key}`, `${data[key]}`);
+            if (key == "start_time" || key == "end_time") {
+                const parsedDate = parse(
+                    data[key],
+                    "dd-MM-yyyy hh:mm a",
+                    new Date()
+                );
+                const sqlDateTime = format(parsedDate, "yyyy-MM-dd HH:mm:ss");
+                formData.append(`${key}`, sqlDateTime);
+            } else
+             formData.append(`${key}`, `${data[key]}`);
         });
         if (image) {
             formData.append("image", {
@@ -101,7 +111,7 @@ const AddEventScreen = () => {
                 } else {
                     console.error("Invalid API response:", res.data);
                 }
-                setAlert("Successfuly Create New Event !","success");
+                setAlert("Successfuly Create New Event !", "success");
                 navigation.goBack();
             });
         } else {
@@ -245,7 +255,7 @@ const AddEventScreen = () => {
                     render={({ field: { onChange, value } }) => (
                         <TextInput
                             className="bg-[--card-background] text-[--text-color] rounded-xl p-4 mb-2 border"
-                            placeholder="YYYY-MM-DD HH:MM"
+                            placeholder="DD-MM-YYYY HH:MM AM/PM"
                             placeholderTextColor="#888"
                             value={value}
                             onChangeText={onChange}
@@ -266,7 +276,7 @@ const AddEventScreen = () => {
                     render={({ field: { onChange, value } }) => (
                         <TextInput
                             className="bg-[--card-background] text-[--text-color] rounded-xl p-4 mb-2 border"
-                            placeholder="YYYY-MM-DD HH:MM"
+                            placeholder="DD-MM-YYYY HH:MM AM/PM"
                             placeholderTextColor="#888"
                             value={value}
                             onChangeText={onChange}

@@ -1,7 +1,6 @@
 import cluster from "cluster";
 import os from "os";
 import startServer from "./server.config.js";
-
 function startCluster() {
     const numCPUs = os.cpus().length;
     if (cluster.isPrimary) {
@@ -19,5 +18,4 @@ function startCluster() {
         startServer();
     }
 }
-
 export default startCluster;

@@ -11,5 +11,4 @@ try {
 } catch (error) {
     catchErr(error, "cloudinary.config.js");
 }
-
 export default cloudinary;

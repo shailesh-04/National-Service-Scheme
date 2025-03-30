@@ -67,7 +67,10 @@ const ExploreCard: React.FC<{ event: ImageProps }> = ({ event }) => {
                     onPress={() => {
                         router.push({
                             pathname: "/screen/dashbord/UploadImages",
-                            params: { eventID: event.id },
+                            params: {
+                                eventID: event.id,
+                                eventName: event.name,
+                            },
                         });
                     }}
                 >

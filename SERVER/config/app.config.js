@@ -13,10 +13,21 @@ try {
     config();
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.join(path.dirname(__filename), "../");
+    const allowedOrigins = process.env.CORS ? process.env.CORS.split(',') : [];
     app.set("view engine", "ejs");
     app.set("views", path.join(__dirname, "src", "views"));
     app.use(express.static("public"));
-    app.use(cors({ origin: "*" }));
+    app.use(cors({
+        origin: function (origin, callback) {
+          console.log(origin);
+          if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+          } else {
+            console.log("Request Origin:", origin);
+            callback(new Error('Not allowed by CORS'));
+          }
+        }
+      }));
     app.use(express.json());
     app.use(cookieParser());
     app.use(
@@ -30,7 +41,6 @@ try {
             },
         })
     );
-    
     app.use("/", viewRouters);
     app.use("/api", routers);
 } catch (error) {

@@ -20,5 +20,4 @@ function startServer() {
         process.exit();
     });
 }
-
 export default startServer;
