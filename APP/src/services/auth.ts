@@ -23,7 +23,7 @@ interface ForgatePasswordType{
     password:string;
     otp:string;
 }
-export async function forgatePassword(data:ForgatePasswordType, res: (res: any, error: string|null) => void) {
+export async function forgotPassword(data:ForgatePasswordType, res: (res: any, error: string|null) => void) {
     api.put<any>("/user/editPassword",data)
         .then((response) => {
             console.log(response);
@@ -35,15 +35,16 @@ export async function forgatePassword(data:ForgatePasswordType, res: (res: any, 
 }
 interface SendOTPType{
     email:string;
+    use?:string;
 }
-export async function sendOTP(data:SendOTPType, res: (res: any, error: string|null) => void) {
+export async function sendOTP(data:SendOTPType, res: (res: any, error: string) => void) {
     api.post<any>("/user/sendOTP", data)
         .then((response) => {
-            console.log(response);
-            res(response.data?.message , null);
+            res(response.data?.message , "");
         })
         .catch(error => {
-            res(null,(error.response?.data?.message));
+            
+            res(null,error.response.data.message ||"error in send otp!");
         });
 }
 export interface EventUserProps {
@@ -56,8 +57,8 @@ export interface EventUserProps {
 }
 export const fetchUser = (id: string, res: (data: EventUserProps[], error: string) => void): void => {
     api.get<EventUserProps[]>(`/user/event/${id}`)
-        .then((responce) => {
-            res(responce.data, '');
+        .then((response) => {
+            res(response.data, '');
         })
         .catch(error => {
             console.log("Error fetching events:", error);

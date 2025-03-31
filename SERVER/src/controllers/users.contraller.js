@@ -3,7 +3,6 @@ import model from "#models/users.model.js";
 import { createToken } from "#services/jwt.service.js";
 import generateOTP from "#services/genarateOTP.js";
 import sendEmail from "#services/sendEmail.js";
-const otpMap = new Map();
 export const All = (req, res) => {
     try {
         model.All((err, data) => {
@@ -67,13 +66,18 @@ export const newUser = async (req, res) => {
 };
 export const editPassword = (req, res) => {
     try {
-        const { email, password,otp} = req.body;
-        if (!email || !password )
+        const { email, password, otp } = req.body;
+        if (!email || !password)
             return res.status(406).json({ message: "Invalid Data.." });
-        if (otpMap.get(email) != otp) return res.status(401).json({ message: "Invalid OTP" });
-        model.editPassword(email,password, (err, data) => {
+        if (req.session.otp != otp)
+            return res.status(401).json({ message: "Invalid OTP" });
+        model.editPassword(email, password, (err, data) => {
             if (err) return res.status(406).json({ message: err.sqlMessage });
-            res.status(200).json({ message: "Successfully Change Your Password" });
+            delete req.session.otp;
+            req.session.save();
+            res.status(200).json({
+                message: "Successfully Change Your Password",
+            });
         });
     } catch (error) {
         catchErr(error, "user.controll.editPassword");
@@ -85,36 +89,63 @@ export const editPassword = (req, res) => {
 };
 export const sendOtp = async (req, res) => {
     try {
-        const { email } = req.body;
-        if(!email)
-            return res
-                .status(500)
-                .json({ error: "Error sending email", message: error.message });
+        const { email, use } = req.body;
+        if (!email)
+            return res.status(500).json({ mesaage: "Error sending email" });
         const otp = generateOTP();
-        otpMap.set(email, otp);
+        req.session.otp = otp;
+        req.session.save();
         try {
-            await sendEmail(email,otp);
-            res.status(200).json({ message: "OTP sent successfully" }); // Store OTP securely in DB or session
+            await model.getUser_email(email, async (err, data) => {
+                if (err)
+                    return res.status(406).json({
+                        mesaage: "Found DataBase Error!",
+                        error: err.sqlMessage,
+                    });
+                else if (!data.length)
+                    if (use == "signup") {
+                        await sendEmail(email, otp);
+                        res.status(200).json({
+                            message: "OTP sent successfully",
+                        });
+                    } else
+                        return res.status(404).json({
+                            message: "Error sending OTP email is not avalable!",
+                        });
+                else {
+                    if (use == "signup")
+                        return res.status(409).json({
+                            message:
+                                "Error sending OTP email is already registered",
+                        });
+                    else {
+                        await sendEmail(email, otp);
+                        res.status(200).json({
+                            message: "OTP sent successfully",
+                        });
+                    }
+                }
+            });
         } catch (error) {
             return res
                 .status(500)
-                .json({ error: "Error sending email", message: error.message });
+                .json({ mesaage: "Error sending email", error: error.message });
         }
     } catch (error) {
         catchErr(error, "user.controll.send otp");
         if (error)
             return res
                 .status(500)
-                .json({ message: "Internal Server Error : " + error });
+                .json({ message: "Internal Server Error : ", error: error });
     }
 };
 export const signup = async (req, res) => {
     try {
         const { name, email, password, phone, otp } = req.body;
-        if (!name || !email || !password )
+        if (!name || !email || !password)
             return res.status(406).json({ message: "Invalid Data.." });
-        console.log(otpMap)
-        if (otpMap.get(email) != otp) return res.status(401).json({ message: "Invalid OTP" });
+        if (req.session.otp != otp)
+            return res.status(401).json({ message: "Invalid OTP" });
 
         model.create([name, email, password, phone], (err, data) => {
             if (err) return res.status(406).json({ message: err.sqlMessage });
@@ -122,6 +153,8 @@ export const signup = async (req, res) => {
                 if (err)
                     return res.status(406).json({ message: err.sqlMessage });
                 if (data.length > 0) {
+                    delete req.session.otp;
+                    req.session.save();
                     const token = await createToken(data[0]);
                     res.cookie("token", token);
                     res.status(200).json({ token: token, data: data[0] });

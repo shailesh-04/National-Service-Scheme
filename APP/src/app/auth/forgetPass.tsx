@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     View,
     Text,
@@ -10,7 +10,7 @@ import {
 import { Theme } from "@/constants/Colors";
 import Button from "@/components/ui/button";
 import { useRouter } from "expo-router";
-import { sendOTP, forgatePassword } from "@services/auth";
+import { sendOTP, forgotPassword } from "@services/auth";
 import useAlert from "@store/useAlert";
 
 export default function ForgatePassword() {
@@ -23,9 +23,24 @@ export default function ForgatePassword() {
     const [emailError, setEmailError] = useState<string | null>(null);
     const [otpError, setOtpError] = useState<string | null>(null);
     const [passwordError, setPasswordError] = useState<string | null>(null);
+    const [timer, setTimer] = useState<number>(0); // Countdown timer state
 
     const router = useRouter();
     const setAlert = useAlert((s) => s.setAlert);
+
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+
+        if (timer > 0) {
+            interval = setInterval(() => {
+                setTimer((prev) => prev - 1);
+            }, 1000);
+        }
+
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [timer]);
 
     const validateEmail = (email: string) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -69,7 +84,7 @@ export default function ForgatePassword() {
             return;
         }
 
-        forgatePassword({ email, password, otp }, (res, err) => {
+        forgotPassword({ email, password, otp }, (res, err) => {
             setLoading(false);
             if (err) {
                 setError("Invalid OTP or email. Please try again.");
@@ -93,10 +108,11 @@ export default function ForgatePassword() {
 
         sendOTP({ email }, (res, err) => {
             if (err) {
-                setAlert("Failed to send OTP. Try again later.", "error");
+                setAlert("Failed to send OTP. Try again later.\n" + err, "error");
                 return;
             }
             setAlert("OTP sent successfully!", "success");
+            setTimer(60); // Start 2-minute timer
         });
     };
 
@@ -137,9 +153,14 @@ export default function ForgatePassword() {
             />
             {otpError && <Text className="w-full text-red-500 mb-3 text-sm font-medium">{otpError}</Text>}
 
-            <TouchableOpacity className="justify-start mb-5 w-full items-end" onPress={sendEmailOtp}>
-                <Text className="text-blue-400">Send OTP</Text>
-            </TouchableOpacity>
+            {/* OTP Button with Timer */}
+            {timer > 0 ? (
+                <Text className="text-gray-400 mb-2">Resend OTP in {timer}s</Text>
+            ) : (
+                <TouchableOpacity className="justify-start mb-5 w-full items-end" onPress={sendEmailOtp}>
+                    <Text className="text-blue-400">Send OTP</Text>
+                </TouchableOpacity>
+            )}
 
             {/* Password Input */}
             <TextInput
