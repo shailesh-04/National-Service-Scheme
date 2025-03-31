@@ -2,10 +2,10 @@
   "expo": {
     "name": "NSS Mahuva",
     "slug": "NSS-Mahuva",
-    "owner": "shailesh-04m",
+    "owner": "shailesh-04",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/assets/images/icon.png",
+    "icon": "./src/assets/images/final_app_icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -53,7 +53,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "6087d1c5-30f1-4358-9dc3-138637825cab"
+        "projectId": "f2a8ab07-86e2-4cdc-81a3-724d01d2fed5"
       }
     }
   }
