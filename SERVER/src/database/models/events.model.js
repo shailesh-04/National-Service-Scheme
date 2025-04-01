@@ -1,6 +1,6 @@
 import conn from "#config/db.config.js";
-class Model {
-    static async All(res) {
+class EventModel {
+     async All(res) {
         try {
          
                 conn.query(
@@ -13,7 +13,7 @@ class Model {
             throw new Error(error);
         }
     }
-    static async AllUpdate(id, body, res) {
+     async AllUpdate(id, body, res) {
         try {
           
             conn.query(
@@ -36,7 +36,7 @@ class Model {
         }
     }
 
-    static async createFull(body, res) {
+     async createFull(body, res) {
         try {
             conn.query(
                 `INSERT INTO events (name, description, location, image, start_time, end_time, created_by)
@@ -49,7 +49,7 @@ class Model {
         }
     }
 
-    static async create(body, res) {
+     async create(body, res) {
         try {
             conn.query(
                 `INSERT INTO events (name, description, location, start_time, end_time, created_by)
@@ -62,7 +62,7 @@ class Model {
         }
     }
 
-    static async findAll(res) {
+     async findAll(res) {
         try {
             conn.query(
                 `SELECT id, name, description, location, start_time, end_time, numOFUser, image, created_by 
@@ -77,8 +77,7 @@ class Model {
             throw new Error(error);
         }
     }
-
-    static async findOne(id, res) {
+     async findOne(id, res) {
         try {
             conn.query(
                 "SELECT id, name, description, location, start_time, end_time, numOFUser, image, created_by FROM events WHERE id = ? AND is_deleted = FALSE;",
@@ -90,7 +89,7 @@ class Model {
         }
     }
 
-    static async update(id, body, res) {
+     async update(id, body, res) {
         try {
             conn.query(
                 `UPDATE events 
@@ -109,7 +108,7 @@ class Model {
         }
     }
 
-    static async remove(id, res) {
+     async remove(id, res) {
         try {
             conn.query(
                 `UPDATE events SET is_deleted = TRUE WHERE id = ?;`,
@@ -121,7 +120,7 @@ class Model {
         }
     }
 
-    static async restore(id, res) {
+     async restore(id, res) {
         try {
             conn.query(
                 `UPDATE events SET is_deleted = false WHERE id = ?;`,
@@ -133,7 +132,7 @@ class Model {
         }
     }
 
-    static async uploadImage(body, res) {
+     async uploadImage(body, res) {
         try {
             conn.query(`UPDATE events SET image = ? WHERE id = ?;`, body, res);
         } catch (error) {
@@ -141,7 +140,7 @@ class Model {
         }
     }
 
-    static async upcoming(res) {
+     async upcoming(res) {
         try {
             conn.query(
                 `SELECT id, name, description, location, start_time, end_time, numOFUser, image, created_by FROM events 
@@ -156,7 +155,7 @@ class Model {
         }
     }
 
-    static async addNUmOfUser(id, res) {
+     async addNUmOfUser(id, res) {
         try {
             conn.query(
                 `UPDATE events SET numOFUser = numOFUser + 1 WHERE id = ?;`,
@@ -167,6 +166,18 @@ class Model {
             throw new Error(error);
         }
     }
+
+     async destroy(id, res) {
+        try {
+            conn.query(
+                `DELETE from events WHERE id = ?;`,
+                [id],
+                res
+            );
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
 }
 
-export default Model;
+export default EventModel;

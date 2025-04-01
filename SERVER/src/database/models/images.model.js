@@ -13,10 +13,17 @@ try {
         conn.query("INSERT INTO images(E_id,imageurl) VALUES(?,?)", body, res);
     };
     model.findAll = async (res) => {
-        conn.query("SELECT id,E_id,imageurl FROM images", res);
+        conn.query("SELECT id, E_id, imageurl FROM images", res);
     };
     model.eventEmages = async (res) => {
-        conn.query(`SELECT images.id,images.E_id,images.imageurl, events.name AS event_name FROM images LEFT JOIN events ON images.E_id = events.id;`, res);
+        conn.query(`SELECT 
+    images.id, 
+    images.E_id, 
+    images.imageurl, 
+    events.name AS event_name 
+FROM images 
+INNER JOIN events ON images.E_id = events.id;
+`, res);
     };
     model.GetImages = (IDs,callback)=>{
         conn.query(`SELECT * FROM images where id IN(${IDs});`,callback);

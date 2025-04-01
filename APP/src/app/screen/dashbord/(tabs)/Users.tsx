@@ -20,6 +20,7 @@ import {
 } from "react-native-reanimated";
 import Animated, { FadeInDown, FadeOutUp } from "react-native-reanimated"; // Reanimated
 import { useUserStore, UserType } from "@store/dashbord/useUserStore";
+import { useUserStore as LoginUser } from "@store/useUserStore";
 import { Color, Theme } from "#/src/constants/Colors";
 import { api } from "#/src/services/apiinterceptors";
 import useAlert from "#/src/store/useAlert";
@@ -29,20 +30,17 @@ import Icons from "#/src/components/Icons";
 
 const UserScreen = () => {
     const { width, height } = Dimensions.get("window");
-    const { users, removeUser, setUsers, updateUser, clearUsers } =
-        useUserStore();
+    const { users, removeUser, setUsers, updateUser, clearUsers } =useUserStore();
     const [loading, setLoading] = useState(false);
     const [isDeleted, setIsDelted] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
-    const [selectedUsersForDeletion, setSelectedUsersForDeletion] = useState<
-        number[]
-    >([]);
+    const [selectedUsersForDeletion, setSelectedUsersForDeletion] = useState< number[]>([]);
+    const user = LoginUser((state) => state.user);
     const flatListRef = useRef<FlatList>(null);
     const navigation = useRouter();
     const { setAlert } = useAlert();
     const opacity = useSharedValue(0);
     const translateY = useSharedValue(20);
-
     useEffect(() => {
         opacity.value = withTiming(1, { duration: 300 });
         translateY.value = withTiming(0, { duration: 300 });
@@ -183,6 +181,8 @@ const UserScreen = () => {
                             />
                         }
                         renderItem={({ item, index }) => {
+                            if(item.id == user?.id)
+                                return(<View></View>);
                             return (
                                 <Animated.View
                                     entering={FadeInDown.delay(index * 100)}

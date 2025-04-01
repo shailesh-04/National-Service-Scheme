@@ -65,7 +65,7 @@ const EventImageList: React.FC = () => {
                         onRefresh={fetchData}
                     />
                 }
-                keyExtractor={(item) => item.id.toString()}
+                keyExtractor={(item) => String(item.id)}
                 renderItem={({ item }) => <ExploreCard event={item} />}
                 contentContainerStyle={{ paddingBottom: 100 }}
                 ListEmptyComponent={

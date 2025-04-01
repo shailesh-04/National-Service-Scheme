@@ -25,18 +25,14 @@ try {
     router.put("/dashbord/:id",updateAll);
     router.post("/dashbord", newUser);
     router.get("/getProfile",viewAuthenticate, profile);
-
     router.get("/", findAll);
     router.post("/signup", signup);
     router.post("/sendOTP", sendOtp);
     router.post("/singin", singin);
     router.get("/singin",authenticate,verifyUser);
-    
     router.put('/editPassword',editPassword);
-    
     router.put('/image/:id',authenticate,cloudinary.upload.single('image'),uploadImage);
     router.get("/event/:id", getEventUser);
-
     router.get("/singout",(req,res)=>{
         res.clearCookie("token");
         res.status(200).json({ message: "Logged out successfully" });

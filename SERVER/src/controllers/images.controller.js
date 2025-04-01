@@ -113,7 +113,7 @@ export const remove = (req, res) => {
             .slice(-2)
             .join("/")
             .replace(/\.[^.]+$/, ""); // Removes file extension (.png, .jpg)
-
+        console.log(publicId);
         imageService
             .removeImage(publicId)
             .then((result) => {

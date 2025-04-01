@@ -10,7 +10,5 @@ const storage = new CloudinaryStorage({
     public_id:(req, file) => `${Date.now()}_${req.params.id || req.name || file.originalname}`, // File name without extension
   },
 });
-
 export const upload = multer({ storage });
-
 export default {upload}

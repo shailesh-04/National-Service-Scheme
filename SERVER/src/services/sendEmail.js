@@ -17,7 +17,7 @@ async function sendEmail(email,otp) {
                 <h3 style="font-size: 24px; background: #F5F7FA; padding: 10px; text-align: center; border-radius: 5px; color: #4A43EC;">
                     ${otp}
                 </h3>
-                <p>This OTP is valid for <strong>5 minutes</strong>. Do not share it with anyone.</p>
+                <p>This OTP is valid for <strong>2 minutes</strong>. Do not share it with anyone.</p>
                 <p>If you didn’t request this, you can safely ignore this email.</p>
                 <hr style="border: none; border-top: 1px solid #ddd;">
                 <p style="font-size: 12px; color: #888;">Need help? Contact our support team.</p>
@@ -30,7 +30,7 @@ async function sendEmail(email,otp) {
         catchErr(error, "sendEmail");
         return Promise.reject({
             error: "Failed to send OTP",
-            details: error.message,
+            details: error,
         });
     }
 }

@@ -35,11 +35,9 @@
                 const events = response.data;
                 const eventContainer = document.getElementById('eventContainer');
                 eventContainer.innerHTML = '';
-
                 events.forEach(event => {
                     const formattedStartTime = formatDateTimeLocal(new Date(event.start_time));
                     const formattedEndTime = formatDateTimeLocal(new Date(event.end_time));
-                    console.log(new Date(event.start_time));
                     const eventCard = document.createElement('div');
                     eventCard.classList.add("bg-gray-800", "text-white", "p-4", "rounded-lg", "shadow", "space-y-2", "form-container");
                     eventCard.innerHTML = `<p>${event.id}</p>
@@ -55,9 +53,11 @@
                     <p class='text-xs text-gray-500'>Updated At: <input type='text' class='bg-gray-700 text-white p-1 w-full' value='${event.updated_at}' readonly></p>
                     <img src="${event.image}" class="w-full h-32 object-cover rounded event-image"/>
                     <input type="file" class="bg-gray-700 text-white p-1 w-full image" onchange="previewImage(event)">
-                    <div class='flex justify-between mt-2'>
+                    <div class='flex justify-between gap-10 mt-2'>
                         <button class='bg-blue-500 text-white px-3 py-1 rounded update-btn' data-id='${event.id}'>Update</button>
+                        <button class='bg-red-500 text-white px-3 py-1 rounded delete-btn w-full' data-id='${event.id}'>Delete</button>
                     </div>
+                    
                 `;
                     eventContainer.appendChild(eventCard);
                 });
@@ -94,7 +94,7 @@
                             description: row.querySelector(".event-description").value,
                             location: row.querySelector(".event-location").value,
                             start_time: row.querySelector(".event-start-time").value, // Ensuring UTC format
-                            end_time:row.querySelector(".event-end-time").value,
+                            end_time: row.querySelector(".event-end-time").value,
                             created_by: parseInt(row.querySelector(".event-created-by").value) || null,
                             is_deleted: row.querySelector(".event-is-deleted").checked,
                             image: row.querySelector(".event-image").src,
@@ -117,6 +117,20 @@
                     const id = target.getAttribute("data-id");
                     await UpdateImage(id);
                 }
+                else if (target.classList.contains("delete-btn")) {
+                    const conform = confirm("Do You Want To Permanent Delete This Event ?");
+                    const id = target.getAttribute("data-id");
+                    if (conform) {
+                        try {
+                            await axios.post("/api/event/destroy",{id:id});
+                            fetchEvents();
+                        } catch (error) {
+                            console.error("Upload Error:", error);
+                            alert("Fail Delete Event! Try Again");
+                        }
+                    }
+                }
+
             });
         });
 

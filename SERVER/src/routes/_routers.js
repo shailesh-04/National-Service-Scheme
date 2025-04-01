@@ -1,6 +1,5 @@
 import { Router } from "express";
 import {catchErr} from "#color";
-
 import user from  "./users.route.js";
 import event from "./events.route.js";
 import emages from "./emages.route.js";

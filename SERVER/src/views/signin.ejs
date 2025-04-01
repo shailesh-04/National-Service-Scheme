@@ -36,10 +36,10 @@
                 const response = await axios.post('api/user/singin', { email, password });
                     document.getElementById('message').textContent = "Login successful!";
                     document.getElementById('message').classList.replace("text-red-400", "text-green-400");
-                    alert("successfuly Login");
                     location.reload();
             } catch (error) {
                 document.getElementById('message').textContent = error.response?.data?.message || "Error logging in!";
+                console.log(error.response)
                 alert(error.response.data);
             }
         });
