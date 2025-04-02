@@ -76,46 +76,21 @@ const AcceptRejectScreen = () => {
         userId: number,
         status: "confirmed" | "cancelled"
     ) => {
-        Alert.alert(
-            "Confirm Action",
-            `Are you sure you want to ${status} this user?`,
-            [
-                { text: "Cancel", style: "cancel" },
-                {
-                    text: "Yes",
-                    onPress: async () => {
-                        setLoading(true);
-                        Animated.timing(fadeAnim, {
-                            toValue: 0,
-                            duration: 300,
-                            useNativeDriver: true,
-                        }).start(async () => {
-                            try {
-                                await api.put(`event-registration/${userId}`, {
-                                    status,
-                                });
-                                Alert.alert(
-                                    "Success",
-                                    `User has been ${status}`
-                                );
-                                fetchUsersInEventAfter(id);
-                                fadeAnim.setValue(1);
-                            } catch (error) {
-                                Alert.alert("Error", "Failed to update status");
-                            } finally {
-                                setLoading(false);
-                            }
-                        });
-                    },
-                },
-            ]
-        );
+    
+        try {
+            await api.put(`event-registration/${userId}`, { status });
+            fetchUsersInEventAfter(id);
+        } catch (error) {
+            console.error("Failed to update status", error);
+        } finally {
+    
+        }
     };
-
+    
     return (
-        <ScrollView style={Theme} className="flex-1 bg-[--bg-color] py-10">
+        <ScrollView style={Theme} className="flex-1 bg-[--bg-color]"> 
             {/* Custom Header */}
-            <View className="flex-row items-center px-4 py-5 shadow-lg bg-[--main-color]">
+            <View className="flex-row items-center px-4 pb-5 pt-10 shadow-lg bg-[--main-color]">
                 <TouchableOpacity onPress={() => router.back()}>
                     <Ionicons name="arrow-back" size={24} color="#FFF" />
                 </TouchableOpacity>
@@ -131,7 +106,7 @@ const AcceptRejectScreen = () => {
                         <Animated.View
                             key={user.id}
                             style={{ opacity: fadeAnim }}
-                            className="bg-[--bg-color] flex-row justify-between items-center p-4 mb-3 rounded-lg shadow-md border border-[--light-dark-color]"
+                            className="bg-[--bg-color] flex-row justify-between items-center p-4 mb-3 rounded-lg shadow-md border border-[--light-dark-color] mt-5"
                         >
                             <View>
                                 {eventUser?.img ? (

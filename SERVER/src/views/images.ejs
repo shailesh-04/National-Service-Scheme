@@ -70,8 +70,7 @@
                 try {
                     await axios.post("/api/images", formData, {
                         headers: { "Content-Type": "multipart/form-data" },
-                    });
-                    alert("Images uploaded successfully!");
+                    }); 
                     fetchImages();
                 } catch (error) {
                     console.error("Upload Error:", error);

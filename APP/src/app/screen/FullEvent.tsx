@@ -33,6 +33,7 @@ const FullEvent: React.FC = () => {
     const [event, setEvent] = useState<EventType | null>(null);
     const [dateTime, setDateTime] = useState<returnValue | null>(null);
     const [registed, setRegisted] = useState<boolean>(false);
+    const [registerStatus, setRegisterStatus] = useState<string>("");
     const { data } = useLocalSearchParams();
 
     useEffect(() => {
@@ -79,7 +80,10 @@ const FullEvent: React.FC = () => {
                 user_id: mainUser?.id,
                 event_id: id,
             });
-            if (!responce.data.message) setRegisted(true);
+            if (!responce.data.message) {
+                setRegisted(true);
+                setRegisterStatus(responce.data[0].status);
+            }
             setLoading1(false);
         } catch (error) {
             setLoading1(false);
@@ -103,12 +107,11 @@ const FullEvent: React.FC = () => {
     return (
         <SafeAreaView style={Theme} className="flex-1 relative">
             <ScrollView className="">
-                <View className="w-full " style={{height:height/2.5}}>
+                <View className="w-full " style={{ height: height / 2.5 }}>
                     <Image
                         source={{ uri: event?.image }}
                         className="w-full h-full rounded-3xl"
-                        resizeMode="cover" 
-                        
+                        resizeMode="cover"
                     />
                 </View>
                 <View className="items-center mt-[-30px]">
@@ -294,7 +297,8 @@ const FullEvent: React.FC = () => {
             {eventStartTime && toDay < eventStartTime ? (
                 registed ? (
                     <View className="items-center mb-10">
-                        <Text>Registered in this Event</Text>
+                        <Text>You Are Registed in This Event</Text>
+                        <Text className=" font-bold">{registerStatus.toUpperCase()} </Text>
                     </View>
                 ) : (
                     <View className="items-center mb-10">
