@@ -21,6 +21,16 @@ import { EventType, fetchUpcomingEvents } from "@services/event";
 import useAlert from "@store/useAlert";
 import { getGallery, StorageImagesType } from "#/src/services/storage";
 import Icons from "#/src/components/Icons";
+import * as Notifications from "expo-notifications";
+import * as Device from "expo-device";
+import Constants from "expo-constants";
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false,
+    }),
+});
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 interface ImageProps {
     url: string;
@@ -34,6 +44,7 @@ const Index: React.FC = () => {
     const [events, setEvents] = useState<EventType[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [gallery, setGallery] = useState<StorageImagesType[] | null>(null);
+    const [expoPushToken, setExpoPushToken] = useState("");
     const setAlert = useAlert((e) => e.setAlert);
     useEffect(() => {
         fetchData();
@@ -41,7 +52,38 @@ const Index: React.FC = () => {
             if (err) setAlert(err, "error");
             setGallery(data.images);
         });
+        registerForPushNotifications();
     }, []);
+
+    async function registerForPushNotifications() {
+        try {
+            let token = "MOCK_PUSH_TOKEN_DEV";
+        
+            if (Constants.isDevice) {
+              const { status: existingStatus } = await Notifications.getPermissionsAsync();
+              let finalStatus = existingStatus;
+        
+              if (existingStatus !== 'granted') {
+                const { status } = await Notifications.requestPermissionsAsync();
+                finalStatus = status;
+              }
+        
+              if (finalStatus !== 'granted') {
+                console.log("❌ Failed to get push token permission");
+                return;
+              }
+        
+              token = (await Notifications.getExpoPushTokenAsync()).data;
+            } else {
+              console.log("⚠️ Using mock push token (not on physical device)");
+            }
+        
+            console.log("Push Token:", token);
+            // Save token or continue logic
+          } catch (error) {
+            console.log("❌ Error in push notification setup:", error);
+          }
+    }
     const fetchData = () => {
         setLoading(true);
         fetchUpcomingEvents((data: EventType[], err: string) => {
@@ -100,7 +142,7 @@ const Index: React.FC = () => {
                         contentContainerStyle={{
                             gap: 30,
                             paddingHorizontal: 10,
-                            paddingVertical:10,
+                            paddingVertical: 10,
                         }}
                         ListEmptyComponent={
                             !loading ? (
@@ -166,24 +208,24 @@ const Index: React.FC = () => {
                         About National Service Scheme (NSS)
                     </Text>
                     <Text className="text-[#555] mt-5  px-4 border-x border-[--main-color] ">
-                        {"      "}The National Service Scheme (NSS) is a Central Sector
-                        Scheme of Government of India, Ministry of Youth Affairs
-                        & Sports. It provides opportunity to the student youth
-                        of 11th & 12th Class of schools at +2 Board level and
-                        student youth of Technical Institution, Graduate & Post
-                        Graduate at colleges and University level of India to
-                        take part in various Government led community service
+                        {"      "}The National Service Scheme (NSS) is a Central
+                        Sector Scheme of Government of India, Ministry of Youth
+                        Affairs & Sports. It provides opportunity to the student
+                        youth of 11th & 12th Class of schools at +2 Board level
+                        and student youth of Technical Institution, Graduate &
+                        Post Graduate at colleges and University level of India
+                        to take part in various Government led community service
                         activities & programmes. {"\n       "}
-                        The primary objective of
-                        developing the personality and character of the student
-                        youth through voluntary community service. ‘Education
-                        through Service’ is the purpose of the NSS. NSS was
-                        launched in 1969 in 37 Universities involving about
-                        40,000 volunteers which has now spread over 657
-                        Universities and 51 +2 Councils/Directorates, covering
-                        20,669 Colleges/ Technical Institutions and 11,988
-                        Senior Secondary School. Since inception , over 7.4
-                        crore students have benefitted from NSS.
+                        The primary objective of developing the personality and
+                        character of the student youth through voluntary
+                        community service. ‘Education through Service’ is the
+                        purpose of the NSS. NSS was launched in 1969 in 37
+                        Universities involving about 40,000 volunteers which has
+                        now spread over 657 Universities and 51 +2
+                        Councils/Directorates, covering 20,669 Colleges/
+                        Technical Institutions and 11,988 Senior Secondary
+                        School. Since inception , over 7.4 crore students have
+                        benefitted from NSS.
                     </Text>
                 </View>
             </ScrollView>

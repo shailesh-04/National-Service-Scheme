@@ -17,7 +17,7 @@ const EventCard: React.FC<EventProps> = ({ data }) => {
         <TouchableOpacity
             onPress={() => {
                 router.push({
-                    pathname: "/screen/FullEvent",
+                    pathname: "/screen/dashbord/event(tabs)",
                     params: { data: JSON.stringify(data) },
                 });
             }}

@@ -15,18 +15,21 @@ import { Theme } from "#/src/constants/Colors";
 import { api } from "#/src/services/apiinterceptors";
 import { Ionicons } from "@expo/vector-icons";
 import { setAlert } from "#/src/components/Alert";
+import { useEvent } from '#/src/context/useEvent';
 
 const AcceptRejectScreen = () => {
+    const { eventId } = useEvent();
     const { id } = useLocalSearchParams<{ id: string }>();
     const { users, setUsers } = useUserStore();
     const [loading, setLoading] = useState(false);
     const [eventUsers, setEventUsers] = useState<any[]>([]);
-    const fadeAnim = useState(new Animated.Value(1))[0]; // Animation for smooth UI update
+    const fadeAnim = useState(new Animated.Value(1))[0];
+    
     const router = useRouter();
 
     useEffect(() => {
-        if (id) {
-            fetchUsersInEvent(id);
+        if (id||eventId) {
+            fetchUsersInEvent(id?id:eventId?eventId:''  );
         }
     }, [id]);
 
@@ -77,7 +80,7 @@ const AcceptRejectScreen = () => {
     ) => {
         try {
             await api.put(`event-registration/${userId}`, { status });
-            fetchUsersInEventAfter(id);
+            fetchUsersInEventAfter(id?id:eventId?eventId:'');
         } catch (error) {
             console.error("Failed to update status", error);
         } finally {

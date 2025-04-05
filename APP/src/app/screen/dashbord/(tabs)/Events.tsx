@@ -120,7 +120,7 @@ const Events: React.FC = () => {
                                 <TouchableOpacity
                                     onPress={() =>
                                         router.push({
-                                            pathname: "/screen/FullEvent",
+                                            pathname: "/screen/dashbord/event(tabs)",
                                             params: {
                                                 data: JSON.stringify(item),
                                             },

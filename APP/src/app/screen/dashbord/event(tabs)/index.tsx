@@ -18,7 +18,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { fetchUser, EventUserProps } from "@services/user";
 import { fetchEvent } from "@services/event";
 import Button from "#/src/components/ui/button";
-
+import {useEvent } from '#/src/context/useEvent';
 import { api } from "#/src/services/apiinterceptors";
 import { useUserStore } from "#/src/store/useUserStore";
 import useAlert from "#/src/store/useAlert";
@@ -26,6 +26,7 @@ import { height } from "#/src/constants/Dimention";
 const FullEvent: React.FC = () => {
     const router = useRouter();
     const mainUser = useUserStore((s) => s.user);
+    const { setEventId } = useEvent();
     const { setAlert } = useAlert();
     const [user, setUser] = useState<EventUserProps[] | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -39,6 +40,7 @@ const FullEvent: React.FC = () => {
     useEffect(() => {
         const parsedEvent = JSON.parse(data as string);
         if (Number.isInteger(parsedEvent)) {
+            setEventId(parsedEvent);
             fetchEvent(parsedEvent, (data1: EventType[], err) => {
                 if (err) {
                     setAlert(err);
@@ -58,6 +60,7 @@ const FullEvent: React.FC = () => {
         } else {
             setEvent(parsedEvent);
             check(parsedEvent.id);
+            setEventId(parsedEvent.id);
             setDateTime(date(parsedEvent.start_time, parsedEvent.end_time));
             fetchUser(parsedEvent.created_by, (data, err) => {
                 if (err) {
@@ -115,22 +118,54 @@ const FullEvent: React.FC = () => {
                     />
                 </View>
                 <View className="items-center mt-[-30px]">
-                    
-                    <View className="flex-row items-center gap-4 bg-[--bg-color] px-5 py-4 w-[80%] rounded-full">
-                        <Icons.Feather
-                            name="users"
-                            size={20}
-                            color={Color["bg-color"]}
-                            className="bg-[#00000033] rounded-full p-2"
-                        />
-                        <Text
-                            className=" font-semibold text-[12px]"
-                            style={{ color: `${Color["main-color"]}aa` }}
+                    {mainUser?.role == "a" ? (
+                        <TouchableOpacity
+                            className="flex-row items-center gap-4 bg-[--bg-color] px-5 py-4 w-[80%] rounded-full"
+                            onPress={() => {
+                                router.push({
+                                    pathname:
+                                        "/screen/dashbord/event(tabs)/Registration",
+                                    params: { id: event?.id },
+                                });
+                            }}
                         >
-                            +{event?.numOFUser} Going
-                        </Text>
-                    </View>
-                    
+                            <Icons.Feather
+                                name="users"
+                                size={20}
+                                color={Color["bg-color"]}
+                                className="bg-[#00000033] rounded-full p-2"
+                            />
+                            <View className="flex-row gap-6">
+                                <Text
+                                    className=" font-semibold text-[12px]"
+                                    style={{
+                                        color: `${Color["main-color"]}aa`,
+                                    }}
+                                >
+                                    +{event?.numOFUser} Going
+                                </Text>
+                                <Text>|</Text>
+                                <Text className="text-blue-700 underline">
+                                    Manage Register User
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                    ) : (
+                        <View className="flex-row items-center gap-4 bg-[--bg-color] px-5 py-4 w-[80%] rounded-full">
+                            <Icons.Feather
+                                name="users"
+                                size={20}
+                                color={Color["bg-color"]}
+                                className="bg-[#00000033] rounded-full p-2"
+                            />
+                            <Text
+                                className=" font-semibold text-[12px]"
+                                style={{ color: `${Color["main-color"]}aa` }}
+                            >
+                                +{event?.numOFUser} Going
+                            </Text>
+                        </View>
+                    )}
                 </View>
                 <View className="px-5">
                     <View className=" mt-10">
@@ -262,13 +297,11 @@ const FullEvent: React.FC = () => {
                     Event Details
                 </Text>
             </View>
-            {eventStartTime && toDay < eventStartTime ? (
+            {eventStartTime && toDay > eventStartTime ? (
                 registed ? (
                     <View className="items-center mb-10">
                         <Text>You Are Registed in This Event</Text>
-                        <Text className=" font-bold">
-                            {registerStatus.toUpperCase()}{" "}
-                        </Text>
+                        <Text className=" font-bold">{registerStatus.toUpperCase()} </Text>
                     </View>
                 ) : (
                     <View className="items-center mb-10">

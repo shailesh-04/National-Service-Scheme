@@ -1,6 +1,7 @@
 import { catchErr } from "#color";
 import model from "#models/registration.model.js";
-import modelEvent from "#models/events.model.js";
+import EventModel from "#models/events.model.js";
+const modelEvent = new EventModel();
 class RegistratoinController {
     static async getAll(req, res) {
         try {
