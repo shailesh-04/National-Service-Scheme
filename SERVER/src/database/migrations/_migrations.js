@@ -35,8 +35,8 @@ async function loadModule(t, c) {
                 query = module.dropTable;
                 break;
             case "drop_create":
-                await conn.query(module.dropTable);
-                query = module.createTable;
+                    conn.query(module.dropTable);
+                    query = module.createTable;
                 break;
             case "seeders":
                 query = module.seeders;
@@ -63,7 +63,11 @@ async function loadModule(t, c) {
         if (query) {
             conn.query(query, (err) => {
                 if (err) return console.error(err.sqlMessage);
-                color(["\n DONE ", "green", ["bold", "italic"]]);
+                color([
+                    "\n════════════════════\n Successfully "+c+" "+table,
+                    "yellow",
+                    "bold",
+                ]);
             });
         }
     } catch (error) {

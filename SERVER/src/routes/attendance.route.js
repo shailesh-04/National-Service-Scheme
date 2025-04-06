@@ -1,0 +1,11 @@
+import express from 'express';
+import AttendanceController from '#controllers/attendance.controller.js';
+const router = express.Router();
+router.get('/', AttendanceController.getAllAttendance);
+router.get('/:id', AttendanceController.getAttendanceById);
+router.post('/', AttendanceController.createAttendance);
+router.put('/:id', AttendanceController.updateAttendance);
+router.delete('/:id', AttendanceController.deleteAttendance);
+router.get('/:id/event', AttendanceController.getEventByAttendanceId);
+router.get('/:id/user', AttendanceController.getUserByAttendanceId);
+export default router;

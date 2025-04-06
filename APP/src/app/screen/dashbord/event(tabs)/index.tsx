@@ -297,7 +297,7 @@ const FullEvent: React.FC = () => {
                     Event Details
                 </Text>
             </View>
-            {eventStartTime && toDay > eventStartTime ? (
+            {eventStartTime && toDay < eventStartTime ? (
                 registed ? (
                     <View className="items-center mb-10">
                         <Text>You Are Registed in This Event</Text>

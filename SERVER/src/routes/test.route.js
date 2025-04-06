@@ -2,8 +2,36 @@ import { Router } from "express";
 import conn from "#config/db.config.js";
 import { authenticate } from "#middleware/auth.middleware.js";
 import { catchErr } from "#color";
+
 const router = Router();
+
+class Test {
+    static async getData() {
+        return new Promise((resolve, reject) => {
+            conn.query("SELECT * FROM events", (err, results) => {
+                if (err) {
+                    return reject(new Error(err.sqlMessage || err.message));
+                }
+                return resolve(results);
+            });
+        });
+    }
+}
+
+router.get("/test", async (req, res) => {
+    try {
+        const rows = await Test.getData();
+        res.status(200).json(rows);
+    } catch (error) {
+        return res.status(500).json({
+            message: "Failed to fetch all events!",
+            detail: error.message,
+        });
+    }
+});
+
 try {
+
     router.get("/information", authenticate, (req, res) => {
         const query = `
       SELECT 
@@ -19,6 +47,7 @@ try {
             else res.status(200).json(data);
         });
     });
+    
     
 } catch (error) {
     catchErr(error, "event.routers");
