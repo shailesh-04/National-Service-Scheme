@@ -1,32 +1,46 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
-// Define the shape of context data
-interface EventContextType {
-  eventId: string | null;
-  setEventId: (id: string) => void;
-  eventExpire: string | null;
-  setEventExpire: (status: string) => void;
-  
+interface Event {
+    id: number;
+    name: string;
+    description: string;
+    location: string;
+    start_time: string;
+    end_time: string;
+    numOFUser: number;
+    image: string;
+    created_by: number;
 }
+
+interface EventContextType {
+    event: Event | null;
+    setEventData: (event: Event) => void;
+}
+
 const EventContext = createContext<EventContextType | undefined>(undefined);
 
 interface EventProviderProps {
-  children: ReactNode;
+    children: ReactNode;
 }
+
 export const EventProvider = ({ children }: EventProviderProps) => {
-  const [eventId, setEventId] = useState<string | null>(null);
-  const [eventExpire, setEventExpire] = useState<string | null>(null);
-  return (
-    <EventContext.Provider value={{ eventId, setEventId,eventExpire,setEventExpire }}>
-      {children}
-    </EventContext.Provider>
-  );
+    const [event, setEvent] = useState<Event | null>(null);
+
+    const setEventData = (event: Event) => {
+        setEvent(event);
+    };
+
+    return (
+        <EventContext.Provider value={{ event, setEventData }}>
+            {children}
+        </EventContext.Provider>
+    );
 };
 
 export const useEvent = (): EventContextType => {
-  const context = useContext(EventContext);
-  if (!context) {
-    throw new Error('useEvent must be used within an EventProvider');
-  }
-  return context;
+    const context = useContext(EventContext);
+    if (!context) {
+        throw new Error("useEvent must be used within an EventProvider");
+    }
+    return context;
 };

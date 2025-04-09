@@ -15,21 +15,21 @@ import { Theme } from "#/src/constants/Colors";
 import { api } from "#/src/services/apiinterceptors";
 import { Ionicons } from "@expo/vector-icons";
 import { setAlert } from "#/src/components/Alert";
-import { useEvent } from '#/src/context/useEvent';
+import { useEvent } from "#/src/context/useEvent";
 
 const AcceptRejectScreen = () => {
-    const { eventId } = useEvent();
+    const { event } = useEvent();
     const { id } = useLocalSearchParams<{ id: string }>();
     const { users, setUsers } = useUserStore();
     const [loading, setLoading] = useState(false);
     const [eventUsers, setEventUsers] = useState<any[]>([]);
     const fadeAnim = useState(new Animated.Value(1))[0];
-    
+    const toDayDate = new Date();
     const router = useRouter();
 
     useEffect(() => {
-        if (id||eventId) {
-            fetchUsersInEvent(id?id:eventId?eventId:''  );
+        if (id || event?.id) {
+            fetchUsersInEvent(id || event?.id.toString() || "");
         }
     }, [id]);
 
@@ -80,7 +80,7 @@ const AcceptRejectScreen = () => {
     ) => {
         try {
             await api.put(`event-registration/${userId}`, { status });
-            fetchUsersInEventAfter(id?id:eventId?eventId:'');
+            fetchUsersInEventAfter(id || event?.id.toString() || "");
         } catch (error) {
             console.error("Failed to update status", error);
         } finally {
@@ -137,28 +137,73 @@ const AcceptRejectScreen = () => {
                                         {user.status}
                                     </Text>
                                 </View>
+                                {
+                                    toDayDate < new Date(event?.end_time??"")?
+                                
                                 <View className=" space-x-2 gap-2">
-                                    <TouchableOpacity
-                                        className="bg-[--main-color] px-4 py-2 rounded-lg shadow"
-                                        onPress={() =>
-                                            changeStatus(user.id, "confirmed")
-                                        }
-                                    >
-                                        <Text className="text-white">
-                                            ✅ Accept
-                                        </Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        className="bg-[--second-color] px-4 py-2 rounded-lg shadow"
-                                        onPress={() =>
-                                            changeStatus(user.id, "cancelled")
-                                        }
-                                    >
-                                        <Text className="text-white">
-                                            ❌ Reject
-                                        </Text>
-                                    </TouchableOpacity>
-                                </View>
+                                    {user.status == "pending" ? (
+                                        <>
+                                            <TouchableOpacity
+                                                className="bg-[--main-color] px-4 py-2 rounded-lg shadow"
+                                                onPress={() =>
+                                                    changeStatus(
+                                                        user.id,
+                                                        "confirmed"
+                                                    )
+                                                }
+                                            >
+                                                <Text className="text-white">
+                                                    ✅ Accept
+                                                </Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
+                                                className="bg-[--second-color] px-4 py-2 rounded-lg shadow"
+                                                onPress={() =>
+                                                    changeStatus(
+                                                        user.id,
+                                                        "cancelled"
+                                                    )
+                                                }
+                                            >
+                                                <Text className="text-white">
+                                                    ❌ Reject
+                                                </Text>
+                                            </TouchableOpacity>
+                                        </>
+                                    ) : user.status == "confirmed" ? (
+                                        <>
+                                            <TouchableOpacity
+                                                className="bg-[--second-color] px-4 py-2 rounded-lg shadow"
+                                                onPress={() =>
+                                                    changeStatus(
+                                                        user.id,
+                                                        "cancelled"
+                                                    )
+                                                }
+                                            >
+                                                <Text className="text-white">
+                                                    ❌ Reject
+                                                </Text>
+                                            </TouchableOpacity>
+                                        </>
+                                    ) : (
+                                        <TouchableOpacity
+                                            className="bg-[--main-color] px-4 py-2 rounded-lg shadow"
+                                            onPress={() =>
+                                                changeStatus(
+                                                    user.id,
+                                                    "confirmed"
+                                                )
+                                            }
+                                        >
+                                            <Text className="text-white">
+                                                ✅ Accept
+                                            </Text>
+                                        </TouchableOpacity>
+                                    )}
+                                </View>:<View className=" space-x-2 gap-2">
+                                    <Text className="text-rose-300 text-[10px]">Event Is Expire</Text>
+                                    </View>}
                             </Animated.View>
                         );
                     })

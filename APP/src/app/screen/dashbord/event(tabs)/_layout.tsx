@@ -25,6 +25,16 @@ function TabLayout() {
           headerShown: false,
         }}
       />
+      <Tabs.Screen
+        name="Attendance"
+        options={{
+          title:"Attendance ",
+          tabBarIcon: ({ color }: { color: string }) => (
+            <Icons.Feather name="user-check" size={24} color={color} />
+          ),
+          headerShown: false, 
+        }}
+      />
     </Tabs>
   );
 }

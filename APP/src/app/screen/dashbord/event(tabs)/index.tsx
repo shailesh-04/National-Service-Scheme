@@ -26,7 +26,7 @@ import { height } from "#/src/constants/Dimention";
 const FullEvent: React.FC = () => {
     const router = useRouter();
     const mainUser = useUserStore((s) => s.user);
-    const { setEventId } = useEvent();
+    const {setEventData}  = useEvent();
     const { setAlert } = useAlert();
     const [user, setUser] = useState<EventUserProps[] | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -40,7 +40,6 @@ const FullEvent: React.FC = () => {
     useEffect(() => {
         const parsedEvent = JSON.parse(data as string);
         if (Number.isInteger(parsedEvent)) {
-            setEventId(parsedEvent);
             fetchEvent(parsedEvent, (data1: EventType[], err) => {
                 if (err) {
                     setAlert(err);
@@ -48,6 +47,17 @@ const FullEvent: React.FC = () => {
                 }
                 setDateTime(date(data1[0].start_time, data1[0].end_time));
                 setEvent(data1[0]);
+                setEventData({
+                    id: data1[0].id,
+                    name: data1[0].name,
+                    description: data1[0].description,
+                    location: data1[0].location,
+                    start_time: data1[0].start_time,
+                    end_time: data1[0].end_time,
+                    numOFUser: data1[0].numOFUser,
+                    image: data1[0].image,
+                    created_by:Number( data1[0].created_by),
+                });
                 check(parsedEvent);
                 fetchUser(data1[0].created_by, (data, err) => {
                     if (err) {
@@ -60,7 +70,17 @@ const FullEvent: React.FC = () => {
         } else {
             setEvent(parsedEvent);
             check(parsedEvent.id);
-            setEventId(parsedEvent.id);
+            setEventData({
+                id: parsedEvent.id,
+                name: parsedEvent.name,
+                description: parsedEvent.description,
+                location: parsedEvent.location,
+                start_time: parsedEvent.start_time,
+                end_time: parsedEvent.end_time,
+                numOFUser: parsedEvent.numOFUser,
+                image: parsedEvent.image,
+                created_by:Number( parsedEvent.created_by),
+            });
             setDateTime(date(parsedEvent.start_time, parsedEvent.end_time));
             fetchUser(parsedEvent.created_by, (data, err) => {
                 if (err) {
@@ -297,51 +317,6 @@ const FullEvent: React.FC = () => {
                     Event Details
                 </Text>
             </View>
-            {eventStartTime && toDay < eventStartTime ? (
-                registed ? (
-                    <View className="items-center mb-10">
-                        <Text>You Are Registed in This Event</Text>
-                        <Text className=" font-bold">{registerStatus.toUpperCase()} </Text>
-                    </View>
-                ) : (
-                    <View className="items-center mb-10">
-                        {loading1 ? (
-                            <ActivityIndicator />
-                        ) : (
-                            <Button
-                                style={{
-                                    width: "80%",
-                                    boxShadow: "0px 1px 10px #777",
-                                }}
-                                onPress={() => {
-                                    Alert.alert(
-                                        "🎟️ Event Registration",
-                                        "Are you sure you want to register for this event? 🎉 This will secure your spot!",
-                                        [
-                                            {
-                                                text: "✅ Yes, Register Me!",
-                                                onPress: () => onRegister(),
-                                            },
-                                            {
-                                                text: "❌ No, Maybe Later",
-                                                style: "cancel",
-                                            },
-                                        ]
-                                    );
-                                }}
-                            >
-                                <Text className="text-[15px] underline">
-                                    Register
-                                </Text>
-                            </Button>
-                        )}
-                    </View>
-                )
-            ) : (
-                <View className="items-center mb-10">
-                    <Text>This Event Is Expired</Text>
-                </View>
-            )}
         </SafeAreaView>
     );
 };

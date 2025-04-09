@@ -25,11 +25,11 @@ class Attendance {
         });
     }
     static async create(data) {
-        const { registration_id } = data;
+        const { user_id, event_id } = data;
         return new Promise((resolve, reject) => {
             conn.query(
-                "INSERT INTO event_attendance (registation_id) VALUES (?)",
-                [registration_id],
+                "INSERT INTO event_attendance (user_id, event_id) VALUES (?, ?)",
+                [user_id, event_id],
                 (err, result) => {
                     if (err) {
                         return reject(new Error(err.sqlMessage || err.message));
@@ -39,12 +39,13 @@ class Attendance {
             );
         });
     }
+
     static async update(id, data) {
-        const { registration_id } = data;
+        const  { user_id, event_id }= data;
         return new Promise((resolve, reject) => {
             conn.query(
-                "UPDATE event_attendance SET registation_id = ? WHERE id = ?",
-                [registration_id, id],
+                "UPDATE event_attendance SET user_id=?, event_id=?  WHERE id = ?",
+                [user_id, event_id, id],
                 (err, result) => {
                     if (err) {
                         return reject(new Error(err.sqlMessage || err.message));
@@ -68,27 +69,12 @@ class Attendance {
             );
         });
     }
-    static async getByRegistrationId(registration_id) {
-        return new Promise((resolve, reject) => {
-            conn.query(
-                "SELECT * FROM event_attendance WHERE registation_id = ?",
-                [registration_id],
-                (err, results) => {
-                    if (err) {
-                        return reject(new Error(err.sqlMessage || err.message));
-                    }
-                    return resolve(results);
-                }
-            );
-        });
-    }
     static async getEventByAttendanceId(attendanceId) {
         return new Promise((resolve, reject) => {
             const query = `
                 SELECT e.*
                 FROM event_attendance a
-                JOIN registration r ON a.registation_id = r.id
-                JOIN events e ON r.event_id = e.id
+                JOIN events e ON a.event_id = e.id
                 WHERE a.id = ?
             `;
             conn.query(query, [attendanceId], (err, results) => {
@@ -101,16 +87,60 @@ class Attendance {
     static async getUserByAttendanceId(attendanceId) {
         return new Promise((resolve, reject) => {
             const query = `
-                SELECT u.*
+                SELECT a.id as attendance_id,u.id as user_id ,u.name,u.img
                 FROM event_attendance a
-                JOIN registration r ON a.registation_id = r.id
-                JOIN users u ON r.user_id = u.id
+                JOIN users u ON a.user_id = u.id
                 WHERE a.id = ?
             `;
             conn.query(query, [attendanceId], (err, results) => {
                 if (err)
                     return reject(new Error(err.sqlMessage || err.message));
                 return resolve(results[0]);
+            });
+        });
+    }
+
+    static async getRegistrationUserByEventId(eventId) {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT 
+                    r.id AS registration_id,
+                    u.id AS user_id,
+                    u.name,
+                    u.img,
+                    u.email
+                FROM registration r
+                JOIN users u ON r.user_id = u.id
+                WHERE r.event_id = ? AND r.status = 'confirmed'
+                ORDER BY r.id DESC;
+
+            `;
+            conn.query(query, [eventId], (err, results) => {
+                if (err)
+                    return reject(new Error(err.sqlMessage || err.message));
+                return resolve(results);
+            });
+        });
+    }
+    static async getUsersByEventId(eventId) {
+        const query = `
+            SELECT 
+                a.id,
+                u.id AS user_id,
+                u.name,
+                u.email,
+                u.img,
+                a.attendance_time
+            FROM event_attendance a
+            JOIN users u ON a.user_id = u.id
+            WHERE a.event_id = ?
+            ORDER BY a.attendance_time DESC
+        `;
+        return new Promise((resolve, reject) => {
+            conn.query(query, [eventId], (err, results) => {
+                if (err)
+                    return reject(new Error(err.sqlMessage || err.message));
+                return resolve(results);
             });
         });
     }

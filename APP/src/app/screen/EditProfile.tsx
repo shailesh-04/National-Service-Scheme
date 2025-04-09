@@ -69,6 +69,7 @@ const UpdateProfile = () => {
         ProfileEdit(data, user?.id, (res, err) => {
             setLoading(false);
             if (err) {
+
                 setAlert(err, "error");
                 return;
             }

@@ -23,10 +23,12 @@ api.interceptors.response.use(
     } else if (!error.response) {
       setAlert("Network Error: Server is unreachable.", "error");
     }
-    console.error(error);
+    console.error(error.response?.data || error.message);
     return Promise.reject(error);
   }
 );
+
+
 export const ExpireApi = axios.create({
   baseURL: BASE_URL,
   timeout: 5000,

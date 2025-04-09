@@ -2,11 +2,13 @@ export const table = {
   name: "event_attendance",
   field: `
     id INT AUTO_INCREMENT PRIMARY KEY,
-    registation_id INT NOT NULL,
+    user_id INT NOT NULL,
+    event_id INT NOT NULL,
     attendance_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (registation_id) REFERENCES registration(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
   `,
 };
 export const createTable = `CREATE TABLE ${table.name} (${table.field});`;
@@ -19,6 +21,7 @@ export const seeders = `INSERT INTO ${table.name} (<column>) VALUES
  (<column_value>),
  (<column_value>),
 `;
+
 export const addIndex = `CREATE INDEX <index_name> ON ${table.name} (<column>);`;
 export const dropIndex = `DROP INDEX <index_name> ON ${table.name};`;
 export const addForeignKey = `ALTER TABLE ${table.name} ADD export CONSTRAINT <export constraint_name> FOREIGN KEY (<column>) REFERENCES <referenced_table>(<referenced_column>);`;

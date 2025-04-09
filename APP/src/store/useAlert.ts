@@ -10,7 +10,7 @@ type AlertStoreType = {
 const useAlert = create<AlertStoreType>()((set) => ({
     alert: null,
     type: "info",
-    setAlert: (alert, type = "info") => {
+    setAlert: (alert, type = "error") => {
         set({ alert, type });
     },
     clearAlert: () => {
