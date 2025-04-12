@@ -28,9 +28,9 @@ const toDayDate = `${new Date().getUTCDate()} ${new Date().toLocaleString(
     }
 )} ${new Date().getUTCFullYear()}`;
 
-const getAttendanceDatesFromPresentUsers = (List: AttendanceType[],end_time:string) => {
+const getAttendanceDatesFromPresentUsers = (List: AttendanceType[],end_time:string,start_time:string) => {
     const dateSet = new Set<string>();
-    if(new Date() < new Date(end_time))
+    if(new Date() < new Date(end_time) &&  new Date() > new Date(start_time))
         dateSet.add(toDayDate);
     List.forEach((user) => {
         if (user.attendance_time) {
@@ -71,7 +71,7 @@ const Attendance = () => {
             await getAllAttendancesByEventId(event?.id).then((data) => {
                 setPresentUsers(data);
                 const attendanceDates =
-                    getAttendanceDatesFromPresentUsers(data,event.end_time);
+                    getAttendanceDatesFromPresentUsers(data,event.end_time,event.start_time);
                 setDates(attendanceDates);
                 if (attendanceDates.length > 0) {
                     setSelectedDate(

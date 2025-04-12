@@ -127,6 +127,7 @@ export const sendOtp = async (req, res) => {
                 }
             });
         } catch (error) {
+            catchErr(error,"send otp");
             return res
                 .status(500)
                 .json({ mesaage: "Error sending email", error: error.message });
@@ -156,7 +157,8 @@ export const signup = async (req, res) => {
                     delete req.session.otp;
                     req.session.save();
                     const token = await createToken(data[0]);
-                    res.cookie("token", token);
+                    res.cookie("token", token,{ maxAge: 2 * 60 * 60 * 1000}); // 2 hovers
+                    // res.cookie("token", token,{ maxAge: 7 * 24 * 60 * 60 * 1000}); // 7 days
                     res.status(200).json({ token: token, data: data[0] });
                 } else
                     return res.status(404).json({

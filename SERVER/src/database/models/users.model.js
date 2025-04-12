@@ -81,7 +81,7 @@ try {
         );
     };
     model.getUser_email = async (id, res) => {
-        conn.query("SELECT id,name FROM users WHERE email = ?;",[s], res);
+        conn.query("SELECT id,name FROM users WHERE email = ?;",[id], res);
     };
 } catch (error) {
     catchErr(error, "user.model");

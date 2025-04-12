@@ -41,7 +41,7 @@ class RegistratoinController {
                     if(err)
                         console.error("Icrement Number Of User In evet:",err.sqlMessage);
 
-                    res.json({message:"Add New Register"});
+                    res.json({message:"You Are Successfuly Register!"});
                 });
             });
         } catch (error) {
