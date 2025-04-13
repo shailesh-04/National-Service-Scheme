@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "CommonJS",
+        "rootDir": "./",
+        "outDir": "./dist",
+        "baseUrl": "src",
+        "paths": {
+            "@color": ["utils/color.ts"],
+            "@controllers/*": ["controllers/*"],
+            "@models/*": ["database/models/*"],
+            "@migrations/*": ["database/migrations/*"],
+            "@config/*": ["config/*"],
+            "@routes/*": ["routes/*"],
+            "@middleware/*": ["middleware/*"],
+            "@services/*": ["services/*"],
+            "@utils/*": ["untils/*"]
+        },
+        "esModuleInterop": true,
+        "strict": true,
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "skipLibCheck": true
+    }
+}
