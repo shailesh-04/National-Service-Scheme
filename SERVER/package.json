@@ -7,7 +7,7 @@
     "scripts": {
         "dev": "ts-node src/index.js",
         "build": "tsc",
-        "start": "node dist/index.js",
+        "start": "node index.js",
         "clean": "rm -rf dist",
         "test": "node temp.test.js",
         "migration": "node ./src/database/migrations/_migrations.js",
