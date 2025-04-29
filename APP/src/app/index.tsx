@@ -46,7 +46,6 @@ export default function HomeScreen() {
     useEffect(() => {
             callingApi();
     }, []);
-
     return (
         <View
             style={Theme}

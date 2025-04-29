@@ -1,40 +1,60 @@
 import express from "express";
 import { config } from "dotenv";
-import routers from "#routes/_routers.js";
-import viewRouters from "#routes/_viewRouters.js";
 import cors from "cors";
-import { catchErr } from "#color";
 import { fileURLToPath } from "url";
 import path from "path";
 import session from "express-session";
 import cookieParser from "cookie-parser";
-const app = express();
-try {
-    config();
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.join(path.dirname(__filename), "../");
-    const allowedOrigins = process.env.CORS ? process.env.CORS.split(",") : [];
-    app.set("view engine", "ejs");
-    app.set("views", path.join(__dirname, "src", "views"));
-    app.use(express.static("public"));
-    app.use(
-        cors({
-            origin: "*",
-        })
-    );
-    app.use(express.json());
-    app.use(cookieParser());
-    app.use(
-        session({
-            secret: process.env.EXPRESS_SESSION || "default_secret",
-            resave: false,
-            saveUninitialized: true,
-            cookie: { maxAge: 2 * 60 * 1000 },
-        })
-    );
-    app.use("/", viewRouters);
-    app.use("/api", routers);
-} catch (error) {
-    catchErr(error, "app.config.js");
+import DataBase from "#config/db.config.js"
+import _index from "#src/routes/_index.route.js";
+import viewRouters from "#routes/_viewRouters.js";
+class App {
+    app;
+    constructor() {
+        this.app = express();
+        this.appConfig();
+        this.middleware();
+        this.routers();
+        DataBase.testConnection();
+    }
+    appConfig() {
+        config();
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = path.join(path.dirname(__filename), "../");
+        this.app.set("view engine", "ejs");
+        this.app.set("views", path.join(__dirname, "src", "views"));
+    }
+    middleware() {
+        this.app.use(express.static("public"));
+
+        const allowedOrigins = process.env.CORS
+            ? process.env.CORS.split(",")
+            : ["*"];
+
+        this.app.use(
+            cors({
+                origin: allowedOrigins,
+                credentials: true,
+            })
+        );
+
+        this.app.use(express.json());
+        this.app.use(cookieParser());
+
+        this.app.use(
+            session({
+                secret: process.env.EXPRESS_SESSION || "default_secret",
+                resave: false,
+                saveUninitialized: true,
+                cookie: { maxAge: 2 * 60 * 1000 },
+            })
+        );
+    }
+
+    routers() {
+        this.app.use("/", viewRouters);
+        this.app.use("/api", _index);
+    }
 }
-export default app;
+
+export default new App().app;

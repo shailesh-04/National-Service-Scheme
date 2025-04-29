@@ -1,11 +1,11 @@
 {
-    "name": "nss-project-backend",
+    "name": "nss.mahuva",
     "version": "1.0.0",
-    "description": "The National Sevice Scheme (NSS) Android App BackEnd Project Apis",
     "type": "module",
+    "description": "nss.mahuva app  Backend is a robust Node.js server application that powers the NSS (National Service Scheme) management system. Built with MVC architecture and MySQL, it handles secure user authentication, event management, registration tracking, profile updates, and admin operations. Designed for both students and admins, the backend supports scalable APIs to manage users, events, images, and notifications efficiently.",
     "main": "index.js",
     "scripts": {
-        "dev": "nodemon index.js",
+        "dev": "nodemon",
         "start": "node index.js",
         "test": "node temp.test.js",
         "migration": "node ./src/database/migrations/_migrations.js",
@@ -23,15 +23,6 @@
         "#services/*": "./src/services/*",
         "#untils/*": "./src/untils/*"
     },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/shailesh-04/NSS.git"
-    },
-    "keywords": [
-        "NSS"
-    ],
-    "author": "shailesh makavana",
-    "license": "ISC",
     "dependencies": {
         "cloudinary": "^1.41.3",
         "cookie-parser": "^1.4.7",
@@ -46,13 +37,22 @@
         "multer-storage-cloudinary": "^4.0.0",
         "mysql2": "^3.12.0",
         "nodemailer": "^6.10.0",
-        "remove": "^0.1.5",
         "socket.io": "^4.8.1"
     },
     "devDependencies": {
-        "@types/node": "^22.14.1",
-        "nodemon": "^3.1.9",
-        "ts-node": "^10.9.2",
-        "typescript": "^5.8.3"
-    }
+        "nodemon": "^3.1.9"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/shailesh-04/National-Service-Scheme.git"
+    },
+    "keywords": [
+        "nss.mahuva"
+    ],
+    "author": "shailesh makavana",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/shailesh-04/National-Service-Scheme/issues"
+    },
+    "homepage": "https://github.com/shailesh-04/National-Service-Scheme#readme"
 }

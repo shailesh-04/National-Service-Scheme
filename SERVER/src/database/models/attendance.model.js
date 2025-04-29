@@ -1,127 +1,117 @@
-import conn from "#config/db.config.js";
+import db from "#config/db.config.js"; // Make sure the path is correct
+
 class Attendance {
     static async getAll() {
-        return new Promise((resolve, reject) => {
-            conn.query("SELECT * FROM event_attendance", (err, results) => {
-                if (err) {
-                    return reject(new Error(err.sqlMessage || err.message));
-                }
-                return resolve(results);
-            });
-        });
+        try {
+            const [rows] = await db.query("SELECT * FROM event_attendance");
+            return rows;
+        } catch (error) {
+            throw new Error(error.sqlMessage || error.message);
+        }
     }
+
     static async getById(id) {
-        return new Promise((resolve, reject) => {
-            conn.query(
+        try {
+            const [rows] = await db.query(
                 "SELECT * FROM event_attendance WHERE id = ?",
-                [id],
-                (err, results) => {
-                    if (err) {
-                        return reject(new Error(err.sqlMessage || err.message));
-                    }
-                    return resolve(results[0]);
-                }
+                [id]
             );
-        });
+            return rows[0];
+        } catch (error) {
+            throw new Error(error.sqlMessage || error.message);
+        }
     }
+
     static async create(data) {
-        const { user_id, event_id } = data;
-        return new Promise((resolve, reject) => {
-            conn.query(
+        try {
+            const { user_id, event_id } = data;
+            const [result] = await db.query(
                 "INSERT INTO event_attendance (user_id, event_id) VALUES (?, ?)",
-                [user_id, event_id],
-                (err, result) => {
-                    if (err) {
-                        return reject(new Error(err.sqlMessage || err.message));
-                    }
-                    return resolve({ id: result.insertId, ...data });
-                }
+                [user_id, event_id]
             );
-        });
+            return result;
+        } catch (error) {
+            console.log(error)
+            throw new Error(error.sqlMessage || error.message);
+        }
     }
 
     static async update(id, data) {
-        const  { user_id, event_id }= data;
-        return new Promise((resolve, reject) => {
-            conn.query(
-                "UPDATE event_attendance SET user_id=?, event_id=?  WHERE id = ?",
-                [user_id, event_id, id],
-                (err, result) => {
-                    if (err) {
-                        return reject(new Error(err.sqlMessage || err.message));
-                    }
-                    return resolve(result);
-                }
+        const { user_id, event_id } = data;
+        try {
+            const [result] = await db.query(
+                "UPDATE event_attendance SET user_id = ?, event_id = ? WHERE id = ?",
+                [user_id, event_id, id]
             );
-        });
+            return result;
+        } catch (error) {
+            throw new Error(error.sqlMessage || error.message);
+        }
     }
+
     static async delete(id) {
-        return new Promise((resolve, reject) => {
-            conn.query(
+        try {
+            const [result] = await db.query(
                 "DELETE FROM event_attendance WHERE id = ?",
-                [id],
-                (err, result) => {
-                    if (err) {
-                        return reject(new Error(err.sqlMessage || err.message));
-                    }
-                    return resolve(result);
-                }
+                [id]
             );
-        });
+            return result;
+        } catch (error) {
+            throw new Error(error.sqlMessage || error.message);
+        }
     }
+
     static async getEventByAttendanceId(attendanceId) {
-        return new Promise((resolve, reject) => {
-            const query = `
-                SELECT e.*
-                FROM event_attendance a
-                JOIN events e ON a.event_id = e.id
-                WHERE a.id = ?
-            `;
-            conn.query(query, [attendanceId], (err, results) => {
-                if (err)
-                    return reject(new Error(err.sqlMessage || err.message));
-                return resolve(results[0]);
-            });
-        });
+        const query = `
+            SELECT e.*
+            FROM event_attendance a
+            JOIN events e ON a.event_id = e.id
+            WHERE a.id = ?
+        `;
+        try {
+            const [rows] = await db.query(query, [attendanceId]);
+            return rows[0];
+        } catch (error) {
+            throw new Error(error.sqlMessage || error.message);
+        }
     }
+
     static async getUserByAttendanceId(attendanceId) {
-        return new Promise((resolve, reject) => {
-            const query = `
-                SELECT a.id as attendance_id,u.id as user_id ,u.name,u.img
-                FROM event_attendance a
-                JOIN users u ON a.user_id = u.id
-                WHERE a.id = ?
-            `;
-            conn.query(query, [attendanceId], (err, results) => {
-                if (err)
-                    return reject(new Error(err.sqlMessage || err.message));
-                return resolve(results[0]);
-            });
-        });
+        const query = `
+            SELECT a.id as attendance_id, u.id as user_id, u.name, u.img
+            FROM event_attendance a
+            JOIN users u ON a.user_id = u.id
+            WHERE a.id = ?
+        `;
+        try {
+            const [rows] = await db.query(query, [attendanceId]);
+            return rows[0];
+        } catch (error) {
+            throw new Error(error.sqlMessage || error.message);
+        }
     }
 
     static async getRegistrationUserByEventId(eventId) {
-        return new Promise((resolve, reject) => {
-            const query = `
-                SELECT 
-                    r.id AS registration_id,
-                    u.id AS user_id,
-                    u.name,
-                    u.img,
-                    u.email
-                FROM registration r
-                JOIN users u ON r.user_id = u.id
-                WHERE r.event_id = ? AND r.status = 'confirmed'
-                ORDER BY r.id DESC;
-
-            `;
-            conn.query(query, [eventId], (err, results) => {
-                if (err)
-                    return reject(new Error(err.sqlMessage || err.message));
-                return resolve(results);
-            });
-        });
+        const query = `
+            SELECT 
+                r.id AS registration_id,
+                u.id AS user_id,
+                u.name,
+                u.img,
+                u.email
+            FROM registration r
+            JOIN users u ON r.user_id = u.id
+            WHERE r.event_id = ? AND r.status = 'confirmed'
+            ORDER BY r.id DESC
+        `;
+        try {
+            const [rows] = await db.query(query, [eventId]);
+            return rows;
+        } catch (error) {
+            throw new Error(error.sqlMessage || error.message);
+        }
     }
+
     static async getUsersByEventId(eventId) {
         const query = `
             SELECT 
@@ -136,13 +126,13 @@ class Attendance {
             WHERE a.event_id = ?
             ORDER BY a.attendance_time DESC
         `;
-        return new Promise((resolve, reject) => {
-            conn.query(query, [eventId], (err, results) => {
-                if (err)
-                    return reject(new Error(err.sqlMessage || err.message));
-                return resolve(results);
-            });
-        });
+        try {
+            const [rows] = await db.query(query, [eventId]);
+            return rows;
+        } catch (error) {
+            throw new Error(error.sqlMessage || error.message);
+        }
     }
 }
+
 export default Attendance;

@@ -7,14 +7,11 @@ class StorageController {
         try {
             const { whyuse, value } = req.body;
             if (!whyuse || !value) {
-                return res
-                    .status(400)
-                    .json({ error: "Missing required fields" });
+                return res.status(400).json({ error: "Missing required fields" });
             }
-            Storage.create({ whyuse, value }, (err, entry) => {
-                if (err) return res.status(500).json({ error: err.message });
-                res.status(201).json(entry);
-            });
+
+            const result = await Storage.create({ whyuse, value });
+            res.status(201).json(result);
         } catch (error) {
             catchErr(error, "StorageController.create");
             return res.status(500).json({ error: error.message });
@@ -24,14 +21,11 @@ class StorageController {
     static async getById(req, res) {
         try {
             const { id } = req.params;
-            Storage.getById(id, (err, entry) => {
-                if (err) return res.status(500).json({ error: err.message });
-                if (!entry)
-                    return res
-                        .status(404)
-                        .json({ error: "Storage entry not found" });
-                res.json(entry);
-            });
+            const entry = await Storage.getById(id);
+            if (!entry) {
+                return res.status(404).json({ error: "Storage entry not found" });
+            }
+            res.json(entry);
         } catch (error) {
             catchErr(error, "StorageController.getById");
             return res.status(500).json({ error: error.message });
@@ -40,34 +34,34 @@ class StorageController {
 
     static async getImageGallery(req, res) {
         try {
-            Storage.getByUse("image-gallry", (err, entries) => {
-                if (err) return res.status(500).json({ error: err.message });
-                model.GetImages(entries[0].value, (err, result) => {
-                    if (err)
-                        return res.status(500).json({ error: err.sqlMessage });
-                    res.json({images:result,imageId:entries[0].value});
-                });
-            });
+            const entries = await Storage.getByUse("image-gallry");
+            if (!entries.length) {
+                return res.status(404).json({ error: "Image gallery ID not found in storage" });
+            }
+            const imageId = entries[0].value;
+            const images = await model.GetImages(imageId);
+            res.json({ images, imageId });
         } catch (error) {
-            catchErr(error, "StorageController.getByUse");
+            catchErr(error, "StorageController.getImageGallery");
             return res.status(500).json({ error: error.message });
         }
     }
-    static async UpdateImageGallery(req,res){
-        const data = req.body;
-        Storage.updateValue([data.value,"image-gallry"],(err)=>{
-            if(err)
-                return res.status(500).json({ error: err.sqlMessage });
-            res.json("Successfuly Update");
-        });
+
+    static async UpdateImageGallery(req, res) {
+        try {
+            const { value } = req.body;
+            await Storage.updateValue([value, "image-gallry"]);
+            res.json("Successfully Updated");
+        } catch (error) {
+            catchErr(error, "StorageController.UpdateImageGallery");
+            return res.status(500).json({ error: error.message });
+        }
     }
 
     static async getAll(req, res) {
         try {
-            Storage.getAll((err, entries) => {
-                if (err) return res.status(500).json({ error: err.message });
-                res.json(entries);
-            });
+            const entries = await Storage.getAll();
+            res.json(entries);
         } catch (error) {
             catchErr(error, "StorageController.getAll");
             return res.status(500).json({ error: error.message });
@@ -78,19 +72,17 @@ class StorageController {
         try {
             const { id } = req.params;
             const { whyuse, value } = req.body;
+
             if (!whyuse || !value) {
-                return res
-                    .status(400)
-                    .json({ error: "Missing required fields" });
+                return res.status(400).json({ error: "Missing required fields" });
             }
-            Storage.update(id, { whyuse, value }, (err, updated) => {
-                if (err) return res.status(500).json({ error: err.message });
-                if (!updated)
-                    return res
-                        .status(404)
-                        .json({ error: "Storage entry not found" });
-                res.json({ message: "Storage entry updated successfully" });
-            });
+
+            const updated = await Storage.update(id, { whyuse, value });
+            if (!updated.affectedRows) {
+                return res.status(404).json({ error: "Storage entry not found" });
+            }
+
+            res.json({ message: "Storage entry updated successfully" });
         } catch (error) {
             catchErr(error, "StorageController.update");
             return res.status(500).json({ error: error.message });
@@ -100,14 +92,11 @@ class StorageController {
     static async delete(req, res) {
         try {
             const { id } = req.params;
-            Storage.delete(id, (err, deleted) => {
-                if (err) return res.status(500).json({ error: err.message });
-                if (!deleted)
-                    return res
-                        .status(404)
-                        .json({ error: "Storage entry not found" });
-                res.json({ message: "Storage entry deleted successfully" });
-            });
+            const deleted = await Storage.delete(id);
+            if (!deleted.affectedRows) {
+                return res.status(404).json({ error: "Storage entry not found" });
+            }
+            res.json({ message: "Storage entry deleted successfully" });
         } catch (error) {
             catchErr(error, "StorageController.delete");
             return res.status(500).json({ error: error.message });

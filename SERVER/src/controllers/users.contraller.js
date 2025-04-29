@@ -1,359 +1,294 @@
 import { catchErr } from "#color";
-import model from "#models/users.model.js";
+import User from "#models/users.model.js";
 import { createToken } from "#services/jwt.service.js";
 import generateOTP from "#services/genarateOTP.js";
 import sendEmail from "#services/sendEmail.js";
-export const All = (req, res) => {
+
+export const All = async (req, res) => {
     try {
-        model.All((err, data) => {
-            if (err) return res.status(406).json({ message: err.sqlMessage });
-            res.status(200).json(data);
-        });
+        const data = await User.All();
+        res.status(200).json(data);
     } catch (error) {
         catchErr(error, "user.controll.findall");
-        if (err)
-            return res
-                .status(500)
-                .json({ message: "Internal Server Error : " + error });
+        res.status(500).json({ message: "Internal Server Error : " + error.message });
     }
 };
 
-export const updateAll = (req, res) => {
+export const updateAll = async (req, res) => {
     try {
         const id = req.params.id;
         const { name, email, password, phone, role, is_deleted } = req.body;
-        const pass =
-            password == ""
-                ? [name, email, phone, role, is_deleted]
-                : [name, email, password, phone, role, is_deleted];
+        const pass = password === "" 
+            ? [name, email, phone, role, is_deleted] 
+            : [name, email, password, phone, role, is_deleted];
 
-        model.updateAll(id, pass, (err, data) => {
-            if (err) return res.status(406).json({ message: err.sqlMessage });
-            res.status(200).json("Succsessfuly Update User Profile:");
-        });
+        await User.updateAll(id, pass);
+        res.status(200).json("Successfully Update User Profile");
     } catch (error) {
         catchErr(error, "user.controll.update");
-        if (err)
-            return res
-                .status(500)
-                .json({ message: "Internal Server Error : " + error });
+        res.status(error.sqlMessage ? 406 : 500).json({ 
+            message: error.sqlMessage || "Internal Server Error" 
+        });
     }
 };
 
 export const newUser = async (req, res) => {
     try {
         const { name, email, password, phone } = req.body;
-        model.create([name, email, password, phone], (err, data) => {
-            if (err) return res.status(406).json({ message: err.sqlMessage });
-            model.singin([email, password], async (err, data) => {
-                if (err)
-                    return res.status(406).json({ message: err.sqlMessage });
-                if (data.length > 0) {
-                    res.status(200).json({ data: data[0] });
-                } else
-                    return res.status(404).json({
-                        mesaage: "Acount Is Not Create",
-                    });
-            });
-        });
+        await User.create([name, email, password, phone]);
+        
+        const data = await User.singin([email, password]);
+        if (data && data.length > 0) {
+            res.status(200).json({ data: data[0] });
+        } else {
+            res.status(404).json({ message: "Account Is Not Created" });
+        }
     } catch (error) {
-        catchErr(error, "user.controll.sinup");
-        if (err)
-            return res
-                .status(500)
-                .json({ message: "Internal Server Error : " + error });
+        catchErr(error, "user.controll.signup");
+        res.status(error.sqlMessage ? 406 : 500).json({ 
+            message: error.sqlMessage || "Internal Server Error" 
+        });
     }
 };
-export const editPassword = (req, res) => {
+
+export const editPassword = async (req, res) => {
     try {
         const { email, password, otp } = req.body;
-        if (!email || !password)
+        if (!email || !password) {
             return res.status(406).json({ message: "Invalid Data.." });
-        if (req.session.otp != otp)
+        }
+        if (req.session.otp != otp) {
             return res.status(401).json({ message: "Invalid OTP" });
-        model.editPassword(email, password, (err, data) => {
-            if (err) return res.status(406).json({ message: err.sqlMessage });
-            delete req.session.otp;
-            req.session.save();
-            res.status(200).json({
-                message: "Successfully Change Your Password",
-            });
-        });
+        }
+
+        await User.editPassword(email, password);
+        delete req.session.otp;
+        req.session.save();
+        res.status(200).json({ message: "Successfully Changed Your Password" });
     } catch (error) {
         catchErr(error, "user.controll.editPassword");
-        if (err)
-            return res
-                .status(500)
-                .json({ message: "Internal Server Error : " + error });
+        res.status(error.sqlMessage ? 406 : 500).json({ 
+            message: error.sqlMessage || "Internal Server Error" 
+        });
     }
 };
+
 export const sendOtp = async (req, res) => {
     try {
         const { email, use } = req.body;
-        if (!email)
-            return res.status(500).json({ mesaage: "Error sending email" });
+        if (!email) {
+            return res.status(500).json({ message: "Error sending email" });
+        }
+
         const otp = generateOTP();
         req.session.otp = otp;
         req.session.save();
-        try {
-            await model.getUser_email(email, async (err, data) => {
-                if (err)
-                    return res.status(406).json({
-                        mesaage: "Found DataBase Error!",
-                        error: err.sqlMessage,
-                    });
-                else if (!data.length)
-                    if (use == "signup") {
-                        await sendEmail(email, otp);
-                        res.status(200).json({
-                            message: "OTP sent successfully",
-                        });
-                    } else
-                        return res.status(404).json({
-                            message: "Error sending OTP email is not avalable!",
-                        });
-                else {
-                    if (use == "signup")
-                        return res.status(409).json({
-                            message:
-                                "Error sending OTP email is already registered",
-                        });
-                    else {
-                        await sendEmail(email, otp);
-                        res.status(200).json({
-                            message: "OTP sent successfully",
-                        });
-                    }
-                }
+
+        const data = await User.getUser_email(email);
+        
+        if (!data.length) {
+            if (use === "signup") {
+                await sendEmail(email, otp);
+                return res.status(200).json({ message: "OTP sent successfully" });
+            }
+            return res.status(404).json({ 
+                message: "Error sending OTP - email is not available!" 
             });
-        } catch (error) {
-            catchErr(error,"send otp");
-            return res
-                .status(500)
-                .json({ mesaage: "Error sending email", error: error.message });
+        } else {
+            if (use === "signup") {
+                return res.status(409).json({ 
+                    message: "Error sending OTP - email is already registered" 
+                });
+            }
+            await sendEmail(email, otp);
+            return res.status(200).json({ message: "OTP sent successfully" });
         }
     } catch (error) {
         catchErr(error, "user.controll.send otp");
-        if (error)
-            return res
-                .status(500)
-                .json({ message: "Internal Server Error : ", error: error });
+        res.status(500).json({ 
+            message: "Internal Server Error", 
+            error: error.message 
+        });
     }
 };
+
 export const signup = async (req, res) => {
     try {
         const { name, email, password, phone, otp } = req.body;
-        if (!name || !email || !password)
+        if (!name || !email || !password) {
             return res.status(406).json({ message: "Invalid Data.." });
-        if (req.session.otp != otp)
+        }
+        if (req.session.otp != otp) {
             return res.status(401).json({ message: "Invalid OTP" });
+        }
 
-        model.create([name, email, password, phone], (err, data) => {
-            if (err) return res.status(406).json({ message: err.sqlMessage });
-            model.singin([email, password], async (err, data) => {
-                if (err)
-                    return res.status(406).json({ message: err.sqlMessage });
-                if (data.length > 0) {
-                    delete req.session.otp;
-                    req.session.save();
-                    const token = await createToken(data[0]);
-                    res.cookie("token", token,{ maxAge: 2 * 60 * 60 * 1000}); // 2 hovers
-                    // res.cookie("token", token,{ maxAge: 7 * 24 * 60 * 60 * 1000}); // 7 days
-                    res.status(200).json({ token: token, data: data[0] });
-                } else
-                    return res.status(404).json({
-                        mesaage: "Acount Is Not Create",
-                    });
-            });
-        });
+        await User.create([name, email, password, phone]);
+        const data = await User.singin([email, password]);
+        
+        if (data && data.length > 0) {
+            delete req.session.otp;
+            req.session.save();
+            const token = await createToken(data[0]);
+            res.cookie("token", token, { maxAge: 2 * 60 * 60 * 1000 }); // 2 hours
+            res.status(200).json({ token: token, data: data[0] });
+        } else {
+            res.status(404).json({ message: "Account Is Not Created" });
+        }
     } catch (error) {
-        catchErr(error, "user.controll.sinup");
-        if (err)
-            return res
-                .status(500)
-                .json({ message: "Internal Server Error : " + error });
+        catchErr(error, "user.controll.signup");
+        res.status(error.sqlMessage ? 406 : 500).json({ 
+            message: error.sqlMessage || "Internal Server Error" 
+        });
     }
 };
+
 export const singin = async (req, res) => {
     try {
         const { email, password } = req.body;
-        model.singin([email, password], async (err, data) => {
-            if (err) return res.status(406).json({ message: err.sqlMessage });
-            if (data.length > 0) {
-                const token = await createToken(data[0]);
-                res.cookie("token", token);
-                res.status(200).json({ token: token, data: data[0] });
-            } else
-                return res.status(404).json({
-                    mesaage:
-                        "Your Inserted Email And Passaword Is Not Match Any User",
-                });
-        });
+        const data = await User.singin([email, password]);
+        
+        if (data && data.length > 0) {
+            const token = await createToken(data[0]);
+            res.cookie("token", token);
+            res.status(200).json({ token: token, data: data[0] });
+        } else {
+            res.status(404).json({ 
+                message: "Your email and password don't match any user" 
+            });
+        }
     } catch (error) {
-        catchErr(error, "user.controll.sinin");
-        if (err)
-            return res
-                .status(500)
-                .json({ message: "Internal Server Error : " + error });
+        catchErr(error, "user.controll.singin");
+        res.status(500).json({
+            message: "Failed to sign in!",
+            detail: error.sqlMessage || error.message,
+        });
     }
 };
-export const findAll = (req, res) => {
+
+export const findAll = async (req, res) => {
     try {
-        model.findAll((err, data) => {
-            if (err) return res.status(406).json({ message: err.sqlMessage });
-            res.status(200).json(data);
-        });
+        const data = await User.findAll();
+        res.status(200).json(data);
     } catch (error) {
         catchErr(error, "user.controll.findall");
-        if (err)
-            return res
-                .status(500)
-                .json({ message: "Internal Server Error : " + error });
+        res.status(error.sqlMessage ? 406 : 500).json({ 
+            message: error.sqlMessage || "Internal Server Error" 
+        });
     }
 };
 
-export const findOne = (req, res) => {
+export const findOne = async (req, res) => {
     try {
         const id = req.params.id;
-        model.findOne(id, (err, data) => {
-            if (err) return res.status(406).json({ message: err.sqlMessage });
-            if (data.length > 0) res.status(200).json(data);
-            else
-                return res
-                    .status(404)
-                    .json(
-                        "You Are File UserID :" +
-                            id +
-                            " - It ID User Is Not Avalable.."
-                    );
-        });
+        const data = await User.findOne(id);
+        
+        if (data) {
+            res.status(200).json(data);
+        } else {
+            res.status(404).json(`User with ID: ${id} is not available`);
+        }
     } catch (error) {
-        catchErr(error, "user.controll.findOn");
-        if (err)
-            return res
-                .status(500)
-                .json({ message: "Internal Server Error : " + error });
+        catchErr(error, "user.controll.findOne");
+        res.status(error.sqlMessage ? 406 : 500).json({ 
+            message: error.sqlMessage || "Internal Server Error" 
+        });
     }
 };
 
-export const profile = (req, res) => {
+export const profile = async (req, res) => {
     try {
         const id = req.auth.id;
-        model.findOne(id, (err, data) => {
-            if (err) return res.status(406).json({ message: err.sqlMessage });
-            if (data.length > 0) res.status(200).json(data);
-            else
-                return res
-                    .status(404)
-                    .json(
-                        "You Are File UserID :" +
-                            id +
-                            " - It ID User Is Not Avalable.."
-                    );
-        });
+        const data = await User.fineUser(id);
+        
+        if (data) {
+            res.status(200).json(data);
+        } else {
+            res.status(404).json(`User with ID: ${id} is not available`);
+        }
     } catch (error) {
-        catchErr(error, "user.controll.findOn");
-        if (err)
-            return res
-                .status(500)
-                .json({ message: "Internal Server Error : " + error });
+        catchErr(error, "user.controll.profile");
+        res.status(error.sqlMessage ? 406 : 500).json({ 
+            message: error.sqlMessage || "Internal Server Error" 
+        });
     }
 };
 
-export const update = (req, res) => {
+export const update = async (req, res) => {
     try {
         const id = req.params.id;
         const { name, email, password, phone } = req.body;
-        const data =
-            password == ""
-                ? [name, email, phone]
-                : [name, email, password, phone];
-        model.update(id, data, (err, data) => {
-            if (err) return res.status(406).json({ message: err.sqlMessage });
-            res.status(200).json("Succsessfuly Update Update Your Profile..");
-        });
+        const data = password === "" 
+            ? [name, email, phone] 
+            : [name, email, password, phone];
+
+        await User.update(id, data);
+        res.status(200).json("Successfully Updated Your Profile");
     } catch (error) {
         catchErr(error, "user.controll.update");
-        if (err)
-            return res
-                .status(500)
-                .json({ message: "Internal Server Error : " + error });
+        res.status(error.sqlMessage ? 406 : 500).json({ 
+            message: error.sqlMessage || "Internal Server Error" 
+        });
     }
 };
 
-export const remove = (req, res) => {
+export const remove = async (req, res) => {
     try {
         const id = req.params.id;
-        model.remove(id, (err, data) => {
-            if (err) return res.status(406).json({ message: err.sqlMessage });
-            res.status(200).json("Succsessfully Delete Your Profile");
-        });
+        await User.remove(id);
+        res.status(200).json("Successfully Deleted Your Profile");
     } catch (error) {
         catchErr(error, "user.controll.remove");
-        if (err)
-            return res
-                .status(500)
-                .json({ message: "Internal Server Error : " + error });
+        res.status(error.sqlMessage ? 406 : 500).json({ 
+            message: error.sqlMessage || "Internal Server Error" 
+        });
     }
 };
 
-export const uploadImage = (req, res) => {
+export const uploadImage = async (req, res) => {
     try {
         const id = req.params.id;
         const image = req.file.path;
-        model.uploadImage([image, id], (err, data) => {
-            if (err) return res.status(406).json({ message: err.sqlMessage });
-            res.status(200).json("Succsessfully Upload Profile Image");
-        });
+        await User.uploadImage(image, id);
+        res.status(200).json("Successfully Uploaded Profile Image");
     } catch (error) {
         catchErr(error, "user.controll.uploadImage");
-        if (err)
-            return res
-                .status(500)
-                .json({ message: "Internal Server Error : " + error });
+        res.status(error.sqlMessage ? 406 : 500).json({ 
+            message: error.sqlMessage || "Internal Server Error" 
+        });
     }
 };
 
-export const getEventUser = (req, res) => {
+export const getEventUser = async (req, res) => {
     try {
         const id = req.params.id;
-        model.getEventUser(id, (err, data) => {
-            if (err) return res.status(406).json({ message: err.sqlMessage });
-            if (data.length > 0) res.status(200).json(data);
-            else
-                return res
-                    .status(404)
-                    .json("The Event User ID Is Not Avalable In Server..");
-        });
+        const data = await User.getEventUser(id);
+        
+        if (data) {
+            res.status(200).json(data);
+        } else {
+            res.status(404).json("The event user ID is not available in server");
+        }
     } catch (error) {
         catchErr(error, "user.controll.getEventUser");
-        if (err)
-            return res
-                .status(500)
-                .json({ message: "Internal Server Error : " + error });
+        res.status(error.sqlMessage ? 406 : 500).json({ 
+            message: error.sqlMessage || "Internal Server Error" 
+        });
     }
 };
 
-export const verifyUser = (req, res) => {
+export const verifyUser = async (req, res) => {
     try {
         const id = req.auth.id;
-        model.fineUser(id, (err, data) => {
-            if (err) return res.status(406).json({ message: err.sqlMessage });
-            if (data.length > 0) res.status(200).json(data);
-            else
-                return res
-                    .status(404)
-                    .json(
-                        "You Are File UserID :" +
-                            id +
-                            " - It ID User Is Not Avalable.."
-                    );
-        });
+        const data = await User.fineUser(id);
+        if (data) {
+            res.status(200).json(data);
+        } else {
+            res.status(404).json(`User with ID: ${id} is not available`);
+        }
     } catch (error) {
-        catchErr(error, "user.controll.verifyuser");
-        if (err)
-            return res
-                .status(500)
-                .json({ message: "Internal Server Error : " + error });
+        catchErr(error, "user.controll.verifyUser");
+        res.status(error.sqlMessage ? 406 : 500).json({ 
+            message: error.sqlMessage || "Internal Server Error" 
+        });
     }
 };

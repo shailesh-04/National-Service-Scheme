@@ -1,97 +1,82 @@
 import conn from "#config/db.config.js";
 class EventModel {
-     async All(res) {
+    async All() {
         try {
-         
-                conn.query(
-                    `SELECT * FROM events ORDER BY 
+            const [rows] = await conn.query(`SELECT * FROM events ORDER BY 
                         DATE(end_time) = CURDATE() ASC,
-                        start_time DESC`,
-                        res
-                );
+                        start_time DESC`);
+            return rows;
         } catch (error) {
-            throw new Error(error);
+            throw new Error(error.sqlMessage || error.message);
         }
     }
-     async AllUpdate(id, body, res) {
+    async AllUpdate(id, body) {
         try {
-          
-            conn.query(
-                `UPDATE events SET 
-                    name= ?, 
-                    description=?, 
-                    location=?,
-                    image=?,
-                    start_time=?, 
-                    end_time=?,
-
-                    created_by=?, 
-                    is_deleted=?  
-                    WHERE id = ${id}; `,
-                body,
-                res
+            const [result] = await conn.query(
+                `UPDATE events SET name= ?, description=?,location=?,image=?,start_time=?, end_time=?,created_by=?, is_deleted=?  WHERE id = ${id}; `,
+                body
             );
+            return result;
         } catch (error) {
-            throw new Error(error);
+            throw new Error(error.sqlMessage || error.message);
         }
     }
 
-     async createFull(body, res) {
+    async createFull(body) {
         try {
-            conn.query(
-                `INSERT INTO events (name, description, location, image, start_time, end_time, created_by)
-                VALUES (?,?,?,?,?,?,?);`,
-                body,
-                res
+            const [result] = await conn.query(
+                `INSERT INTO events (name, description, location, image, start_time, end_time, created_by) VALUES (?,?,?,?,?,?,?);`,
+                body
             );
+            return result;
         } catch (error) {
-            throw new Error(error);
+            throw new Error(error.sqlMessage || error.message);
         }
     }
 
-     async create(body, res) {
+    async create(body) {
         try {
-            conn.query(
+            const [result] = await conn.query(
                 `INSERT INTO events (name, description, location, start_time, end_time, created_by)
                 VALUES (?,?,?,?,?,?);`,
-                body,
-                res
+                body
             );
+            return result;
         } catch (error) {
-            throw new Error(error);
+            throw new Error(error.sqlMessage || error.message);
         }
     }
 
-     async findAll(res) {
+    async findAll() {
         try {
-            conn.query(
+            const [result] = await conn.query(
                 `SELECT id, name, description, location, start_time, end_time, numOFUser, image, created_by 
                 FROM events 
                 WHERE is_deleted = false  
                 ORDER BY 
                 DATE(end_time) = CURDATE() ASC,
-                start_time DESC;`,
-                res
+                start_time DESC;`
             );
+            return result;
         } catch (error) {
-            throw new Error(error);
+            throw new Error(error.sqlMessage || error.message);
         }
     }
-     async findOne(id, res) {
+    async findOne(id) {
         try {
-            conn.query(
+            const [result] = await conn.query(
                 "SELECT id, name, description, location, start_time, end_time, numOFUser, image, created_by FROM events WHERE id = ? AND is_deleted = FALSE;",
-                id,
-                res
+                id
             );
+            return result;
         } catch (error) {
-            throw new Error(error);
+            throw new Error(error.sqlMessage || error.message);
         }
     }
 
-     async update(id, body, res) {
+    async update(id, body) {
         try {
-            conn.query(
+            const [result] = await conn.query(
                 `UPDATE events 
                 SET name = ?, 
                     description = ?, 
@@ -100,84 +85,86 @@ class EventModel {
                     end_time = ?, 
                     image = ? 
                 WHERE id = ${id};`,
-                body,
-                res
+                body
             );
+            return result;
         } catch (error) {
-            throw new Error(error);
+            throw new Error(error.sqlMessage || error.message);
         }
     }
 
-     async remove(id, res) {
+    async remove(id) {
         try {
-            conn.query(
+            const [result] = await conn.query(
                 `UPDATE events SET is_deleted = TRUE WHERE id = ?;`,
-                [id],
-                res
+                [id]
             );
+            return result;
         } catch (error) {
-            throw new Error(error);
+            throw new Error(error.sqlMessage || error.message);
         }
     }
 
-     async restore(id, res) {
+    async tore(id) {
         try {
-            conn.query(
+            const [result] = await conn.query(
                 `UPDATE events SET is_deleted = false WHERE id = ?;`,
-                [id],
-                res
+                [id]
             );
+            return result;
         } catch (error) {
-            throw new Error(error);
+            throw new Error(error.sqlMessage || error.message);
         }
     }
 
-     async uploadImage(body, res) {
+    async uploadImage(body) {
         try {
-            conn.query(`UPDATE events SET image = ? WHERE id = ?;`, body, res);
+            const [result] = await conn.query(
+                `UPDATE events SET image = ? WHERE id = ?;`,
+                body
+            );
+            return result;
         } catch (error) {
-            throw new Error(error);
+            throw new Error(error.sqlMessage || error.message);
         }
     }
 
-     async upcoming(res) {
+    async upcoming() {
         try {
-            conn.query(
+            const [result] = await conn.query(
                 `SELECT id, name, description, location, start_time, end_time, numOFUser, image, created_by FROM events 
                 WHERE is_deleted = false 
                 AND start_time >= NOW() 
                 ORDER BY start_time ASC 
-                LIMIT 5;`,
-                res
+                LIMIT 5;`
             );
+            return result;
         } catch (error) {
-            throw new Error(error);
+            throw new Error(error.sqlMessage || error.message);
         }
     }
 
-     async addNUmOfUser(id, res) {
+    async addNUmOfUser(id) {
         try {
-            conn.query(
+            const [result] = await conn.query(
                 `UPDATE events SET numOFUser = numOFUser + 1 WHERE id = ?;`,
-                [id],
-                res
+                [id]
             );
+            return result;
         } catch (error) {
-            throw new Error(error);
+            throw new Error(error.sqlMessage || error.message);
         }
     }
 
-     async destroy(id, res) {
+    async destroy(id) {
         try {
-            conn.query(
-                `DELETE from events WHERE id = ?;`,
-                [id],
-                res
-            );
+            const [result] = await conn.query(`DELETE from events WHERE id = ?;`, [
+                id,
+            ]);
+            return result;
         } catch (error) {
-            throw new Error(error);
+            throw new Error(error.sqlMessage || error.message);
         }
     }
 }
-
 export default EventModel;

@@ -1,24 +1,58 @@
 import { catchErr } from "#color";
 import EventModel from "#models/events.model.js";
-
+import UserModel from "#models/users.model.js";
 const model = new EventModel();
-
 class EventController {
-    All = async (req, res) => {
+    // GET api/event/dashbord
+    async All(req, res) {
         try {
-            await model.All((err, data) => {
-                if (err)
-                    return res.status(406).json({ message: err.sqlMessage });
-                res.status(200).json(data);
+            const rows = await model.All();
+            res.status(200).json(rows);
+        } catch (error) {
+            catchErr(error.message, "event.controller.All");
+            res.status(500).json({
+                message: "Failed to fetch all events!",
+                detail: error.message,
+            });
+        }
+    }
+    // POST api/event/dashbord
+    async createFull(req, res) {
+        try {
+            const {
+                name,
+                description,
+                location,
+                start_time,
+                end_time,
+                created_by,
+            } = req.body;
+            const file = req.file ? req.file.path : "";
+            const result = await model.createFull([
+                name,
+                description,
+                location,
+                file,
+                start_time,
+                end_time,
+                created_by,
+            ]);
+            const data = await model.findOne(result.insertId||result[0].insertId);
+            res.status(200).json({
+                message: "Successfully created new event!",
+                data: data,
             });
         } catch (error) {
-            catchErr(error, "event.controll.findall");
-            return res
-                .status(500)
-                .json({ message: "Internal Server Error : " + error });
+            catchErr(error.message, "event.controller.createFull");
+            res.status(500).json({
+                message: "Failed to create new event!",
+                detail: error.message,
+            });
         }
-    };
-    AllUpdate = (req, res) => {
+    }
+
+    // PUT api/event/dashbord/:id
+    async AllUpdate(req, res) {
         try {
             const id = req.params.id;
             const {
@@ -32,35 +66,66 @@ class EventController {
                 image,
             } = req.body;
             const file = req.file ? req.file.path : image;
-            model.AllUpdate(
-                id,
-                [
-                    name,
-                    description,
-                    location,
-                    file,
-                    start_time,
-                    end_time,
-                    created_by,
-                    String(is_deleted) == "true" ? true : false,
-                ],
-                (err, data) => {
-                    if (err)
-                        return res
-                            .status(406)
-                            .json({ message: err.sqlMessage });
-                    res.status(200).json("Succsessfully Update Event..");
-                }
-            );
+
+            const existing = await model.findOne(id);
+            if (!existing || existing.length === 0) {
+                return res.status(404).json({ message: "Event not found" });
+            }
+
+            await model.AllUpdate(id, [
+                name,
+                description,
+                location,
+                file,
+                start_time,
+                end_time,
+                created_by,
+                String(is_deleted) === "true",
+            ]);
+
+            res.status(200).json({ message: "Successfully updated event" });
         } catch (error) {
-            catchErr(error, "event.controll.update");
-            if (error)
-                return res
-                    .status(500)
-                    .json({ message: "Internal Server Error : " + error });
+            catchErr(error.message, "event.controller.AllUpdate");
+            res.status(500).json({
+                message: "Failed to update event!",
+                detail: error.message,
+            });
         }
-    };
-    createFull = async (req, res) => {
+    }
+    // GET api/event/
+    async findAll(req, res) {
+        try {
+            const data = await model.findAll();
+            res.status(200).json(data);
+        } catch (error) {
+            catchErr(error.message, "event.controller.findAll");
+            res.status(500).json({
+                message: "Failed to fetch events!",
+                detail: error.message,
+            });
+        }
+    }
+
+    // GET api/event/:id
+    async findOne(req, res) {
+        try {
+            const id = req.params.id;
+            const data = await model.findOne(id);
+            if (!data || data.length === 0) {
+                return res.status(404).json({ message: `Event with ID ${id} not found` });
+            }
+            res.status(200).json(data);
+        } catch (error) {
+            catchErr(error.message, "event.controller.findOne");
+            res.status(500).json({
+                message: "Failed to find event!",
+                detail: error.message,
+            });
+        }
+    }
+
+    // POST api/event/
+    async create(req, res) {
         try {
             const {
                 name,
@@ -70,223 +135,119 @@ class EventController {
                 end_time,
                 created_by,
             } = req.body;
-            const file = req.file ? req.file.path : "";
-            model.createFull(
-                [
-                    name,
-                    description,
-                    location,
-                    file,
-                    start_time,
-                    end_time,
-                    created_by,
-                ],
-                (err, result) => {
-                    if (err)
-                        return res
-                            .status(406)
-                            .json({ message: err.sqlMessage });
-                    model.findOne(result.insertId, (err, data) => {
-                        if (err)
-                            return res
-                                .status(406)
-                                .json({ message: err.sqlMessage });
-                        res.status(201).json({
-                            meaage: "Successfully Add New Event..",
-                            data: data,
-                        });
-                    });
-                }
-            );
-        } catch (error) {
-            catchErr(error, "event.controll.create");
-            return res
-                .status(500)
-                .json({ message: "Internal Server Error : " + error });
-        }
-    };
-    create = async (req, res) => {
-        try {
-            const {
+
+            await model.create([
                 name,
                 description,
                 location,
                 start_time,
                 end_time,
                 created_by,
-            } = req.body;
-            model.create(
-                [name, description, location, start_time, end_time, created_by],
-                (err) => {
-                    if (err)
-                        return res
-                            .status(406)
-                            .json({ message: err.sqlMessage });
-                    res.status(201).json("Successfully Add New Event..");
-                }
-            );
+            ]);
+            res.status(201).json("Successfully added new event");
         } catch (error) {
-            catchErr(error, "event.controll.create");
-
-            if (error)
-                return res
-                    .status(500)
-                    .json({ message: "Internal Server Error : " + error });
-        }
-    };
-    findAll = async (req, res) => {
-        try {
-            model.findAll((err, data) => {
-                if (err)
-                    return res.status(406).json({ message: err.sqlMessage });
-                res.status(200).json(data);
+            catchErr(error.message, "event.controller.create");
+            res.status(500).json({
+                message: "Failed to create event!",
+                detail: error.message,
             });
-        } catch (error) {
-            catchErr(error, "event.controll.findall");
-            if (error)
-                return res
-                    .status(500)
-                    .json({ message: "Internal Server Error : " + error });
         }
-    };
+    }
 
-    findOne = (req, res) => {
+    // PUT api/event/:id
+    async update(req, res) {
         try {
             const id = req.params.id;
-            model.findOne(id, (err, data) => {
-                if (err)
-                    return res.status(406).json({ message: err.sqlMessage });
-                if (data.length > 0) res.status(200).json(data);
-                else
-                    return res
-                        .status(404)
-                        .json(
-                            "Your ID:" +
-                                id +
-                                " Event Is Not Avalable In Server.."
-                        );
-            });
+            const { name, description, location, start_time, end_time } = req.body;
+            await model.update(id, [name, description, location, start_time, end_time]);
+            res.status(200).json("Successfully updated event");
         } catch (error) {
-            catchErr(error, "event.controll.findOn");
-            if (error)
-                return res
-                    .status(500)
-                    .json({ message: "Internal Server Error : " + error });
+            catchErr(error.message, "event.controller.update");
+            res.status(500).json({
+                message: "Failed to update event!",
+                detail: error.message,
+            });
         }
-    };
-    update = (req, res) => {
+    }
+
+    // DELETE api/event/:id
+    async remove(req, res) {
         try {
             const id = req.params.id;
-            const { name, description, location, start_time, end_time } =
-                req.body;
-            model.update(
-                id,
-                [name, description, location, start_time, end_time],
-                (err, data) => {
-                    if (err)
-                        return res
-                            .status(406)
-                            .json({ message: err.sqlMessage });
-                    res.status(200).json("Succsessfully Update Event..");
-                }
-            );
+            await model.remove(id);
+            res.status(200).json("Successfully deleted event");
         } catch (error) {
-            catchErr(error, "event.controll.update");
-            if (error)
-                return res
-                    .status(500)
-                    .json({ message: "Internal Server Error : " + error });
-        }
-    };
-
-    remove = (req, res) => {
-        try {
-            const id = req.params.id;
-            model.remove(id, (err, data) => {
-                if (err)
-                    return res.status(406).json({ message: err.sqlMessage });
-                res.status(200).json("Succsessfully Delete Delete..");
+            catchErr(error.message, "event.controller.remove");
+            res.status(500).json({
+                message: "Failed to delete event!",
+                detail: error.message,
             });
-        } catch (error) {
-            catchErr(error, "event.controll.remove");
-            if (error)
-                return res
-                    .status(500)
-                    .json({ message: "Internal Server Error : " + error });
         }
-    };
+    }
 
-    destroy = (req, res) => {
+    // POST api/event/destroy
+    async destroy(req, res) {
         try {
             const { id } = req.body;
-            if (!id)
-                return res.status(406).json({ message: "Id Require In Body" });
-            model.destroy(id, (err, data) => {
-                if (err)
-                    return res.status(406).json({ message: err.sqlMessage });
-                res.status(200).json("Succsessfully Destroy Event..");
-            });
-        } catch (error) {
-            catchErr(error, "event.controll.destroy");
-            if (error)
-                return res
-                    .status(500)
-                    .json({ message: "Internal Server Error : " + error });
-        }
-    };
+            if (!id) return res.status(406).json({ message: "ID is required in request body" });
 
-    restore = (req, res) => {
+            await model.destroy(id);
+            res.status(200).json("Successfully permanently deleted event");
+        } catch (error) {
+            catchErr(error.message, "event.controller.destroy");
+            res.status(500).json({
+                message: "Failed to destroy event!",
+                detail: error.message,
+            });
+        }
+    }
+
+    // GET api/event/restore/:id
+    async restore(req, res) {
         try {
             const id = req.params.id;
-            model.restore(id, (err, data) => {
-                if (err)
-                    return res.status(406).json({ message: err.sqlMessage });
-                if (data.length > 0) res.status(200).json(data);
-                res.status(200).json("Succsessfully Delete Delete..");
-            });
+            const result = await model.restore(id);
+            if (result.length > 0) {
+                res.status(200).json(result);
+            } else {
+                res.status(404).json({ message: "No data restored" });
+            }
         } catch (error) {
-            catchErr(error, "event.controll.remove");
-            if (error)
-                return res
-                    .status(500)
-                    .json({ message: "Internal Server Error : " + error });
+            catchErr(error.message, "event.controller.restore");
+            res.status(500).json({
+                message: "Failed to restore event!",
+                detail: error.message,
+            });
         }
-    };
-    upcoming = (req, res) => {
+    }
+    // GET api/event/upcoming
+    async upcoming(req, res) {
         try {
-            model.upcoming((err, data) => {
-                if (err)
-                    return res.status(406).json({ message: err.sqlMessage });
-                res.json(data);
-            });
+            const data = await model.upcoming();
+            res.status(200).json(data);
         } catch (error) {
-            catchErr(error, "event.controll.remove");
-            if (error)
-                return res
-                    .status(500)
-                    .json({ message: "Internal Server Error : " + error });
-        }
-    };
-    uploadImage = (req, res) => {
-        const id = req.params.id;
-        const file = req.file.path;
-        try {
-            model.uploadImage([file, id], (err, data) => {
-                if (err)
-                    if (err)
-                        return res
-                            .status(406)
-                            .json({ message: err.sqlMessage });
-                res.json("Sucsessfuly Update Event Image");
+            catchErr(error.message, "event.controller.upcoming");
+            res.status(500).json({
+                message: "Failed to get upcoming events!",
+                detail: error.message,
             });
-        } catch (error) {
-            catchErr(error, "event.controll.remove");
-            if (error)
-                return res
-                    .status(500)
-                    .json({ message: "Internal Server Error : " + error });
         }
-    };
-}
+    }
 
+    // PUT api/event/image/:id
+    async uploadImage(req, res) {
+        try {
+            const id = req.params.id;
+            const file = req.file.path;
+            await model.uploadImage([file, id]);
+            res.status(200).json("Successfully updated event image");
+        } catch (error) {
+            catchErr(error.message, "event.controller.uploadImage");
+            res.status(500).json({
+                message: "Failed to upload event image!",
+                detail: error.message,
+            });
+        }
+    }
+}
 export default EventController;

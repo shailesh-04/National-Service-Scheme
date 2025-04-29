@@ -1,7 +1,7 @@
 import axios from "axios";
-import { BASE_URL } from "./config";
-import useAlert from "@/store/useAlert";
 
+import useAlert from "@/store/useAlert";
+const BASE_URL = "http://192.168.43.2:3000/api/";//process.env.EXPO_PUBLIC_API_URL;
 export const publicApi = axios.create({
   baseURL: BASE_URL,
   headers: { "Content-Type": "application/json" }

@@ -1,31 +1,34 @@
 import conn from "#config/db.config.js";
 import color, { catchErr } from "#color";
 import { getFiles, consoleColor } from "#untils/migrationFunctions.js";
-import e from "express";
 const command = process.argv[2];
 const table = process.argv[3];
 const fileList = await getFiles();
+
 if (!table || !command) {
     consoleColor();
     process.exit(0);
 }
-var i = null;
+let i = null;
+
 async function loadModule(t, c) {
-    await fileList.find((value, index, array) => {
-        if (value[0] == t) {
+    await fileList.find((value, index) => {
+        if (value[0] === t) {
             i = index;
         }
     });
+
     try {
-        var module;
+        let module;
         try {
             module =
-                (t !== "all" && c !== "sql")
-                    ?  await import(`./${fileList[i][0]}_${fileList[i][1]}.js`)
+                t !== "all" && c !== "sql"
+                    ? await import(`./${fileList[i][0]}_${fileList[i][1]}.js`)
                     : null;
         } catch (error) {
-            throw "Not Found FIle -> " + t;
+            throw "Not Found File -> " + t;
         }
+
         let query = "";
         switch (c) {
             case "create":
@@ -35,8 +38,8 @@ async function loadModule(t, c) {
                 query = module.dropTable;
                 break;
             case "drop_create":
-                    conn.query(module.dropTable);
-                    query = module.createTable;
+                await conn.query(module.dropTable);
+                query = module.createTable;
                 break;
             case "seeders":
                 query = module.seeders;
@@ -51,101 +54,93 @@ async function loadModule(t, c) {
                 query = `${module.AddColumn} ${process.argv[4]}`;
                 break;
             case "sql":
-                conn.query(t,(err,result)=>{
-                    if(err) return console.error(err.sqlMessage);
-                    console.log("Result:",result);
-                });
-                break;
+                try {
+                    const result = await conn.query(t);
+                    console.log("Result:", result);
+                } catch (err) {
+                    console.error(err.sqlMessage);
+                }
+                return;
             default:
                 consoleColor();
                 process.exit(0);
         }
+
         if (query) {
-            conn.query(query, (err) => {
-                if (err) return console.error(err.sqlMessage);
+            try {
+                await conn.query(query);
                 color([
-                    "\n════════════════════\n Successfully "+c+" "+table,
+                    "\n════════════════════\n Successfully " + c + " " + table,
                     "yellow",
                     "bold",
                 ]);
-            });
+            } catch (error) {
+                console.log(error);
+            }
         }
     } catch (error) {
         catchErr("_migration", error);
         process.exit(0);
     }
 }
+
 async function rollback(t) {
-    if (t != "all") {
+    if (t !== "all") {
         try {
-            const module = await import(
-                `./${fileList[i][0]}_${fileList[i][1]}.js`
-            );
-            conn.query(module.dropTable, (err) => {
-                if (err) return console.log("SQL ERROR => ", err.sqlMessage);
-                color(["Sucssessfuly Drop  " + fileList[i][0], "red", "bold"]);
-            });
-            conn.query(module.createTable, (err) => {
-                if (err) return console.log("SQL ERROR => ", err.sqlMessage);
-                color([
-                    "--Successfully created " + fileList[i][0],
-                    "green",
-                    "bold",
-                ]);
-            });
-            conn.query(module.seeders, (err) => {
-                if (err) return console.log("SQL ERROR => ", err.sqlMessage);
-                color([
-                    "--Successfully run Seeders " + fileList[i][0],
-                    "yellow",
-                    "bold",
-                ]);
-            });
+            const module = await import(`./${fileList[i][0]}_${fileList[i][1]}.js`);
+            
+            await conn.query(module.dropTable);
+            color(["Sucssessfuly Drop  " + fileList[i][0], "red", "bold"]);
+            
+            await conn.query(module.createTable);
+            color(["--Successfully created " + fileList[i][0], "green", "bold"]);
         } catch (error) {
             console.log("ERROR", error);
         }
         return;
     }
 
+    // Rollback all tables in reverse order
     for (const tbl of fileList.slice().reverse()) {
         try {
             const module = await import(`./${tbl[0]}_${tbl[1]}.js`);
-            conn.query(module.dropTable, (err) => {
-                if (err) return console.log("SQL ERROR => ", err.sqlMessage);
-                color(["Sucssessfuly Drop  " + tbl[0], "red", "bold"]);
-            });
+            await conn.query(module.dropTable);
+            color(["Sucssessfuly Drop  " + tbl[0], "red", "bold"]);
         } catch (err) {
             catchErr("_migration/rollback", err);
         }
     }
 
+    // Create all tables
     for (const tbl of fileList) {
         try {
             const module = await import(`./${tbl[0]}_${tbl[1]}.js`);
-            conn.query(module.createTable, (err) => {
-                if (err) return console.log("SQL ERROR => ", err.sqlMessage);
-                color(["--Successfully created " + tbl[0], "green", "bold"]);
-            });
+            await conn.query(module.createTable);
+            color(["--Successfully created " + tbl[0], "green", "bold"]);
         } catch (err) {
             catchErr("_migration/rollback", err);
         }
     }
 
+    // Run all seeders
+    if(process.argv[4] == "seeders" ||process.argv[4] == "s" )
     for (const tbl of fileList) {
         try {
             const module = await import(`./${tbl[0]}_${tbl[1]}.js`);
-            conn.query(module.seeders, (err) => {
-                if (err) return console.log("SQL ERROR => ", err.sqlMessage);
-                color([
-                    "--Successfully run Seeders " + tbl[0],
-                    "yellow",
-                    "bold",
-                ]);
-            });
+            await conn.query(module.seeders);
+            color(["--Successfully run Seeders " + tbl[0], "yellow", "bold"]);
         } catch (err) {
             catchErr("_migration/rollback", err);
         }
     }
 }
-await loadModule(table, command);
-conn.end();
+
+(async () => {
+    try {
+        await conn.testConnection();
+        await loadModule(table, command);
+    } catch (error) {
+        console.error("Initialization error:", error);
+        process.exit(1);
+    }
+})();

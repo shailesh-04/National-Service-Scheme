@@ -18,7 +18,6 @@ try {
     router.use("/nss_store",nss_store);
     router.use("/attendance",attendance);
     router.use("/test",test);
-
 } catch (error) {
     catchErr(error,"_routes");
 }

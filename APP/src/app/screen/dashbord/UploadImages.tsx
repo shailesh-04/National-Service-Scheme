@@ -12,13 +12,12 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
-import { BASE_URL } from "#/src/services/config";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import Button from "#/src/components/ui/button";
 import { height, width } from "#/src/constants/Dimention";
 import useAlert from "#/src/store/useAlert";
-
+const BASE_URL = process.env.EXPO_PUBLIC_URL;
 
 const MultiImageUpload = () => {
     const { eventID, eventName } = useLocalSearchParams();

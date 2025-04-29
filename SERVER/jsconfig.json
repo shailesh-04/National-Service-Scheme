@@ -1,14 +1,20 @@
 {
     "compilerOptions": {
+        "baseUrl": ".",
         "target": "ES6",
-        "module": "commonjs",
-        "strict": true,
-        "esModuleInterop": true,
-        "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true,
-        "outDir": "./dist",
-        "baseUrl": "./",
+        "paths": {
+            "#src/*": ["./src/*"],
+            "#color": ["./src/services/color.js"],
+            "#controllers/*": ["./src/controllers/*"],
+            "#models/*": ["./src/database/models/*"],
+            "#migrations/*": ["./src/database/migrations/*"],
+            "#config/*": ["./config/*"],
+            "#routes/*": ["./src/routes/*"],
+            "#middleware/*": ["./src/middleware/*"],
+            "#services/*": ["./src/services/*"],
+            "#untils/*": ["./src/untils/*"]
+        }
     },
-    "include": ["src/**/*.js"],
-    "exclude": ["node_modules", "dist"]
+    "include": ["src/**/*", "index.js","./config**/*"],
+    "exclude": ["node_modules"]
 }
