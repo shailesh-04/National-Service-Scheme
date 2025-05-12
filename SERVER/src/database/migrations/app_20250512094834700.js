@@ -1,14 +1,12 @@
 import database from "#config/db.config.js";
 import Migration from "#utils/Migration.js";
-class images {
+class app {
     constructor() {
         this.migration = new Migration(
-            "images",
+            "app",
             {
                 id: ["INT", "AUTO_INCREMENT", "PRIMARY KEY"],
-                imageurl: [" VARCHAR(255) NOT NULL"],
-                E_id: ["INT NULL"],
-                is_deleted: ["BOOLEAN DEFAULT FALSE"],
+                
                 created_at: ["TIMESTAMP", "DEFAULT CURRENT_TIMESTAMP"],
                 updated_at: [
                     "TIMESTAMP",
@@ -16,7 +14,7 @@ class images {
                     "ON UPDATE CURRENT_TIMESTAMP",
                 ],
             },
-            ["FOREIGN KEY (E_id) REFERENCES events(id) ON DELETE SET NULL"]
+            []
         );
     }
     async create(body) {
@@ -54,6 +52,6 @@ class images {
         return result;
     }
 }
-const imagesMigration = new images();
-export const migration = imagesMigration.migration;
-export default imagesMigration;
+const appMigration = new app();
+export const migration = appMigration.migration;
+export default appMigration;

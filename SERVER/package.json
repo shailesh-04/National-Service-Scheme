@@ -8,8 +8,9 @@
         "dev": "nodemon",
         "start": "node index.js",
         "test": "node temp.test.js",
-        "migration": "node ./src/database/migrations/_migrations.js",
-        "create-migration": "node ./src/scripts/createMigratoin.js"
+        "migration": "node ./src/scripts/migrations.js",
+        "create:migration": "node ./src/scripts/createMigratoin.js",
+        "refresh:database": "node ./src/scripts/refreshDatabase.js"
     },
     "imports": {
         "#src/*": "./src/*",
@@ -21,7 +22,7 @@
         "#routes/*": "./src/routes/*",
         "#middleware/*": "./src/middleware/*",
         "#services/*": "./src/services/*",
-        "#untils/*": "./src/untils/*"
+        "#utils/*": "./src/utils/*"
     },
     "dependencies": {
         "cloudinary": "^1.41.3",

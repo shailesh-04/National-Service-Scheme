@@ -24,14 +24,28 @@ class Database {
     }
     async testConnection() {
         try {
-             this.conn = await this.pool.getConnection();
+            this.conn = await this.pool.getConnection();
             await this.conn.ping();
+
             this.conn.release();
-            color(["✅ Database Connected Successfully!", "brightGreen", "bold"]);
-            color(["════════════════════════════════════", "brightMagenta", "bold"]);
+            color([
+                "✅ Database Connected Successfully!",
+                "brightGreen",
+                "bold",
+            ]);
+            color([
+                "════════════════════════════════════\n",
+                "brightMagenta",
+                "bold",
+            ]);
         } catch (err) {
             color(["❌ Database Connection Failed!", "brightRed", "bold"]);
             color([`🔍 Error: ${err.message}`, "red", "italic"]);
+            color([
+                "\n════════════════════════════════════",
+                "brightMagenta",
+                "bold",
+            ]);
             throw err;
         }
     }

@@ -12,7 +12,7 @@
             "#routes/*": ["./src/routes/*"],
             "#middleware/*": ["./src/middleware/*"],
             "#services/*": ["./src/services/*"],
-            "#untils/*": ["./src/untils/*"]
+            "#utils/*": ["./src/utils/*"]
         }
     },
     "include": ["src/**/*", "index.js","./config**/*"],
