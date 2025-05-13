@@ -2,7 +2,7 @@ import conn from "#config/db.config.js";
 class EventModel {
     async All() {
         try {
-            const [rows] = await conn.query(`SELECT * FROM events ORDER BY 
+            const rows = await conn.query(`SELECT * FROM events ORDER BY 
                         DATE(end_time) = CURDATE() ASC,
                         start_time DESC`);
             return rows;
@@ -12,7 +12,7 @@ class EventModel {
     }
     async AllUpdate(id, body) {
         try {
-            const [result] = await conn.query(
+            const result = await conn.query(
                 `UPDATE events SET name= ?, description=?,location=?,image=?,start_time=?, end_time=?,created_by=?, is_deleted=?  WHERE id = ${id}; `,
                 body
             );
@@ -24,7 +24,7 @@ class EventModel {
 
     async createFull(body) {
         try {
-            const [result] = await conn.query(
+            const result = await conn.query(
                 `INSERT INTO events (name, description, location, image, start_time, end_time, created_by) VALUES (?,?,?,?,?,?,?);`,
                 body
             );
@@ -36,7 +36,7 @@ class EventModel {
 
     async create(body) {
         try {
-            const [result] = await conn.query(
+            const result = await conn.query(
                 `INSERT INTO events (name, description, location, start_time, end_time, created_by)
                 VALUES (?,?,?,?,?,?);`,
                 body
@@ -49,7 +49,7 @@ class EventModel {
 
     async findAll() {
         try {
-            const [result] = await conn.query(
+            const result = await conn.query(
                 `SELECT id, name, description, location, start_time, end_time, numOFUser, image, created_by 
                 FROM events 
                 WHERE is_deleted = false  
@@ -64,7 +64,7 @@ class EventModel {
     }
     async findOne(id) {
         try {
-            const [result] = await conn.query(
+            const result = await conn.query(
                 "SELECT id, name, description, location, start_time, end_time, numOFUser, image, created_by FROM events WHERE id = ? AND is_deleted = FALSE;",
                 id
             );
@@ -76,7 +76,7 @@ class EventModel {
 
     async update(id, body) {
         try {
-            const [result] = await conn.query(
+            const result = await conn.query(
                 `UPDATE events 
                 SET name = ?, 
                     description = ?, 
@@ -95,7 +95,7 @@ class EventModel {
 
     async remove(id) {
         try {
-            const [result] = await conn.query(
+            const result = await conn.query(
                 `UPDATE events SET is_deleted = TRUE WHERE id = ?;`,
                 [id]
             );
@@ -107,7 +107,7 @@ class EventModel {
 
     async tore(id) {
         try {
-            const [result] = await conn.query(
+            const result = await conn.query(
                 `UPDATE events SET is_deleted = false WHERE id = ?;`,
                 [id]
             );
@@ -119,7 +119,7 @@ class EventModel {
 
     async uploadImage(body) {
         try {
-            const [result] = await conn.query(
+            const result = await conn.query(
                 `UPDATE events SET image = ? WHERE id = ?;`,
                 body
             );
@@ -131,7 +131,7 @@ class EventModel {
 
     async upcoming() {
         try {
-            const [result] = await conn.query(
+            const result = await conn.query(
                 `SELECT id, name, description, location, start_time, end_time, numOFUser, image, created_by FROM events 
                 WHERE is_deleted = false 
                 AND start_time >= NOW() 
@@ -146,7 +146,7 @@ class EventModel {
 
     async addNUmOfUser(id) {
         try {
-            const [result] = await conn.query(
+            const result = await conn.query(
                 `UPDATE events SET numOFUser = numOFUser + 1 WHERE id = ?;`,
                 [id]
             );
@@ -158,7 +158,7 @@ class EventModel {
 
     async destroy(id) {
         try {
-            const [result] = await conn.query(`DELETE from events WHERE id = ?;`, [
+            const result = await conn.query(`DELETE from events WHERE id = ?;`, [
                 id,
             ]);
             return result;

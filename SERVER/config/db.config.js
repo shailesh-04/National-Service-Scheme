@@ -52,7 +52,7 @@ class Database {
     async query(sql, params) {
         const connection = await this.pool.getConnection();
         try {
-            const [...results] = await connection.query(sql, params);
+            const [results] = await connection.query(sql, params);
             return results;
         } finally {
             connection.release();

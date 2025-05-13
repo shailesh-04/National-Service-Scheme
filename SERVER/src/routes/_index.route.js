@@ -7,7 +7,7 @@ import storage from "./storage.route.js";
 import registratios from "./registration.route.js";
 import nss_store from "./nss_store.route.js";
 import attendance from "./attendance.route.js";
-import test from "./test.route.js";
+import test from "./route.js";
 const router = Router();
 try {
     router.use("/user",user);

@@ -4,13 +4,13 @@ import { catchErr } from "#color";
 class ImageModel {
     // Get all images
     async All() {
-        const [rows] = await conn.query("SELECT * FROM images");
+        const rows = await conn.query("SELECT * FROM images");
         return rows;
     }
 
     // Update image by ID
     async updateAll(id, body) {
-        const [result] = await conn.query(
+        const result = await conn.query(
             "UPDATE images SET E_id = ?, imageurl = ?, is_deleted = ? WHERE id = ?",
             [...body, id]
         );
@@ -19,7 +19,7 @@ class ImageModel {
 
     // Create new image
     async create(body) {
-        const [result] = await conn.query(
+        const result = await conn.query(
             "INSERT INTO images (E_id, imageurl) VALUES (?, ?)",
             body
         );
@@ -28,7 +28,7 @@ class ImageModel {
 
     // Find all (specific fields)
     async findAll() {
-        const [rows] = await conn.query(
+        const rows = await conn.query(
             "SELECT id, E_id, imageurl FROM images"
         );
         return rows;
@@ -36,7 +36,7 @@ class ImageModel {
 
     // Join images with event names
     async eventImages() {
-        const [rows] = await conn.query(`
+        const rows = await conn.query(`
             SELECT 
                 images.id, 
                 images.E_id, 
@@ -58,7 +58,7 @@ class ImageModel {
 
     // Remove image by ID
     async remove(id) {
-        const [result] = await conn.query(`DELETE FROM images WHERE id = ?`, [
+        const result = await conn.query(`DELETE FROM images WHERE id = ?`, [
             id,
         ]);
         return result;
@@ -66,7 +66,7 @@ class ImageModel {
 
     // Count rows in images
     async countRows() {
-        const [rows] = await conn.query(
+        const rows = await conn.query(
             `SELECT COUNT(*) AS numOfRow FROM images`
         );
         return rows[0];

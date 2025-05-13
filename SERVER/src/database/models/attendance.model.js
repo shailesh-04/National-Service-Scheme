@@ -3,7 +3,7 @@ import db from "#config/db.config.js"; // Make sure the path is correct
 class Attendance {
     static async getAll() {
         try {
-            const [rows] = await db.query("SELECT * FROM event_attendance");
+            const rows = await db.query("SELECT * FROM event_attendance");
             return rows;
         } catch (error) {
             throw new Error(error.sqlMessage || error.message);
@@ -12,7 +12,7 @@ class Attendance {
 
     static async getById(id) {
         try {
-            const [rows] = await db.query(
+            const rows = await db.query(
                 "SELECT * FROM event_attendance WHERE id = ?",
                 [id]
             );
@@ -25,7 +25,7 @@ class Attendance {
     static async create(data) {
         try {
             const { user_id, event_id } = data;
-            const [result] = await db.query(
+            const result = await db.query(
                 "INSERT INTO event_attendance (user_id, event_id) VALUES (?, ?)",
                 [user_id, event_id]
             );
@@ -39,7 +39,7 @@ class Attendance {
     static async update(id, data) {
         const { user_id, event_id } = data;
         try {
-            const [result] = await db.query(
+            const result = await db.query(
                 "UPDATE event_attendance SET user_id = ?, event_id = ? WHERE id = ?",
                 [user_id, event_id, id]
             );
@@ -51,7 +51,7 @@ class Attendance {
 
     static async delete(id) {
         try {
-            const [result] = await db.query(
+            const result = await db.query(
                 "DELETE FROM event_attendance WHERE id = ?",
                 [id]
             );
@@ -69,7 +69,7 @@ class Attendance {
             WHERE a.id = ?
         `;
         try {
-            const [rows] = await db.query(query, [attendanceId]);
+            const rows = await db.query(query, [attendanceId]);
             return rows[0];
         } catch (error) {
             throw new Error(error.sqlMessage || error.message);
@@ -84,7 +84,7 @@ class Attendance {
             WHERE a.id = ?
         `;
         try {
-            const [rows] = await db.query(query, [attendanceId]);
+            const rows = await db.query(query, [attendanceId]);
             return rows[0];
         } catch (error) {
             throw new Error(error.sqlMessage || error.message);
@@ -105,7 +105,7 @@ class Attendance {
             ORDER BY r.id DESC
         `;
         try {
-            const [rows] = await db.query(query, [eventId]);
+            const rows = await db.query(query, [eventId]);
             return rows;
         } catch (error) {
             throw new Error(error.sqlMessage || error.message);
@@ -127,7 +127,7 @@ class Attendance {
             ORDER BY a.attendance_time DESC
         `;
         try {
-            const [rows] = await db.query(query, [eventId]);
+            const rows = await db.query(query, [eventId]);
             return rows;
         } catch (error) {
             throw new Error(error.sqlMessage || error.message);
