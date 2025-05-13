@@ -63,7 +63,7 @@ export const findAll = async (req, res) => {
 
 export const eventEmages = async (req, res) => {
     try {
-        const data = await model.eventEmages();
+        const data = await model.eventImages();
         res.status(200).json(data);
     } catch (error) {
         catchErr(error, "images.controller.eventEmages");

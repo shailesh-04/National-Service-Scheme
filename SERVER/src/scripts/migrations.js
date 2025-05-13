@@ -74,12 +74,35 @@ import color from "#color";
         ]);
     };
 
-    if (args.length === 0) {
-        showUsage();
-        process.exit(1);
-    }
     const [command, tableName, ...rest] = args;
-    if (!tableName) {
+    if (!command) {
+        const migrationFolder = path.join(
+            path.dirname(fileURLToPath(import.meta.url)),
+            "../database/migrations"
+        );
+        const files = fs.readdirSync(migrationFolder);
+        const fileNames = files.sort((a, b) => {
+            const numA = parseInt(
+                a.split("_")[a.split("_").length - 1].split(".")[0]
+            );
+            const numB = parseInt(
+                b.split("_")[b.split("_").length - 1].split(".")[0]
+            );
+            return numB - numA;
+        });
+        for (let filename of fileNames.reverse()) {
+            try {
+                const migrationModule = await import(`#migrations/${filename}`);
+                const migration = migrationModule.default.migration;
+                await migration.createTable();
+            } catch (error) {
+                console.error(error.message);
+            }
+        }
+        process.exit(0);
+    }
+    if (!tableName || tableName == "") {
+        showUsage();
         color(["❌ Please specify a table name.", "red", "bold"]);
         process.exit(1);
     }
@@ -157,14 +180,14 @@ import color from "#color";
                     break;
                 }
                 await migration.renameTable(rest[0]);
-                 d = fs.readFileSync(
+                d = fs.readFileSync(
                     `${migrationFolder}/${migrationFile}`,
                     "utf-8"
                 );
                 d = d.replace(
                     /this\.migration\s*=\s*new\s*Migration\(".*?"(,[^)]*)/,
                     `this.migration = new Migration("${rest[0]}"$1`
-                )
+                );
                 fs.unlinkSync(`${migrationFolder}/${migrationFile}`);
                 const newFileName = migrationFile.split("_");
                 newFileName[0] = rest[0];

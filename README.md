@@ -1,4 +1,5 @@
 # National-Service-Scheme
+
 That Repository is Create For Develop national service scheme for my collage project  
 
 # National Service Scheme (NSS) App
@@ -39,11 +40,13 @@ This is a **National Service Scheme (NSS) App**, developed using **Node.js**, **
    npm install
    ```
 4. **Configure the environment variables**
-   - Create a `.env` file in the `backend/` directory
+   - Create a `.env` file in the `server/` directory
+   - connect local sql server
    ```
    mv dot.env .env
    ```
 5. **Run the MySQL Database Migration**
+   - create all nessary tables
    ```sh
    npm run migration
    ```
@@ -53,6 +56,16 @@ This is a **National Service Scheme (NSS) App**, developed using **Node.js**, **
    ```
    The backend will be running on `http://localhost:3000`
 
+0. **Command**
+   ```sh
+      git clone https://github.com/shailesh-04/National-Service-Scheme.git
+      cd National-Service-Scheme
+      cd SERVER
+      npm install
+      mv dot.env .env
+      npm run migration
+      npm start
+   ```
 ---
 
 ### **Frontend (React Native - Expo)**
@@ -64,10 +77,11 @@ This is a **National Service Scheme (NSS) App**, developed using **Node.js**, **
 2. **Install dependencies**
    ```sh
    npm install
+   mv dot.env .env
    ```
 3. **Start the Expo development server**
    ```sh
-   npx expo start
+   npm start
    ```
    This will launch the Metro Bundler, and you can scan the QR code with the Expo Go app.
 
@@ -122,7 +136,7 @@ This is a **National Service Scheme (NSS) App**, developed using **Node.js**, **
 - **Database**: MySQL
 
 ## **Contributors**
-- Your Name (@yourusername)
+- Your Name (@shailesh-04m)
 - Other Team Members
 
 ## **License**

@@ -2,7 +2,7 @@
     "name": "nss.mahuva",
     "version": "1.0.0",
     "type": "module",
-    "description": "nss.mahuva app  Backend is a robust Node.js server application that powers the NSS (National Service Scheme) management system. Built with MVC architecture and MySQL, it handles secure user authentication, event management, registration tracking, profile updates, and admin operations. Designed for both students and admins, the backend supports scalable APIs to manage users, events, images, and notifications efficiently.",
+    "description":"nss.mahuva app  Backend is a robust Node.js server application that powers the NSS (National Service Scheme) management system. Built with MVC architecture and MySQL, it handles secure user authentication, event management, registration tracking, profile updates, and admin operations. Designed for both students and admins, the backend supports scalable APIs to manage users, events, images, and notifications efficiently.",
     "main": "index.js",
     "scripts": {
         "dev": "nodemon",

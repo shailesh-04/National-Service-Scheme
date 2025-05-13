@@ -1,12 +1,7 @@
 import color from "#color";
 import { server } from "#config/soket.config.js";
-import app from "#config/app.config.js";
-
 function startServer() {
-
-    app
-   // server  //this For use Soket.io
-    .listen(process.env.PORT, "0.0.0.0", () => {
+   server.listen(process.env.PORT, "0.0.0.0", () => {
         color(["\n🚀 Server Status: Running", "brightGreen", "bold"]);
         color(
             ["🌍 Access it at: ", "cyan", "bold"],

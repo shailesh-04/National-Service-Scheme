@@ -44,12 +44,11 @@ const Index: React.FC = () => {
     const [events, setEvents] = useState<EventType[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [gallery, setGallery] = useState<StorageImagesType[] | null>(null);
-    const [expoPushToken, setExpoPushToken] = useState("");
     const setAlert = useAlert((e) => e.setAlert);
     useEffect(() => {
         fetchData();
         getGallery((data, err) => {
-            if (err) setAlert(err, "error");
+            if (err) return;
             setGallery(data.images);
         });
         registerForPushNotifications();
@@ -72,14 +71,11 @@ const Index: React.FC = () => {
                 console.log("❌ Failed to get push token permission");
                 return;
               }
-        
               token = (await Notifications.getExpoPushTokenAsync()).data;
             } else {
               console.log("⚠️ Using mock push token (not on physical device)");
             }
-        
             console.log("Push Token:", token);
-            // Save token or continue logic
           } catch (error) {
             console.log("❌ Error in push notification setup:", error);
           }
