@@ -7,6 +7,10 @@ import {
     Image,
     ActivityIndicator,
 } from "react-native";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+
 import { Theme } from "@/constants/Colors";
 import Button from "@/components/ui/button";
 import { useRouter } from "expo-router";
@@ -14,42 +18,40 @@ import { signin } from "@services/auth";
 import { useUserStore } from "@store/useUserStore";
 import useAlert from "@store/useAlert";
 
+// Validation schema
+const schema = yup.object().shape({
+    email: yup.string().email("Invalid email format").required("Email is required"),
+    password: yup.string().required("Password is required"),
+});
+
+type FormData = {
+    email: string;
+    password: string;
+};
+
 export default function SignInScreen() {
-    const [loading, setLoading] = useState<boolean>(false);
-    const [email, setEmail] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
-    const [error, setError] = useState<string | null>(null); // General error state
-    const [emailError, setEmailError] = useState<string | null>(null); // Email validation error
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
     const setUser = useUserStore((state) => state.setUser);
     const setAlert = useAlert((s) => s.setAlert);
 
-    const validateEmail = (email: string) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    };
+    const {
+        control,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<FormData>({
+        resolver: yupResolver(schema),
+    });
 
-    const handleSubmit = () => {
+    const onSubmit = (data: FormData) => {
         setLoading(true);
-        setError(null);
-        setEmailError(null);
 
-        if (!email || !password) {
-            setError("Email and password are required.");
-            return;
-        }
-
-        if (!validateEmail(email)) {
-            setEmailError("Invalid email format.");
-            return;
-        }
-
-        signin({ email, password }, (res, err) => {
+        signin(data, (res, err) => {
             setLoading(false);
             if (err) {
-                setError("Invalid email or password. Please try again.");
+                setAlert("Invalid email or password. Please try again.", "error");
             } else if (res) {
-                setAlert("You Are Succsessfuly SignIn!", "success");
+                setAlert("You are successfully signed in!", "success");
                 setUser(res.data, res.token);
                 router.replace("/screen/(tabs)");
             }
@@ -71,61 +73,68 @@ export default function SignInScreen() {
             </Text>
 
             {/* Email Input */}
-            <TextInput
-                className="w-full p-3 mb-3 border border-[--accent-color] rounded-lg text-[--text-color]"
-                placeholder="Email"
-                placeholderTextColor="#888"
-                value={email}
-                onChangeText={(text) => {
-                    setEmail(text);
-                    if (emailError) setEmailError(null); // Clear error on change
-                }}
+            <Controller
+                control={control}
+                name="email"
+                render={({ field: { onChange, onBlur, value } }) => (
+                    <TextInput
+                        className="w-full p-3 mb-2 border border-[--accent-color] rounded-lg text-[--text-color]"
+                        placeholder="Email"
+                        placeholderTextColor="#888"
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        value={value}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                    />
+                )}
             />
-            {emailError && (
-                <Text className="text-red-500 mb-3 text-sm font-medium">
-                    {emailError}
+            {errors.email && (
+                <Text className="text-red-500 mb-2 text-sm font-medium">
+                    {errors.email.message}
                 </Text>
             )}
 
             {/* Password Input */}
-            <TextInput
-                className="w-full p-3 mb-2 border border-[--accent-color] rounded-lg text-[--text-color]"
-                placeholder="Password"
-                placeholderTextColor="#888"
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
+            <Controller
+                control={control}
+                name="password"
+                render={({ field: { onChange, onBlur, value } }) => (
+                    <TextInput
+                        className="w-full p-3 mb-2 border border-[--accent-color] rounded-lg text-[--text-color]"
+                        placeholder="Password"
+                        placeholderTextColor="#888"
+                        secureTextEntry
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        value={value}
+                    />
+                )}
             />
-
-            {/* Error message display */}
-            {error && (
-                <Text className="text-red-500 mb-3 text-sm font-medium">
-                    {error}
+            {errors.password && (
+                <Text className="text-red-500 mb-2 text-sm font-medium">
+                    {errors.password.message}
                 </Text>
             )}
 
-            <TouchableOpacity className="justify-start mb-5 w-full items-end" onPress={()=>{
-                router.replace("/auth/forgetPass")
-            }}>
+            {/* Forgot Password */}
+            <TouchableOpacity
+                className="justify-start mb-5 w-full items-end"
+                onPress={() => router.replace("/auth/forgetPass")}
+            >
                 <Text className="text-blue-400">Forgot Password?</Text>
             </TouchableOpacity>
+
+            {/* Submit Button */}
             {loading ? (
                 <ActivityIndicator />
             ) : (
-                <Button onPress={handleSubmit} className="mt-5">
+                <Button onPress={handleSubmit(onSubmit)} className="mt-5">
                     SIGN IN
                 </Button>
             )}
 
-            <View className="flex-row mt-4">
-                <Text>Don’t have an account? </Text>
-                <TouchableOpacity onPress={() => router.push("/auth/signUp")}>
-                    <Text className="text-[--main-color] font-semibold">
-                        Sign Up
-                    </Text>
-                </TouchableOpacity>
-            </View>
-
+            {/* Optional Skip Button */}
             <TouchableOpacity
                 className="mt-10 p-4 font-bold rounded-lg"
                 onPress={() => router.replace("/screen/(tabs)")}

@@ -201,13 +201,6 @@ export default function ForgatePassword() {
                 </Button>
             )}
 
-            <View className="flex-row mt-4">
-                <Text>Remembered your password? </Text>
-                <TouchableOpacity onPress={() => router.push("/auth/signIn")}>
-                    <Text className="text-[--main-color] font-semibold">Sign In</Text>
-                </TouchableOpacity>
-            </View>
-
             <TouchableOpacity className="mt-10 p-4 font-bold rounded-lg" onPress={() => router.replace("/screen/(tabs)")}>
                 <Text>SKIP</Text>
             </TouchableOpacity>
